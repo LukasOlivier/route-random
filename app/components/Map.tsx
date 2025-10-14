@@ -6,16 +6,12 @@ import {
   Marker,
   Popup,
   useMap,
-  Circle,
-  Polyline,
-  ZoomControl,
-  ScaleControl,
   useMapEvent,
 } from "react-leaflet";
-import { LatLngExpression, LatLngTuple } from "leaflet";
-import { useRouteStore } from "../../stores/store";
+import { LatLngTuple } from "leaflet";
 import { useEffect } from "react";
 import * as L from "leaflet";
+import { useLocationStore } from "../../stores/store";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -51,7 +47,7 @@ const MapUpdater = ({ center }: { center: LatLngTuple }) => {
 };
 
 function MapClickHandler() {
-  const { setStartLocation } = useRouteStore();
+  const { setStartLocation } = useLocationStore();
   const map = useMapEvent("click", (e) => {
     const { lat, lng } = e.latlng;
     setStartLocation([lat, lng]);
@@ -60,9 +56,9 @@ function MapClickHandler() {
 }
 
 const Map = () => {
-  const { options } = useRouteStore();
+  const { startLocation, userLocation } = useLocationStore();
 
-  const mapCenter = options.userLocation || defaults.defaultPosition;
+  const mapCenter = userLocation || defaults.defaultPosition;
 
   return (
     <MapContainer
@@ -84,8 +80,8 @@ const Map = () => {
       />
 
       {/* Start location marker */}
-      {options.startLocation && (
-        <Marker position={options.startLocation} icon={blueIcon}>
+      {startLocation && (
+        <Marker position={startLocation} icon={blueIcon}>
           <Popup>Starting Location</Popup>
         </Marker>
       )}
