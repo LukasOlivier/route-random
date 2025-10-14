@@ -32,6 +32,7 @@ type RouteStore = {
   setPace: (pace: Pace) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
+  setLocationInput: (input: string) => void;
   setIsGettingLocation: (isGetting: boolean) => void;
   setLocationError: (hasError: boolean) => void;
 };
@@ -69,12 +70,17 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
       options: {
         ...state.options,
         userLocation,
-        startLocation: userLocation, // Set as start location when user location is obtained
+        // Only set as start location if no start location is already set
+        startLocation: state.options.startLocation || userLocation,
       },
     })),
   setStartLocation: (startLocation) =>
     set((state) => ({
       options: { ...state.options, startLocation },
+    })),
+  setLocationInput: (locationInput) =>
+    set((state) => ({
+      options: { ...state.options, locationInput },
     })),
   setIsGettingLocation: (isGettingLocation) =>
     set((state) => ({

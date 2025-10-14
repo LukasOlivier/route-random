@@ -10,6 +10,7 @@ import {
   Polyline,
   ZoomControl,
   ScaleControl,
+  useMapEvent,
 } from "react-leaflet";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 import { useRouteStore } from "../../stores/store";
@@ -49,6 +50,15 @@ const MapUpdater = ({ center }: { center: LatLngTuple }) => {
   return null;
 };
 
+function MapClickHandler() {
+  const { setStartLocation } = useRouteStore();
+  const map = useMapEvent("click", (e) => {
+    const { lat, lng } = e.latlng;
+    setStartLocation([lat, lng]);
+  });
+  return null;
+}
+
 const Map = () => {
   const { options } = useRouteStore();
 
@@ -58,7 +68,7 @@ const Map = () => {
     <MapContainer
       center={mapCenter}
       zoom={defaults.zoom}
-      zoomControl={false}
+      zoomControl={true}
       scrollWheelZoom={true}
       style={{
         height: "100%",
@@ -66,29 +76,18 @@ const Map = () => {
       }}
     >
       <MapUpdater center={mapCenter} />
+      <MapClickHandler />
 
-      {/* modern basemap with subtle contrast for routes */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — &copy; Carto'
         url="https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png"
       />
 
-      {/* UI controls */}
-      <ZoomControl position="topright" />
-      <ScaleControl position="bottomleft" imperial={false} />
-
       {/* Start location marker */}
-      {(options.userLocation || options.startLocation) && (
-        <>
-          <Marker
-            position={options.userLocation || options.startLocation!}
-            icon={blueIcon}
-          >
-            <Popup>
-              {options.userLocation ? "Your Location" : "Starting Location"}
-            </Popup>
-          </Marker>
-        </>
+      {options.startLocation && (
+        <Marker position={options.startLocation} icon={blueIcon}>
+          <Popup>Starting Location</Popup>
+        </Marker>
       )}
     </MapContainer>
   );
