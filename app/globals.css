@@ -3,3 +3,22 @@
 button {
   @apply cursor-pointer;
 }
+
+label {
+  @apply text-gray-200 block mb-1 text-sm font-medium;
+}
+
+input:is([type="number"]),
+input:is([type="text"]) {
+  @apply p-2 border border-gray-700 rounded bg-gray-800 w-full;
+}
+
+button:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+/* Add specific styling for inputs with icons */
+.relative input:is([type="number"]),
+.relative input:is([type="text"]) {
+  @apply pl-10;
+}
