@@ -1,28 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { MapPin, Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
-
-enum Mode {
-  TIME = "time",
-  DISTANCE = "distance",
-}
-
-enum Pace {
-  WALKING = "walking",
-  RUNNING = "running",
-  CYCLING = "cycling",
-}
+import { useRouteStore, Mode, Pace } from "../../stores/store";
 
 export default function SidebarForm() {
-  const [currentMode, setCurrentMode] = useState<Mode>(Mode.DISTANCE);
-  const [currentPace, setCurrentPace] = useState<Pace>(Pace.WALKING);
-
-  // State for location input and loading state for geolocation
-  const [location, setLocation] = useState("");
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [locationError, setLocationError] = useState<boolean>(false);
+  const {
+    options,
+    setMode,
+    setPace,
+    setUserLocation,
+    setIsGettingLocation,
+    setLocationError,
+  } = useRouteStore();
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -35,7 +25,7 @@ export default function SidebarForm() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+        setUserLocation([latitude, longitude]);
         setIsGettingLocation(false);
         setLocationError(false);
       },
@@ -73,17 +63,17 @@ export default function SidebarForm() {
       <div className="w-full flex gap-2">
         <ToggleModeButton
           text="Distance"
-          selected={currentMode === Mode.DISTANCE}
-          onClick={() => setCurrentMode(Mode.DISTANCE)}
+          selected={options.mode === Mode.DISTANCE}
+          onClick={() => setMode(Mode.DISTANCE)}
         />
         <ToggleModeButton
           text="Time"
-          selected={currentMode === Mode.TIME}
-          onClick={() => setCurrentMode(Mode.TIME)}
+          selected={options.mode === Mode.TIME}
+          onClick={() => setMode(Mode.TIME)}
         />
       </div>
       <div className="flex flex-col gap-4">
-        {currentMode === Mode.DISTANCE ? (
+        {options.mode === Mode.DISTANCE ? (
           <div>
             {/* Distance specific fields */}
             <label
@@ -126,8 +116,8 @@ export default function SidebarForm() {
               </label>
               <select
                 className="w-full bg-gray-800 rounded-md px-3 py-2 border border-gray-700"
-                onChange={(e) => setCurrentPace(e.target.value as Pace)}
-                value={currentPace}
+                onChange={(e) => setPace(e.target.value as Pace)}
+                value={options.pace}
               >
                 {paceItems}
               </select>
@@ -147,17 +137,24 @@ export default function SidebarForm() {
                 name="location"
                 type="text"
                 placeholder="Enter a location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={options.locationInput}
+                onChange={(e) => console.log(e.target.value)}
               />
             </div>
             <button
               type="button"
               onClick={getCurrentLocation}
-              disabled={isGettingLocation || locationError}
+              disabled={options.isGettingLocation || options.locationError}
               className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 disabled:bg-gray-600 rounded-md text-white flex items-center"
             >
-              {locationError ? <LocateOff size={16} /> : <Locate size={16} />}
+              {options.locationError ? (
+                <LocateOff size={16} />
+              ) : (
+                <Locate
+                  size={16}
+                  className={options.isGettingLocation ? "animate-spin" : ""}
+                />
+              )}
             </button>
           </div>
         </div>
