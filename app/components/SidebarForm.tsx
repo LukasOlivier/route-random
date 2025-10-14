@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Clock, Ruler, Locate, LocateOff } from "lucide-react";
+import { Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useRouteStore, Mode, Pace } from "../../stores/store";
 import { useState } from "react";
@@ -130,21 +130,15 @@ export default function SidebarForm() {
             </div>
           </div>
         )}
-        {/* Search starting location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium mb-1 ">
-            Starting Location:
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Starting Location
           </label>
           <div className="flex gap-1">
-            <div className="relative flex-1">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                id="location"
-                name="location"
-                type="text"
-                placeholder="Enter a location"
-                value={options.locationInput}
-                onChange={(e) => console.log(e.target.value)}
+            <div className="flex-1">
+              <LocationSearch
+                onLocationSelect={handleLocationSelect}
+                placeholder="Search starting location..."
               />
             </div>
             <button
@@ -163,15 +157,6 @@ export default function SidebarForm() {
               )}
             </button>
           </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Starting Location
-          </label>
-          <LocationSearch
-            onLocationSelect={handleLocationSelect}
-            placeholder="Search starting location..."
-          />
         </div>
       </div>
     </form>
