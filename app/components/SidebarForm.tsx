@@ -124,6 +124,8 @@ export default function SidebarForm() {
                 className="w-full bg-gray-800 rounded-md px-3 py-2 border border-gray-700"
                 onChange={(e) => setPace(e.target.value as Pace)}
                 value={options.pace}
+                id="pace"
+                name="pace"
               >
                 {paceItems}
               </select>
