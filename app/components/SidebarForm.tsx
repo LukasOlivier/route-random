@@ -3,6 +3,8 @@
 import { MapPin, Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useRouteStore, Mode, Pace } from "../../stores/store";
+import { useState } from "react";
+import LocationSearch from "./LocationSearch";
 
 export default function SidebarForm() {
   const {
@@ -13,6 +15,10 @@ export default function SidebarForm() {
     setIsGettingLocation,
     setLocationError,
   } = useRouteStore();
+
+  const handleLocationSelect = (location: { lat: number; lon: number }) => {
+    setUserLocation([location.lat, location.lon]);
+  };
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -157,6 +163,15 @@ export default function SidebarForm() {
               )}
             </button>
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Starting Location
+          </label>
+          <LocationSearch
+            onLocationSelect={handleLocationSelect}
+            placeholder="Search starting location..."
+          />
         </div>
       </div>
     </form>
