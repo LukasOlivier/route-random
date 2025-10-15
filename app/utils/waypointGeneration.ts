@@ -93,25 +93,3 @@ export function generateCircularWaypoints(
 
   return waypoints;
 }
-
-/**
- * Add some randomness to waypoints to make routes more interesting
- */
-export function addRandomnessToWaypoints(
-  waypoints: [number, number][],
-  randomnessFactor: number = 0.3
-): [number, number][] {
-  return waypoints.map((waypoint, index) => {
-    // Don't modify start and end points
-    if (index === 0 || index === waypoints.length - 1) {
-      return waypoint;
-    }
-
-    // Add random offset within the randomness factor
-    const [lng, lat] = waypoint;
-    const randomOffsetLng = (Math.random() - 0.5) * randomnessFactor * 0.01;
-    const randomOffsetLat = (Math.random() - 0.5) * randomnessFactor * 0.01;
-
-    return [lng + randomOffsetLng, lat + randomOffsetLat] as [number, number];
-  });
-}

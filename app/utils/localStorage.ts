@@ -7,6 +7,7 @@ interface FormPreferences {
   time?: string;
   correctionFactor?: number;
   startLocation?: [number, number] | null;
+  showWaypoints?: boolean;
 }
 
 /**
@@ -125,4 +126,11 @@ export function saveStartLocationToPreferences(
   } catch (error) {
     console.error("Failed to save location to preferences:", error);
   }
+}
+
+/**
+ * Save form preferences to localStorage
+ */
+export function saveFormPreferences(preferences: FormPreferences): void {
+  saveToLocalStorage("routeFormPreferences", preferences);
 }

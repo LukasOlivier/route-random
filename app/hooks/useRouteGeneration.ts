@@ -90,8 +90,53 @@ export function useRouteGeneration() {
     }
   };
 
+  const regenerateRouteFromWaypoints = async (
+    waypoints: [number, number][]
+  ) => {
+    if (!waypoints || waypoints.length === 0) return;
+
+    try {
+      setIsGeneratingRoute(true);
+
+      // Convert waypoints to the format expected by the API
+      const waypointsForApi = waypoints.map(([lat, lng]) => [lng, lat]);
+
+      const requestBody = {
+        waypoints: waypointsForApi,
+        regenerate: true,
+      };
+
+      const response = await fetch("/api/generateroute", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.route) {
+        setGeneratedRoute(result.route);
+      }
+    } catch (error) {
+      console.error("Error regenerating route:", error);
+      // Don't show alert for waypoint adjustments to avoid interrupting user
+    } finally {
+      setIsGeneratingRoute(false);
+    }
+  };
+
   return {
     generateRoute,
+    regenerateRouteFromWaypoints,
     isGeneratingRoute,
   };
 }

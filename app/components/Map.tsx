@@ -13,10 +13,12 @@ import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
+import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import {
   mapDefaults,
   blueIcon,
   userLocationIcon,
+  createNumberedWaypointIcon,
   normalizeToLatLngTuple,
   shouldRecenterMap,
 } from "../utils/mapUtils";
@@ -85,8 +87,11 @@ const Map = () => {
     isRouteAccepted,
     isHydrated,
     isTrackingLocation,
+    updateWaypoint,
     hydrate,
   } = useLocationStore();
+
+  const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
 
   // Hydrate the store on client-side mount
@@ -128,6 +133,18 @@ const Map = () => {
     return <MapLoading />;
   }
 
+  const handleWaypointDrag = async (index: number, newPosition: L.LatLng) => {
+    const newPos: [number, number] = [newPosition.lat, newPosition.lng];
+    updateWaypoint(index, newPos);
+
+    // Regenerate route with new waypoints
+    if (generatedRoute?.waypoints) {
+      const updatedWaypoints = [...generatedRoute.waypoints];
+      updatedWaypoints[index] = newPos;
+      await regenerateRouteFromWaypoints(updatedWaypoints);
+    }
+  };
+
   return (
     <MapContainer
       center={mapCenter}
@@ -163,14 +180,36 @@ const Map = () => {
 
       {/* Generated route */}
       {generatedRoute && (
-        <Polyline
-          positions={generatedRoute.coordinates.map(
-            (coord) => [coord[1], coord[0]] as LatLngTuple
-          )}
-          color="#3388ff"
-          weight={4}
-          opacity={0.8}
-        ></Polyline>
+        <>
+          <Polyline
+            positions={generatedRoute.coordinates.map(
+              (coord) => [coord[1], coord[0]] as LatLngTuple
+            )}
+            color="#3388ff"
+            weight={4}
+            opacity={0.8}
+          />
+
+          {/* Waypoint markers */}
+          {generatedRoute.waypoints &&
+            generatedRoute.waypoints
+              .slice(1, -1) // Skip first and last waypoint since they are start/end locations
+              .map((waypoint, index) => (
+                <Marker
+                  key={`waypoint-${index}`}
+                  position={waypoint}
+                  icon={createNumberedWaypointIcon(index + 1)}
+                  draggable={!isRouteAccepted}
+                  eventHandlers={{
+                    dragend: (e) => {
+                      const marker = e.target;
+                      const position = marker.getLatLng();
+                      handleWaypointDrag(index + 1, position); // Adjust index for original waypoint array
+                    },
+                  }}
+                />
+              ))}
+        </>
       )}
     </MapContainer>
   );

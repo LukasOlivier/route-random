@@ -1,29 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  generateCircularWaypoints,
-  addRandomnessToWaypoints,
-} from "../../utils/waypointGeneration";
+import { generateCircularWaypoints } from "../../utils/waypointGeneration";
 import { generateWalkingRoute } from "../../services/orsService";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { startLocation, distance, correctionFactor } = body;
-
-    // Validate required fields
-    if (!startLocation) {
-      return NextResponse.json(
-        { error: "Starting location is required" },
-        { status: 400 }
-      );
-    }
-
-    if (!distance || distance <= 0) {
-      return NextResponse.json(
-        { error: "Valid distance is required" },
-        { status: 400 }
-      );
-    }
+    const { startLocation, distance, correctionFactor, waypoints, regenerate } =
+      body;
 
     // Validate ORS API key
     const orsApiKey = process.env.ORS_API_KEY;
@@ -34,35 +17,56 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract coordinates from startLocation
-    let startLat: number, startLng: number;
-    if (Array.isArray(startLocation)) {
-      [startLat, startLng] = startLocation;
+    let finalWaypoints: [number, number][];
+
+    if (regenerate && waypoints) {
+      // Use existing waypoints for regeneration (user moved a marker)
+      finalWaypoints = waypoints;
     } else {
-      startLat = startLocation.lat;
-      startLng = startLocation.lng;
+      if (!startLocation) {
+        return NextResponse.json(
+          { error: "Starting location is required" },
+          { status: 400 }
+        );
+      }
+
+      if (!distance || distance <= 0) {
+        return NextResponse.json(
+          { error: "Valid distance is required" },
+          { status: 400 }
+        );
+      }
+
+      // Extract coordinates from startLocation
+      let startLat: number, startLng: number;
+      if (Array.isArray(startLocation)) {
+        [startLat, startLng] = startLocation;
+      } else {
+        startLat = startLocation.lat;
+        startLng = startLocation.lng;
+      }
+
+      // Generate circular waypoints
+      finalWaypoints = generateCircularWaypoints(
+        startLat,
+        startLng,
+        distance,
+        undefined,
+        correctionFactor || 0.65
+      );
     }
 
-    // Generate circular waypoints
-    const baseWaypoints = generateCircularWaypoints(
-      startLat,
-      startLng,
-      distance,
-      undefined,
-      correctionFactor || 0.65
-    );
-
-    // Add some randomness to make routes more interesting
-    const waypoints = addRandomnessToWaypoints(baseWaypoints, 0.2);
-
-    // Generate the actual walking route using ORS
-    const route = await generateWalkingRoute(waypoints, orsApiKey);
+    // Generate the actual route using ORS
+    const route = await generateWalkingRoute(finalWaypoints, orsApiKey);
 
     return NextResponse.json({
       success: true,
       route: {
         coordinates: route.coordinates,
         distance: route.distance,
+        waypoints: finalWaypoints.map(
+          ([lng, lat]) => [lat, lng] as [number, number]
+        ),
       },
     });
   } catch (error) {

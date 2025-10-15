@@ -22,6 +22,7 @@ enum Pace {
 type GeneratedRoute = {
   coordinates: [number, number][];
   distance: number;
+  waypoints?: [number, number][];
 };
 
 type LocationStore = {
@@ -34,6 +35,7 @@ type LocationStore = {
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
+  updateWaypoint: (index: number, newPosition: [number, number]) => void;
   resetRoute: () => void;
   acceptRoute: () => void;
   hydrate: () => void;
@@ -75,6 +77,21 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     });
   },
   setLocationTracking: (isTrackingLocation) => set({ isTrackingLocation }),
+  updateWaypoint: (index, newPosition) => {
+    set((state) => {
+      if (!state.generatedRoute?.waypoints) return state;
+
+      const updatedWaypoints = [...state.generatedRoute.waypoints];
+      updatedWaypoints[index] = newPosition;
+
+      return {
+        generatedRoute: {
+          ...state.generatedRoute,
+          waypoints: updatedWaypoints,
+        },
+      };
+    });
+  },
 }));
 
 export { Mode, Pace };

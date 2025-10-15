@@ -34,6 +34,21 @@ export const userLocationIcon = new L.DivIcon({
   popupAnchor: [0, -13],
 });
 
+export const waypointIcon = new L.Icon({
+  iconUrl:
+    "data:image/svg+xml;base64," +
+    btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <circle cx="12" cy="12" r="8" fill="#ff6b35" stroke="white" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3" fill="white"/>
+        <path d="M8 8l8 8M16 8l-8 8" stroke="#ff6b35" stroke-width="1" opacity="0.5"/>
+      </svg>
+    `),
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+  popupAnchor: [0, -12],
+});
+
 /**
  * Helper function to ensure LatLngTuple format
  */
@@ -80,3 +95,18 @@ export const shouldRecenterMap = (
 
   return false;
 };
+
+export const createNumberedWaypointIcon = (number: number) =>
+  new L.Icon({
+    iconUrl:
+      "data:image/svg+xml;base64," +
+      btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+        <circle cx="16" cy="16" r="12" fill="#ff6b35" stroke="white" stroke-width="2"/>
+        <text x="16" y="20" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">${number}</text>
+      </svg>
+    `),
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+  });
