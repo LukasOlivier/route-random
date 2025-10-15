@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import MapWrapper from "./components/MapWrapper";
 import Sidebar from "./components/Sidebar";
+import MobileBottomBar from "./components/MobileBottomBar";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,9 +33,12 @@ export default function Home() {
       )}
 
       <div className="flex min-h-screen w-full flex-row">
-        <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} />
         <MapWrapper />
       </div>
+
+      {/* Mobile Bottom Bar */}
+      <MobileBottomBar />
     </main>
   );
 }

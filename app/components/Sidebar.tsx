@@ -3,10 +3,9 @@ import SidebarForm from "./SidebarForm";
 
 interface SidebarProps {
   isOpen?: boolean;
-  onClose?: () => void;
 }
 
-export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen = false }: SidebarProps) {
   return (
     <div
       className={`h-screen bg-gray-900 text-white flex flex-col p-6 transition-transform duration-300 ease-in-out ${
