@@ -6,6 +6,7 @@ import MapWrapper from "./components/MapWrapper";
 import Sidebar from "./components/Sidebar";
 import MobileBottomBar from "./components/MobileBottomBar";
 import TrackUserLocationButton from "./components/TrackUserLocationButton";
+import DownloadButton from "./components/DownloadButton";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,6 +27,7 @@ export default function Home() {
       </button>
 
       <TrackUserLocationButton />
+      <DownloadButton />
 
       {/* Mobile overlay */}
       {isSidebarOpen && (
