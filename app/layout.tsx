@@ -49,6 +49,7 @@ export const metadata: Metadata = {
     description: description,
     images: [image],
   },
+  manifest: "/manifest.json",
 };
 
 export default async function RootLayout({
@@ -58,6 +59,11 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icons.png" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
