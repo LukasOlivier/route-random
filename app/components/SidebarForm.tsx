@@ -14,6 +14,7 @@ interface FormPreferences {
   distance: string;
   time: string;
   correctionFactor: number;
+  startLocation: [number, number] | null;
 }
 
 export default function SidebarForm() {
@@ -65,6 +66,7 @@ export default function SidebarForm() {
         distance,
         time,
         correctionFactor,
+        startLocation: startLocation as [number, number] | null,
         ...updates,
       };
       localStorage.setItem("routeFormPreferences", JSON.stringify(preferences));
@@ -76,6 +78,7 @@ export default function SidebarForm() {
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
     setUserLocation(newLocation);
+    savePreferences({ startLocation: newLocation });
   };
 
   const generateRoute = async (e: React.FormEvent) => {

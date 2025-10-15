@@ -20,7 +20,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 const defaults = {
-  zoom: 17,
+  zoom: 15,
   // London as fallback
   defaultPosition: [51.5074, -0.1278] as LatLngTuple,
 };
