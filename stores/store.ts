@@ -21,15 +21,18 @@ type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
   userLocation: LatLngTuple | null;
   generatedRoute: GeneratedRoute | null;
+  correctionFactor: number;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
+  setCorrectionFactor: (factor: number) => void;
 };
 
 export const useLocationStore = create<LocationStore>((set) => ({
   startLocation: null,
   userLocation: null,
   generatedRoute: null,
+  correctionFactor: 0.65, // Default value
   setStartLocation: (startLocation) => set({ startLocation }),
   setUserLocation: (userLocation) =>
     set((state) => ({
@@ -38,6 +41,7 @@ export const useLocationStore = create<LocationStore>((set) => ({
       startLocation: state.startLocation || userLocation,
     })),
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
+  setCorrectionFactor: (correctionFactor) => set({ correctionFactor }),
 }));
 
 export { Mode, Pace };

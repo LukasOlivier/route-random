@@ -8,7 +8,7 @@ import { generateWalkingRoute } from "../../services/orsService";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { startLocation, distance } = body;
+    const { startLocation, distance, correctionFactor } = body;
 
     // Validate required fields
     if (!startLocation) {
@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
     const baseWaypoints = generateCircularWaypoints(
       startLat,
       startLng,
-      distance
+      distance,
+      undefined,
+      correctionFactor || 0.65
     );
 
     // Add some randomness to make routes more interesting

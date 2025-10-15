@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Clock, Ruler, Locate, LocateOff, Send } from "lucide-react";
+import { Clock, Ruler, Locate, LocateOff, Send, Settings } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useLocationStore, Mode, Pace } from "../../stores/store";
 import LocationSearch from "./LocationSearch";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
 
 export default function SidebarForm() {
-  const { startLocation, setUserLocation, setGeneratedRoute } =
-    useLocationStore();
+  const {
+    startLocation,
+    setUserLocation,
+    setGeneratedRoute,
+    correctionFactor,
+    setCorrectionFactor,
+  } = useLocationStore();
 
   // Local form state
   const [mode, setMode] = useState<Mode>(Mode.DISTANCE);
@@ -60,6 +65,7 @@ export default function SidebarForm() {
       const requestBody = {
         startLocation: startLocation,
         distance: finalDistance,
+        correctionFactor: correctionFactor,
       };
 
       const response = await fetch("/api/generateroute", {
@@ -246,8 +252,32 @@ export default function SidebarForm() {
           </div>
         </div>
 
+        {/* Route Complexity Slider */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2 items-center gap-2">
+            Route Complexity: {Math.round(correctionFactor * 100)}%
+          </label>
+          <input
+            type="range"
+            min="0.3"
+            max="1.0"
+            step="0.05"
+            value={correctionFactor}
+            onChange={(e) => setCorrectionFactor(parseFloat(e.target.value))}
+            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+          />
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <span>Urban/Dense</span>
+            <span>Rural/Open</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            When generated routes are too short, consider increasing the
+            complexity.
+          </p>
+        </div>
+
         {/* Submit button */}
-        <div className="mt-auto">
+        <div className="mt-10">
           <button
             type="submit"
             disabled={isGeneratingRoute}
