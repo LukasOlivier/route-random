@@ -21,8 +21,8 @@ export default function ToggleModeButton({
       disabled={disabled}
       className={`px-4 flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
         selected
-          ? "bg-blue-600 text-white"
-          : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700"
+          ? "bg-blue-600 text-white hover:bg-blue-700"
+          : "bg-white hover:bg-gray-50 text-black"
       } shadow-sm `}
       onClick={onClick}
     >

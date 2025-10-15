@@ -107,7 +107,7 @@ export default function SidebarForm() {
     <option
       key={pace.value}
       value={pace.value}
-      className="bg-gray-800 text-gray-200 p-2"
+      className="dark:bg-gray-800 dark:text-gray-200 p-2 bg-gray-300 text-gray-800"
     >
       {pace.label}
     </option>
@@ -194,7 +194,6 @@ export default function SidebarForm() {
                     setTime(e.target.value);
                   }}
                   placeholder="e.g. 30 or 45"
-                  className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                   required
                 />
               </div>
@@ -205,7 +204,7 @@ export default function SidebarForm() {
                 Pace:
               </label>
               <select
-                className="w-full bg-gray-800 rounded-md px-3 py-2 border border-gray-700"
+                className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200"
                 disabled={!!generatedRoute}
                 onChange={(e) => {
                   setPace(e.target.value as Pace);
@@ -237,7 +236,7 @@ export default function SidebarForm() {
               aria-label="Use current location"
               onClick={getCurrentLocation}
               disabled={isGettingLocation || locationError || !!generatedRoute}
-              className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 disabled:bg-gray-600 rounded-md text-white flex items-center"
+              className="px-3 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 rounded-md dark:text-white flex items-center bg-gray-200 hover:bg-gray-300 transition-colors border-gray-400"
             >
               {locationError ? (
                 <LocateOff size={16} />
@@ -254,7 +253,7 @@ export default function SidebarForm() {
         {/* Route Complexity Slider */}
         <div>
           <label
-            className="block text-sm font-medium text-gray-300 mb-2 items-center gap-2"
+            className="block text-sm font-medium dark:text-gray-300 text-gray-800 mb-2 items-center gap-2"
             htmlFor="complexity"
           >
             Route Complexity: {Math.round(correctionFactor * 100)}%
@@ -271,9 +270,9 @@ export default function SidebarForm() {
             onChange={(e) => {
               setCorrectionFactor(parseFloat(e.target.value));
             }}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            className="w-full h-2 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider bg-gray-300"
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-extra mt-1">
             When generated routes are too short, consider increasing the
             complexity.
           </p>

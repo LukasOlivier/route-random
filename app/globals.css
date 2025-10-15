@@ -1,16 +1,24 @@
 @import "tailwindcss";
 
+.primary-bg {
+  @apply dark:bg-gray-800 bg-gray-100;
+}
+
+.text-extra {
+  @apply dark:text-gray-400 text-gray-600;
+}
+
 button {
   @apply cursor-pointer;
 }
 
 label {
-  @apply text-gray-200 block mb-1 text-sm font-medium;
+  @apply block mb-1 text-sm font-medium dark:text-gray-300 text-gray-800;
 }
 
 input:is([type="number"]),
 input:is([type="text"]) {
-  @apply p-2 border border-gray-700 rounded bg-gray-800 w-full;
+  @apply p-2 border dark:border-gray-700 rounded dark:bg-gray-800 w-full  bg-gray-200 border-gray-400 dark:text-white text-black;
 }
 
 button:disabled {
@@ -19,7 +27,7 @@ button:disabled {
 
 input:disabled,
 select:disabled {
-  @apply cursor-not-allowed opacity-50 bg-gray-600;
+  @apply cursor-not-allowed opacity-50 dark:bg-gray-600 bg-gray-200;
 }
 
 input[type="range"]:disabled {
