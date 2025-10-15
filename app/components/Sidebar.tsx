@@ -1,9 +1,20 @@
 import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   return (
-    <div className="w-1/4 h-screen bg-gray-900 text-white flex flex-col p-6">
+    <div
+      className={`h-screen bg-gray-900 text-white flex flex-col p-6 transition-transform duration-300 ease-in-out ${
+        isOpen
+          ? "fixed inset-0 z-[99999] md:relative md:w-1/4 md:translate-x-0"
+          : "hidden md:flex md:w-1/4"
+      }`}
+    >
       {/* Header */}
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2">
