@@ -11,6 +11,7 @@ import {
 import { LatLngTuple } from "leaflet";
 import { useEffect, useRef } from "react";
 import * as L from "leaflet";
+import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import {
   mapDefaults,
@@ -76,6 +77,7 @@ function MapClickHandler() {
 }
 
 const Map = () => {
+  const t = useTranslations("Map");
   const {
     startLocation,
     userLocation,
@@ -104,15 +106,15 @@ const Map = () => {
         return;
       }
 
-      let popupContent = "<b>Start Location</b>";
+      let popupContent = `<b>${t("startLocation")}</b>`;
       if (generatedRoute && generatedRoute.distance != null) {
-        popupContent = `<b>Route Generated!</b><br>Distance: ${generatedRoute.distance.toFixed(
-          2
-        )} km`;
+        popupContent = `<b>${t("routeGenerated")}</b><br>${t(
+          "distance"
+        )}: ${generatedRoute.distance.toFixed(2)} km`;
       }
       marker.bindPopup(popupContent).openPopup();
     }
-  }, [startLocation, generatedRoute, isRouteAccepted]);
+  }, [startLocation, generatedRoute, isRouteAccepted, t]);
 
   const mapCenter = normalizeToLatLngTuple(
     (isTrackingLocation && userLocation) ||

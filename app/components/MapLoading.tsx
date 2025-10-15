@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function MapLoading() {
+  const t = useTranslations("MapLoading");
+
   return (
     <div className="h-full w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col items-center justify-center">
       {/* Logo with animation */}
@@ -23,7 +26,7 @@ export default function MapLoading() {
 
         {/* Loading text */}
         <p className="text-gray-300 text-lg animated-fade-in">
-          Loading your adventure...
+          {t("loadingText")}
         </p>
       </div>
 

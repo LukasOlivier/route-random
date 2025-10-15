@@ -32,9 +32,9 @@ export default function FloatingButton({
   };
 
   const responsiveClasses = hideOnDesktop
-    ? "md:hidden"
+    ? "lg:hidden"
     : showTextOnDesktop
-    ? "md:w-fit md:px-3 md:gap-2"
+    ? "lg:w-fit lg:px-3 lg:gap-2"
     : "";
 
   const borderClasses =

@@ -37,7 +37,7 @@ export default function FloatingActionButtons({
     ((mode === "distance" && distance) || (mode === "time" && time));
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-[1000] md:hidden">
+    <div className="fixed bottom-4 left-4 right-4 z-[1000] lg:hidden">
       {generatedRoute ? (
         <div className="flex gap-2">
           {!isRouteAccepted && (

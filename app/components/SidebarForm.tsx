@@ -279,9 +279,9 @@ export default function SidebarForm() {
         </div>
 
         {/* Submit button or Accept/Reset buttons */}
-        <div className="mt-10 hidden md:block">
+        <div className="mt-10 hidden lg:block">
           {generatedRoute ? (
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {!isRouteAccepted && (
                 <AcceptRouteButton
                   onAccept={handleAcceptRoute}

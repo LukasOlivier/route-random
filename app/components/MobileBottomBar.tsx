@@ -21,7 +21,7 @@ export default function MobileBottomBar() {
   };
 
   return (
-    <div className="absolute bottom-5 left-0 right-0 z-[9999] md:hidden p-4">
+    <div className="absolute bottom-5 left-0 right-0 z-[9999] lg:hidden p-4">
       <div className="w-full max-w-sm mx-auto">
         {generatedRoute ? (
           <div className="flex gap-3">

@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import FloatingButton from "./FloatingButton";
 
 export default function TrackUserLocationButton() {
+  const t = useTranslations("TrackUserLocationButton");
   const { isTrackingLocation, setLocationTracking, setUserLocation } =
     useLocationStore();
 
@@ -14,7 +16,7 @@ export default function TrackUserLocationButton() {
 
   const startTracking = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by this browser.");
+      alert(t("geolocationNotSupported"));
       return;
     }
 
@@ -33,17 +35,16 @@ export default function TrackUserLocationButton() {
       console.error("Error getting location:", error);
       setLocationTracking(false);
 
-      let message = "Unable to get your location.";
+      let message = t("unableToGetLocation");
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          message =
-            "Location access denied. Please enable location permissions.";
+          message = t("locationAccessDenied");
           break;
         case error.POSITION_UNAVAILABLE:
-          message = "Location information unavailable.";
+          message = t("locationUnavailable");
           break;
         case error.TIMEOUT:
-          message = "Location request timed out.";
+          message = t("locationTimeout");
           break;
       }
       alert(message);
@@ -92,12 +93,8 @@ export default function TrackUserLocationButton() {
     <FloatingButton
       onClick={toggleTracking}
       variant={isTrackingLocation ? "active" : "default"}
-      ariaLabel={
-        isTrackingLocation ? "Stop tracking location" : "Track location"
-      }
-      title={
-        isTrackingLocation ? "Stop tracking location" : "Track your location"
-      }
+      ariaLabel={isTrackingLocation ? t("stopTracking") : t("trackLocation")}
+      title={isTrackingLocation ? t("stopTracking") : t("trackYourLocation")}
       hideOnDesktop={true}
     >
       {isTrackingLocation ? (

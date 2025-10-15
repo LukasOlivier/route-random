@@ -5,14 +5,11 @@ export default getRequestConfig(async () => {
   const store = await cookies();
   const headersList = await headers();
 
-  console.log("Cookies:", store.getAll());
-
   let locale = store.get("locale")?.value;
 
   // If no locale cookie is found, try to detect from Accept-Language header
   if (!locale) {
     const acceptLanguage = headersList.get("accept-language");
-    console.log("Accept-Language header:", acceptLanguage);
 
     if (acceptLanguage) {
       // Parse the Accept-Language header to get the preferred language
@@ -33,8 +30,6 @@ export default getRequestConfig(async () => {
   if (!locale) {
     locale = "en";
   }
-
-  console.log("Final locale:", locale);
 
   return {
     locale,

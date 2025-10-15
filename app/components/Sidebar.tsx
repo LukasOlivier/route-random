@@ -24,13 +24,13 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
     <div
       className={`h-screen primary-bg  flex flex-col p-6 transition-transform duration-300 ease-in-out ${
         isOpen
-          ? "fixed inset-0 z-[99999] md:relative md:w-1/4 md:translate-x-0"
-          : "hidden md:flex md:w-1/4"
+          ? "fixed inset-0 z-[99999] lg:relative lg:w-1/4 lg:translate-x-0"
+          : "hidden lg:flex lg:w-1/4"
       }`}
     >
       {/* Header */}
       <header>
-        <div className="flex items-base md:justify-between gap-2 mb-1">
+        <div className="flex items-base lg:justify-between gap-2 mb-1 flex-wrap">
           <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
             <Footprints size={24} />
             {t("title")}
@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
           <select
             value={locale}
             onChange={(e) => handleLanguageChange(e.target.value)}
-            className="text-xs px-2 py-1 dark:bg-gray-800 rounded border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white text-gray-800"
+            className="text-xs w-full xl:w-fit px-2 py-1 dark:bg-gray-800 rounded border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white text-gray-800"
             title={t("language")}
           >
             <option value="en">EN</option>

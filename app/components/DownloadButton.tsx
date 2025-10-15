@@ -1,11 +1,13 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import { downloadRouteAsGPX } from "../utils/gpxUtils";
 import FloatingButton from "./FloatingButton";
 
 export default function DownloadButton() {
+  const t = useTranslations("DownloadButton");
   const { generatedRoute, isRouteAccepted } = useLocationStore();
 
   const handleDownload = () => {
@@ -22,12 +24,12 @@ export default function DownloadButton() {
   return (
     <FloatingButton
       onClick={handleDownload}
-      ariaLabel="Download route as GPX"
-      title="Download route as GPX"
+      ariaLabel={t("ariaLabel")}
+      title={t("ariaLabel")}
       showTextOnDesktop={true}
     >
       <Download size={20} />
-      <span className="hidden md:inline">Download route as GPX</span>
+      <span className="hidden lg:inline">{t("downloadRoute")}</span>
     </FloatingButton>
   );
 }

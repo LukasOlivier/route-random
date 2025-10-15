@@ -5,7 +5,8 @@
     "authorLink": "Lukas Olivier",
     "aboutTitle": "About Route Random",
     "aboutDescription1": "Route Random is a free random route generator that creates random circular routes for runners, joggers, and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.",
-    "aboutDescription2": "Perfect for discovering new paths, exploring your neighborhood, or finding new routes to keep your workouts exciting."
+    "aboutDescription2": "Perfect for discovering new paths, exploring your neighborhood, or finding new routes to keep your workouts exciting.",
+    "language": "Language"
   },
   "SidebarForm": {
     "distanceMode": "Distance",
@@ -25,5 +26,40 @@
     "complexityNote": "When generated routes are too short, consider increasing the complexity.",
     "geolocationNotSupported": "Geolocation is not supported by this browser.",
     "locationError": "Unable to get your current location."
+  },
+  "Map": {
+    "startLocation": "Start Location",
+    "routeGenerated": "Route Generated!",
+    "distance": "Distance"
+  },
+  "MapLoading": {
+    "loadingText": "Loading your adventure..."
+  },
+  "DownloadButton": {
+    "downloadRoute": "Download route as GPX",
+    "ariaLabel": "Download route as GPX"
+  },
+  "TrackUserLocationButton": {
+    "stopTracking": "Stop tracking location",
+    "trackLocation": "Track location",
+    "trackYourLocation": "Track location",
+    "geolocationNotSupported": "Geolocation is not supported by this browser.",
+    "unableToGetLocation": "Unable to get your location.",
+    "locationAccessDenied": "Location access denied. Please enable location permissions.",
+    "locationUnavailable": "Location information unavailable.",
+    "locationTimeout": "Location request timed out."
+  },
+  "Page": {
+    "toggleMenu": "Toggle menu"
+  },
+  "GenerateRouteButton": {
+    "generating": "Generating...",
+    "generateRoute": "Generate Route"
+  },
+  "ResetRouteButton": {
+    "reset": "Reset"
+  },
+  "AcceptRouteButton": {
+    "accept": "Accept"
   }
 }

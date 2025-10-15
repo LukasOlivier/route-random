@@ -16,7 +16,7 @@ export default function Page() {
 
   return (
     <>
-      <div className="w-full md:w-3/4 h-[100vh]">
+      <div className="w-full lg:w-3/4 h-[100vh]">
         <Map />
       </div>
     </>

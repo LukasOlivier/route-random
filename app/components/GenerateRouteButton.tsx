@@ -1,6 +1,7 @@
 "use client";
 
 import { Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface GenerateRouteButtonProps {
   isGeneratingRoute: boolean;
@@ -15,6 +16,8 @@ export default function GenerateRouteButton({
   onSubmit,
   className = "",
 }: GenerateRouteButtonProps) {
+  const t = useTranslations("GenerateRouteButton");
+
   const handleClick = () => {
     if (onSubmit) {
       onSubmit();
@@ -34,7 +37,7 @@ export default function GenerateRouteButton({
         }`}
         size={16}
       />
-      {isGeneratingRoute ? "Generating..." : "Generate Route"}
+      {isGeneratingRoute ? t("generating") : t("generateRoute")}
     </button>
   );
 }
