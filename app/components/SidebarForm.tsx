@@ -8,13 +8,12 @@ import AcceptRouteButton from "./AcceptRouteButton";
 import ResetRouteButton from "./ResetRouteButton";
 import { useLocationStore, Mode, Pace, useRouteFormStore } from "../../stores";
 import LocationSearch from "./LocationSearch";
-import { calculateDistanceFromTime } from "../utils/routeCalculations";
+import { useRouteGeneration } from "../hooks/useRouteGeneration";
 
 export default function SidebarForm() {
   const {
     startLocation,
     setUserLocation,
-    setGeneratedRoute,
     generatedRoute,
     resetRoute,
     acceptRoute,
@@ -29,16 +28,16 @@ export default function SidebarForm() {
     distance,
     time,
     correctionFactor,
-    isGeneratingRoute,
     setMode,
     setPace,
     setDistance,
     setTime,
     setCorrectionFactor,
-    setIsGeneratingRoute,
     hydrate: hydrateForm,
     isHydrated: isFormHydrated,
   } = useRouteFormStore();
+
+  const { generateRoute, isGeneratingRoute } = useRouteGeneration();
 
   // Local state for location functionality
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -59,77 +58,18 @@ export default function SidebarForm() {
     setUserLocation(newLocation);
   };
 
-  const generateRoute = async (e: React.FormEvent) => {
+  const handleGenerateRoute = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
     const distanceInput = formData.get("distance") as string;
     const timeInput = formData.get("time") as string;
 
-    // Calculate the final distance to send
-    let finalDistance: number;
-
-    if (mode === Mode.DISTANCE) {
-      if (!distanceInput) {
-        alert("Please enter a distance");
-        return;
-      }
-      finalDistance = parseFloat(distanceInput);
-    } else {
-      if (!timeInput) {
-        alert("Please enter a time duration");
-        return;
-      }
-      const timeMinutes = parseFloat(timeInput);
-      finalDistance = calculateDistanceFromTime(timeMinutes, pace);
-    }
-
-    // Validate required fields
-    if (!startLocation) {
-      alert("Please select a starting location");
-      return;
-    }
-
-    try {
-      setIsGeneratingRoute(true);
-
-      const requestBody = {
-        startLocation: startLocation,
-        distance: finalDistance,
-        correctionFactor: correctionFactor,
-      };
-
-      const response = await fetch("/api/generateroute", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const result = await response.json();
-
-      // Store the generated route in the store
-      if (result.success && result.route) {
-        setGeneratedRoute(result.route);
-      }
-    } catch (error) {
-      console.error("Error generating route:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to generate route. Please try again.";
-      alert(errorMessage);
-    } finally {
-      setIsGeneratingRoute(false);
-    }
+    // Call the hook's generateRoute function with form data
+    await generateRoute({
+      distance: distanceInput,
+      time: timeInput,
+    });
   };
 
   const getCurrentLocation = () => {
@@ -183,7 +123,7 @@ export default function SidebarForm() {
 
   return (
     <form
-      onSubmit={(e) => generateRoute(e)}
+      onSubmit={handleGenerateRoute}
       className="flex flex-col gap-4 flex-grow"
     >
       {/* Toggling between time and distance mode */}
