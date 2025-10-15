@@ -4,11 +4,9 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Tooltip,
   useMap,
   useMapEvent,
   Polyline,
-  Popup,
 } from "react-leaflet";
 import { LatLngTuple } from "leaflet";
 import { useEffect, useRef } from "react";
@@ -75,7 +73,7 @@ const normalizeToLatLngTuple = (
 
 function MapClickHandler() {
   const { setStartLocation, generatedRoute } = useLocationStore();
-  const map = useMapEvent("click", (e) => {
+  useMapEvent("click", (e) => {
     // Prevent setting new location when route is generated
     if (generatedRoute) {
       return;

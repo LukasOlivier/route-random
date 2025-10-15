@@ -32,7 +32,7 @@ function loadFromLocalStorage<T>(key: string, defaultValue: T): T {
 /**
  * Save data to localStorage with error handling
  */
-function saveToLocalStorage(key: string, data: any): void {
+function saveToLocalStorage(key: string, data: unknown): void {
   if (typeof window === "undefined") {
     return;
   }

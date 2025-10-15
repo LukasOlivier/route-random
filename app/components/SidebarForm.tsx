@@ -32,7 +32,6 @@ export default function SidebarForm() {
     setGeneratedRoute,
     correctionFactor,
     setCorrectionFactor,
-    setStartLocation,
     generatedRoute,
     resetRoute,
     acceptRoute,

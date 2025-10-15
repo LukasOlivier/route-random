@@ -16,7 +16,7 @@ export default function Page() {
   return (
     <>
       <div className="w-3/4 h-[100vh]">
-        <Map posix={[4.79029, -75.69003]} />
+        <Map />
       </div>
     </>
   );

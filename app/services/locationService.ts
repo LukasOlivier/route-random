@@ -5,6 +5,14 @@ export interface LocationResult {
   place_id: string;
 }
 
+interface NominatimResponse {
+  display_name: string;
+  lat: string;
+  lon: string;
+  place_id: string;
+  [key: string]: unknown; // For other properties we don't use
+}
+
 export async function searchLocations(
   query: string
 ): Promise<LocationResult[]> {
@@ -23,8 +31,8 @@ export async function searchLocations(
       throw new Error("Failed to fetch locations");
     }
 
-    const data = await response.json();
-    return data.map((item: any) => ({
+    const data: NominatimResponse[] = await response.json();
+    return data.map((item) => ({
       display_name: item.display_name,
       lat: item.lat,
       lon: item.lon,
