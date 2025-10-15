@@ -6,5 +6,24 @@
     "aboutTitle": "About Route Random",
     "aboutDescription1": "Route Random is a free random route generator that creates random circular routes for runners, joggers, and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.",
     "aboutDescription2": "Perfect for discovering new paths, exploring your neighborhood, or finding new routes to keep your workouts exciting."
+  },
+  "SidebarForm": {
+    "distanceMode": "Distance",
+    "timeMode": "Time",
+    "desiredDistance": "Desired distance (in km):",
+    "distancePlaceholder": "e.g. 5 or 7.5",
+    "desiredDuration": "Desired Duration (in minutes):",
+    "timePlaceholder": "e.g. 30 or 45",
+    "pace": "Pace:",
+    "walkingPace": "Walking Pace (5 km/h)",
+    "runningPace": "Running Pace (10 km/h)",
+    "cyclingPace": "Cycling Pace (15 km/h)",
+    "startingLocation": "Starting Location",
+    "searchLocationPlaceholder": "Search starting location...",
+    "useCurrentLocation": "Use current location",
+    "routeComplexity": "Route Complexity:",
+    "complexityNote": "When generated routes are too short, consider increasing the complexity.",
+    "geolocationNotSupported": "Geolocation is not supported by this browser.",
+    "locationError": "Unable to get your current location."
   }
 }

@@ -1,9 +1,40 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
 
 export default getRequestConfig(async () => {
   const store = await cookies();
-  const locale = store.get("locale")?.value || "en";
+  const headersList = await headers();
+
+  console.log("Cookies:", store.getAll());
+
+  let locale = store.get("locale")?.value;
+
+  // If no locale cookie is found, try to detect from Accept-Language header
+  if (!locale) {
+    const acceptLanguage = headersList.get("accept-language");
+    console.log("Accept-Language header:", acceptLanguage);
+
+    if (acceptLanguage) {
+      // Parse the Accept-Language header to get the preferred language
+      const preferredLanguage = acceptLanguage
+        .split(",")[0] // Get the first (most preferred) language
+        .split("-")[0] // Get just the language code (e.g., "en" from "en-US")
+        .toLowerCase();
+
+      // Check if we have translations for this language
+      const supportedLocales = ["en", "nl"]; // Add your supported locales here
+      if (supportedLocales.includes(preferredLanguage)) {
+        locale = preferredLanguage;
+      }
+    }
+  }
+
+  // Fallback to English if still no locale found
+  if (!locale) {
+    locale = "en";
+  }
+
+  console.log("Final locale:", locale);
 
   return {
     locale,

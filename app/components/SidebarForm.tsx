@@ -9,8 +9,11 @@ import ResetRouteButton from "./ResetRouteButton";
 import { useLocationStore, Mode, Pace, useRouteFormStore } from "../../stores";
 import LocationSearch from "./LocationSearch";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
+import { useTranslations } from "next-intl";
 
 export default function SidebarForm() {
+  const t = useTranslations("SidebarForm");
+
   const {
     startLocation,
     setUserLocation,
@@ -74,7 +77,7 @@ export default function SidebarForm() {
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by this browser.");
+      alert(t("geolocationNotSupported"));
       setLocationError(true);
       return;
     }
@@ -90,7 +93,7 @@ export default function SidebarForm() {
       },
       (error) => {
         console.error("Error getting location:", error);
-        alert("Unable to get your current location.");
+        alert(t("locationError"));
         setIsGettingLocation(false);
         setLocationError(true);
       }
@@ -98,9 +101,9 @@ export default function SidebarForm() {
   };
 
   const paceOptions = [
-    { value: Pace.WALKING, label: "Walking Pace (5 km/h)" },
-    { value: Pace.RUNNING, label: "Running Pace (10 km/h)" },
-    { value: Pace.CYCLING, label: "Cycling Pace (15 km/h)" },
+    { value: Pace.WALKING, label: t("walkingPace") },
+    { value: Pace.RUNNING, label: t("runningPace") },
+    { value: Pace.CYCLING, label: t("cyclingPace") },
   ];
 
   const paceItems = paceOptions.map((pace) => (
@@ -129,7 +132,7 @@ export default function SidebarForm() {
       {/* Toggling between time and distance mode */}
       <div className="w-full flex gap-2">
         <ToggleModeButton
-          text="Distance"
+          text={t("distanceMode")}
           selected={mode === Mode.DISTANCE}
           disabled={!!generatedRoute}
           onClick={() => {
@@ -137,7 +140,7 @@ export default function SidebarForm() {
           }}
         />
         <ToggleModeButton
-          text="Time"
+          text={t("timeMode")}
           selected={mode === Mode.TIME}
           disabled={!!generatedRoute}
           onClick={() => {
@@ -153,7 +156,7 @@ export default function SidebarForm() {
               htmlFor="distance"
               className="block text-sm font-medium mb-1"
             >
-              Desired distance (in km):
+              {t("desiredDistance")}
             </label>
             <div className="relative">
               <Ruler className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -168,7 +171,7 @@ export default function SidebarForm() {
                 onChange={(e) => {
                   setDistance(e.target.value);
                 }}
-                placeholder="e.g. 5 or 7.5"
+                placeholder={t("distancePlaceholder")}
                 className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                 required
               />
@@ -179,7 +182,7 @@ export default function SidebarForm() {
             {/* Time specific fields */}
             <div>
               <label htmlFor="time" className="block text-sm font-medium mb-1">
-                Desired Duration (in minutes):
+                {t("desiredDuration")}
               </label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -193,7 +196,7 @@ export default function SidebarForm() {
                   onChange={(e) => {
                     setTime(e.target.value);
                   }}
-                  placeholder="e.g. 30 or 45"
+                  placeholder={t("timePlaceholder")}
                   required
                 />
               </div>
@@ -201,7 +204,7 @@ export default function SidebarForm() {
             <div>
               {/* Pacing selector */}
               <label htmlFor="pace" className="block text-sm font-medium mb-1 ">
-                Pace:
+                {t("pace")}
               </label>
               <select
                 className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
@@ -220,20 +223,20 @@ export default function SidebarForm() {
         )}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Starting Location
+            {t("startingLocation")}
           </label>
           <div className="flex gap-1">
             <div className="flex-1">
               <LocationSearch
                 onLocationSelect={handleLocationSelect}
-                placeholder="Search starting location..."
+                placeholder={t("searchLocationPlaceholder")}
                 disabled={!!generatedRoute}
               />
             </div>
             <button
               type="button"
-              title="Use current location"
-              aria-label="Use current location"
+              title={t("useCurrentLocation")}
+              aria-label={t("useCurrentLocation")}
               onClick={getCurrentLocation}
               disabled={isGettingLocation || locationError || !!generatedRoute}
               className="px-3 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 rounded-md dark:text-white flex items-center bg-gray-200 hover:bg-gray-300 transition-colors border-gray-400"
@@ -256,7 +259,7 @@ export default function SidebarForm() {
             className="block text-sm font-medium dark:text-gray-300 text-gray-800 mb-2 items-center gap-2"
             htmlFor="complexity"
           >
-            Route Complexity: {Math.round(correctionFactor * 100)}%
+            {t("routeComplexity")} {Math.round(correctionFactor * 100)}%
           </label>
           <input
             type="range"
@@ -272,10 +275,7 @@ export default function SidebarForm() {
             }}
             className="w-full h-2 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider bg-gray-300"
           />
-          <p className="text-xs text-extra mt-1">
-            When generated routes are too short, consider increasing the
-            complexity.
-          </p>
+          <p className="text-xs text-extra mt-1">{t("complexityNote")}</p>
         </div>
 
         {/* Submit button or Accept/Reset buttons */}

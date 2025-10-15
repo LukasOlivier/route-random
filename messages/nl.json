@@ -1,10 +1,29 @@
 {
   "Sidebar": {
     "title": "Route Random",
-    "subtitle": "A project made by",
+    "subtitle": "Een project gemaakt door",
     "authorLink": "Lukas Olivier",
-    "aboutTitle": "About Route Random",
-    "aboutDescription1": "Route Random is a free random route generator that creates random circular routes for runners, joggers, and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.",
-    "aboutDescription2": "Perfect for discovering new paths, exploring your neighborhood, or finding new routes to keep your workouts exciting."
+    "aboutTitle": "Over Route Random",
+    "aboutDescription1": "Route Random is een gratis generator voor willekeurige routes die cirkelvormige routes maakt voor hardlopers, joggers en wandelaars. Genereer willekeurige routes op basis van uw gewenste afstand en startlocatie, waar dan ook ter wereld.",
+    "aboutDescription2": "Perfect om nieuwe paden te ontdekken, uw buurt te verkennen of nieuwe routes te vinden om uw trainingen spannend te houden."
+  },
+  "SidebarForm": {
+    "distanceMode": "Afstand",
+    "timeMode": "Tijd",
+    "desiredDistance": "Gewenste afstand (in km):",
+    "distancePlaceholder": "bijv. 5 of 7,5",
+    "desiredDuration": "Gewenste duur (in minuten):",
+    "timePlaceholder": "bijv. 30 of 45",
+    "pace": "Tempo:",
+    "walkingPace": "Wandeltempo (5 km/u)",
+    "runningPace": "Hardlooptempo (10 km/u)",
+    "cyclingPace": "Fietstempo (15 km/u)",
+    "startingLocation": "Startlocatie",
+    "searchLocationPlaceholder": "Zoek startlocatie...",
+    "useCurrentLocation": "Gebruik huidige locatie",
+    "routeComplexity": "Route complexiteit:",
+    "complexityNote": "Wanneer gegenereerde routes te kort zijn, overweeg de complexiteit te verhogen.",
+    "geolocationNotSupported": "Geolocatie wordt niet ondersteund door deze browser.",
+    "locationError": "Kan uw huidige locatie niet ophalen."
   }
 }

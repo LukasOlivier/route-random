@@ -1,6 +1,7 @@
-import { Footprints } from "lucide-react";
+import { Footprints, Globe } from "lucide-react";
 import SidebarForm from "./SidebarForm";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -8,6 +9,16 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = false }: SidebarProps) {
   const t = useTranslations("Sidebar");
+  const locale = useLocale();
+  const router = useRouter();
+
+  const handleLanguageChange = (newLocale: string) => {
+    // Set the locale cookie
+    document.cookie = `locale=${newLocale}; path=/; max-age=31536000`; // 1 year
+
+    // Refresh the page to apply the new locale
+    router.refresh();
+  };
 
   return (
     <div
@@ -19,10 +30,24 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
     >
       {/* Header */}
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
-          <Footprints size={24} />
-          {t("title")}
-        </h1>
+        <div className="flex items-base md:justify-between gap-2 mb-1">
+          <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
+            <Footprints size={24} />
+            {t("title")}
+          </h1>
+
+          {/* Compact Language Selector */}
+          <select
+            value={locale}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="text-xs px-2 py-1 dark:bg-gray-800 rounded border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white text-gray-800"
+            title={t("language")}
+          >
+            <option value="en">EN</option>
+            <option value="nl">NL</option>
+          </select>
+        </div>
+
         <h2 className="text-sm text-extra mt-1 mb-4">
           {t("subtitle")}{" "}
           <a
