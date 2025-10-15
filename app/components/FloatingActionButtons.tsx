@@ -1,6 +1,7 @@
 "use client";
 
 import { Send, Check, RotateCcw } from "lucide-react";
+import { LatLngExpression, LatLngTuple } from "leaflet";
 import { useLocationStore } from "../../stores/store";
 
 interface FloatingActionButtonsProps {
@@ -9,7 +10,7 @@ interface FloatingActionButtonsProps {
   mode: string;
   distance: string;
   time: string;
-  startLocation: any;
+  startLocation: LatLngExpression | LatLngTuple | null;
 }
 
 export default function FloatingActionButtons({
