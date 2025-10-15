@@ -30,12 +30,14 @@ type LocationStore = {
   generatedRoute: GeneratedRoute | null;
   isRouteAccepted: boolean;
   isHydrated: boolean;
+  isTrackingLocation: boolean;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
   resetRoute: () => void;
   acceptRoute: () => void;
   hydrate: () => void;
+  setLocationTracking: (isTracking: boolean) => void;
 };
 
 export const useLocationStore = create<LocationStore>((set, get) => ({
@@ -44,6 +46,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   generatedRoute: null,
   isRouteAccepted: false,
   isHydrated: false,
+  isTrackingLocation: false,
   setStartLocation: (startLocation) => set({ startLocation }),
   setUserLocation: (userLocation) =>
     set((state) => ({
@@ -71,6 +74,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       isHydrated: true,
     });
   },
+  setLocationTracking: (isTrackingLocation) => set({ isTrackingLocation }),
 }));
 
 export { Mode, Pace };

@@ -36,6 +36,19 @@ const blueIcon = new L.Icon({
   popupAnchor: [0, -32],
 });
 
+const userLocationIcon = new L.DivIcon({
+  className: "user-location-marker",
+  html: `
+    <div class="user-location-marker">
+      <div class="user-location-pulse"></div>
+      <div class="user-location-dot"></div>
+    </div>
+  `,
+  iconSize: [26, 26],
+  iconAnchor: [13, 13],
+  popupAnchor: [0, -13],
+});
+
 const MapUpdater = ({ center }: { center: LatLngTuple }) => {
   const map = useMap();
   const prevCenterRef = useRef<LatLngTuple | null>(null);
@@ -103,6 +116,7 @@ const Map = () => {
     generatedRoute,
     isRouteAccepted,
     isHydrated,
+    isTrackingLocation,
     hydrate,
   } = useLocationStore();
   const markerRef = useRef<L.Marker>(null);
@@ -135,7 +149,10 @@ const Map = () => {
   }, [startLocation, generatedRoute, isRouteAccepted]);
 
   const mapCenter = normalizeToLatLngTuple(
-    userLocation || (isHydrated && startLocation) || defaults.defaultPosition
+    (isTrackingLocation && userLocation) ||
+      userLocation ||
+      (isHydrated && startLocation) ||
+      defaults.defaultPosition
   );
 
   // Don't render until hydrated to prevent hydration mismatch
@@ -169,6 +186,11 @@ const Map = () => {
           icon={blueIcon}
           ref={markerRef}
         ></Marker>
+      )}
+
+      {/* User location marker (when tracking) */}
+      {isTrackingLocation && userLocation && (
+        <Marker position={userLocation} icon={userLocationIcon}></Marker>
       )}
 
       {/* Generated route */}

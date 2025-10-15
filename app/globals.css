@@ -31,3 +31,46 @@ input[type="range"]:disabled {
 .relative input:is([type="text"]) {
   @apply pl-10;
 }
+
+/* User location pulsing animation */
+@keyframes pulse-location {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.user-location-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-location-dot {
+  width: 16;
+  height: 16px;
+  background-color: #22c55e;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.user-location-pulse {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  animation: pulse-location 2s ease-out infinite;
+  z-index: 1;
+}

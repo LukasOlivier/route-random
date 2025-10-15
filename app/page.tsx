@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import MapWrapper from "./components/MapWrapper";
 import Sidebar from "./components/Sidebar";
 import MobileBottomBar from "./components/MobileBottomBar";
+import TrackUserLocationButton from "./components/TrackUserLocationButton";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,6 +24,8 @@ export default function Home() {
       >
         {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
+
+      <TrackUserLocationButton />
 
       {/* Mobile overlay */}
       {isSidebarOpen && (
