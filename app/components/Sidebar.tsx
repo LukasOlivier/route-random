@@ -44,14 +44,14 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
           About Route Random
         </h3>
         <p className="text-gray-400 leading-relaxed">
-          Route Random is a free running route generator that creates random
-          circular routes for runners, joggers, and walkers. Generate custom
-          running routes based on your desired distance and starting location
-          anywhere in the world.
+          Route Random is a free random route generator that creates random
+          circular routes for runners, joggers, and walkers. Generate random
+          routes based on your desired distance and starting location anywhere
+          in the world.
         </p>
         <p className="text-gray-400 leading-relaxed mt-2">
-          Perfect for discovering new running paths, exploring your
-          neighborhood, or finding new routes to keep your workouts exciting.
+          Perfect for discovering new paths, exploring your neighborhood, or
+          finding new routes to keep your workouts exciting.
         </p>
       </footer>
     </div>

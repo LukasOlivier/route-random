@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Route Random - Free Running Route Generator",
+    name: "Route Random - Free Random Route Generator",
     short_name: "Route Random",
     description:
-      "Route Random is a free running route generator that creates random circular routes for runners and walkers. Generate custom running routes based on your desired distance and starting location anywhere in the world.",
+      "Route Random is a free random route generator that creates random circular routes for runners and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

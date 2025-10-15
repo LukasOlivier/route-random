@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 const description =
-  "Route Random is a free running route generator that creates random circular routes for runners and walkers. Generate custom running routes based on your desired distance and starting location anywhere in the world.";
-const ogTitle = "Route Random - Free Running Route Generator";
+  "Route Random is a free route generator that creates random circular routes for runners and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.";
+const ogTitle = "Route Random - Free Random Route Generator";
 const image = "https://route-random.lukasolivier.be/og-image.png";
 const mySite = "https://route-random.lukasolivier.be";
 
