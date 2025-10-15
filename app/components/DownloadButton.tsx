@@ -3,6 +3,7 @@
 import { Download } from "lucide-react";
 import { useLocationStore } from "../../stores/store";
 import { downloadRouteAsGPX } from "../utils/gpxUtils";
+import FloatingButton from "./FloatingButton";
 
 export default function DownloadButton() {
   const { generatedRoute, isRouteAccepted } = useLocationStore();
@@ -19,14 +20,14 @@ export default function DownloadButton() {
   }
 
   return (
-    <button
+    <FloatingButton
       onClick={handleDownload}
-      className="fixed top-28 right-4 z-[999999] md:top-4 h-10 w-10 md:w-fit md:px-3 md:flex md:gap-2 rounded-md transition-colors flex items-center justify-center bg-gray-900 text-white hover:bg-gray-800 border border-gray-700"
-      aria-label="Download route as GPX"
+      ariaLabel="Download route as GPX"
       title="Download route as GPX"
+      showTextOnDesktop={true}
     >
       <Download size={20} />
-      <span>Download route as GPX</span>
-    </button>
+      <span className="hidden md:inline">Download route as GPX</span>
+    </FloatingButton>
   );
 }

@@ -7,6 +7,7 @@ import Sidebar from "./components/Sidebar";
 import MobileBottomBar from "./components/MobileBottomBar";
 import TrackUserLocationButton from "./components/TrackUserLocationButton";
 import DownloadButton from "./components/DownloadButton";
+import FloatingButton from "./components/FloatingButton";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,17 +18,21 @@ export default function Home() {
 
   return (
     <main>
-      {/* Mobile menu button */}
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-4 right-4 z-[999999] md:hidden bg-gray-900 text-white p-2 rounded-md "
-        aria-label="Toggle menu"
-      >
-        {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      <TrackUserLocationButton />
-      <DownloadButton />
+      <div className="fixed right-4 z-[999999] flex flex-col items-end gap-2 pt-4">
+        <FloatingButton
+          onClick={toggleSidebar}
+          ariaLabel="Toggle menu"
+          hideOnDesktop={true}
+        >
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </FloatingButton>
+        {!isSidebarOpen && (
+          <>
+            <TrackUserLocationButton />
+            <DownloadButton />
+          </>
+        )}
+      </div>
 
       {/* Mobile overlay */}
       {isSidebarOpen && (

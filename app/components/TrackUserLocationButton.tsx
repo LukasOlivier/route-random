@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useLocationStore } from "../../stores/store";
+import FloatingButton from "./FloatingButton";
 
 export default function TrackUserLocationButton() {
   const { isTrackingLocation, setLocationTracking, setUserLocation } =
@@ -88,23 +89,22 @@ export default function TrackUserLocationButton() {
   }, []);
 
   return (
-    <button
+    <FloatingButton
       onClick={toggleTracking}
-      className={`fixed top-16 right-4 z-[999999] md:hidden h-10 w-10 rounded-md transition-colors flex items-center justify-center ${
-        isTrackingLocation ? "bg-blue-600 text-white" : "bg-gray-900 text-white"
-      }`}
-      aria-label={
+      variant={isTrackingLocation ? "active" : "default"}
+      ariaLabel={
         isTrackingLocation ? "Stop tracking location" : "Track location"
       }
       title={
         isTrackingLocation ? "Stop tracking location" : "Track your location"
       }
+      hideOnDesktop={true}
     >
       {isTrackingLocation ? (
         <Navigation size={20} />
       ) : (
         <NavigationOff size={20} />
       )}
-    </button>
+    </FloatingButton>
   );
 }
