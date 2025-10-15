@@ -28,13 +28,11 @@ type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
   userLocation: LatLngTuple | null;
   generatedRoute: GeneratedRoute | null;
-  correctionFactor: number;
   isRouteAccepted: boolean;
   isHydrated: boolean;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
-  setCorrectionFactor: (factor: number) => void;
   resetRoute: () => void;
   acceptRoute: () => void;
   hydrate: () => void;
@@ -44,7 +42,6 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   startLocation: null,
   userLocation: null,
   generatedRoute: null,
-  correctionFactor: 0.65,
   isRouteAccepted: false,
   isHydrated: false,
   setStartLocation: (startLocation) => set({ startLocation }),
@@ -54,7 +51,6 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       startLocation: state.startLocation || userLocation,
     })),
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
-  setCorrectionFactor: (correctionFactor) => set({ correctionFactor }),
   resetRoute: () => {
     removeAcceptedRoute();
     set({ generatedRoute: null, isRouteAccepted: false });

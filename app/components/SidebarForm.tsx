@@ -6,27 +6,15 @@ import ToggleModeButton from "./ToggleModeButton";
 import GenerateRouteButton from "./GenerateRouteButton";
 import AcceptRouteButton from "./AcceptRouteButton";
 import ResetRouteButton from "./ResetRouteButton";
-import { useLocationStore, Mode, Pace } from "../../stores/store";
+import { useLocationStore, Mode, Pace, useRouteFormStore } from "../../stores";
 import LocationSearch from "./LocationSearch";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
-
-// Add interface for form preferences
-interface FormPreferences {
-  mode: Mode;
-  pace: Pace;
-  distance: string;
-  time: string;
-  correctionFactor: number;
-  startLocation: [number, number] | null;
-}
 
 export default function SidebarForm() {
   const {
     startLocation,
     setUserLocation,
     setGeneratedRoute,
-    correctionFactor,
-    setCorrectionFactor,
     generatedRoute,
     resetRoute,
     acceptRoute,
@@ -35,66 +23,40 @@ export default function SidebarForm() {
     hydrate,
   } = useLocationStore();
 
-  // Local form state with default values
-  const [mode, setMode] = useState<Mode>(Mode.DISTANCE);
-  const [pace, setPace] = useState<Pace>(Pace.WALKING);
-  const [distance, setDistance] = useState("5");
-  const [time, setTime] = useState("30");
+  const {
+    mode,
+    pace,
+    distance,
+    time,
+    correctionFactor,
+    isGeneratingRoute,
+    setMode,
+    setPace,
+    setDistance,
+    setTime,
+    setCorrectionFactor,
+    setIsGeneratingRoute,
+    hydrate: hydrateForm,
+    isHydrated: isFormHydrated,
+  } = useRouteFormStore();
+
+  // Local state for location functionality
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
-  const [isGeneratingRoute, setIsGeneratingRoute] = useState(false);
 
-  // Hydrate the store and load preferences on client-side mount
+  // Hydrate both stores on client-side mount
   useEffect(() => {
     if (!isHydrated) {
       hydrate();
     }
-
-    const loadPreferences = () => {
-      if (typeof window === "undefined") return;
-
-      try {
-        const saved = localStorage.getItem("routeFormPreferences");
-        if (saved) {
-          const preferences: FormPreferences = JSON.parse(saved);
-          setMode(preferences.mode);
-          setPace(preferences.pace);
-          setDistance(preferences.distance);
-          setTime(preferences.time);
-          setCorrectionFactor(preferences.correctionFactor);
-        }
-      } catch (error) {
-        console.error("Failed to load preferences:", error);
-      }
-    };
-
-    loadPreferences();
-  }, [isHydrated, hydrate, setCorrectionFactor]);
-
-  // Save preferences to localStorage
-  const savePreferences = (updates: Partial<FormPreferences> = {}) => {
-    if (typeof window === "undefined") return;
-
-    try {
-      const preferences: FormPreferences = {
-        mode,
-        pace,
-        distance,
-        time,
-        correctionFactor,
-        startLocation: startLocation as [number, number] | null,
-        ...updates,
-      };
-      localStorage.setItem("routeFormPreferences", JSON.stringify(preferences));
-    } catch (error) {
-      console.error("Failed to save preferences:", error);
+    if (!isFormHydrated) {
+      hydrateForm();
     }
-  };
+  }, [isHydrated, hydrate, isFormHydrated, hydrateForm]);
 
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
     setUserLocation(newLocation);
-    savePreferences({ startLocation: newLocation });
   };
 
   const generateRoute = async (e: React.FormEvent) => {
@@ -127,8 +89,6 @@ export default function SidebarForm() {
       alert("Please select a starting location");
       return;
     }
-
-    savePreferences();
 
     try {
       setIsGeneratingRoute(true);
@@ -234,7 +194,6 @@ export default function SidebarForm() {
           disabled={!!generatedRoute}
           onClick={() => {
             setMode(Mode.DISTANCE);
-            savePreferences({ mode: Mode.DISTANCE });
           }}
         />
         <ToggleModeButton
@@ -243,7 +202,6 @@ export default function SidebarForm() {
           disabled={!!generatedRoute}
           onClick={() => {
             setMode(Mode.TIME);
-            savePreferences({ mode: Mode.TIME });
           }}
         />
       </div>
@@ -269,7 +227,6 @@ export default function SidebarForm() {
                 disabled={!!generatedRoute}
                 onChange={(e) => {
                   setDistance(e.target.value);
-                  savePreferences({ distance: e.target.value });
                 }}
                 placeholder="e.g. 5 or 7.5"
                 className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
@@ -295,7 +252,6 @@ export default function SidebarForm() {
                   disabled={!!generatedRoute}
                   onChange={(e) => {
                     setTime(e.target.value);
-                    savePreferences({ time: e.target.value });
                   }}
                   placeholder="e.g. 30 or 45"
                   className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
@@ -313,7 +269,6 @@ export default function SidebarForm() {
                 disabled={!!generatedRoute}
                 onChange={(e) => {
                   setPace(e.target.value as Pace);
-                  savePreferences({ pace: e.target.value as Pace });
                 }}
                 value={pace}
                 id="pace"
@@ -368,7 +323,6 @@ export default function SidebarForm() {
             disabled={!!generatedRoute}
             onChange={(e) => {
               setCorrectionFactor(parseFloat(e.target.value));
-              savePreferences({ correctionFactor: parseFloat(e.target.value) });
             }}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />
