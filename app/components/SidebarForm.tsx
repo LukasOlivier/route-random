@@ -233,6 +233,8 @@ export default function SidebarForm() {
             </div>
             <button
               type="button"
+              title="Use current location"
+              aria-label="Use current location"
               onClick={getCurrentLocation}
               disabled={isGettingLocation || locationError || !!generatedRoute}
               className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 disabled:bg-gray-600 rounded-md text-white flex items-center"
@@ -251,11 +253,16 @@ export default function SidebarForm() {
 
         {/* Route Complexity Slider */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2 items-center gap-2">
+          <label
+            className="block text-sm font-medium text-gray-300 mb-2 items-center gap-2"
+            htmlFor="complexity"
+          >
             Route Complexity: {Math.round(correctionFactor * 100)}%
           </label>
           <input
             type="range"
+            name="complexity"
+            id="complexity"
             min="0.3"
             max="1.0"
             step="0.05"
@@ -266,11 +273,7 @@ export default function SidebarForm() {
             }}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>Urban/Dense</span>
-            <span>Rural/Open</span>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             When generated routes are too short, consider increasing the
             complexity.
           </p>
