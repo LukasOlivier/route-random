@@ -18,9 +18,9 @@ export default function TrackUserLocationButton() {
     }
 
     const options = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 60000,
+      enableHighAccuracy: true, // Uses GPS when available
+      timeout: 10000, // 10 seconds timeout for each location request
+      maximumAge: 5000, // Accepts cached locations up to 5 seconds old
     };
 
     const success = (position: GeolocationPosition) => {

@@ -12,46 +12,29 @@ import { LatLngTuple } from "leaflet";
 import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import { useLocationStore } from "../../stores/store";
+import {
+  mapDefaults,
+  blueIcon,
+  userLocationIcon,
+  normalizeToLatLngTuple,
+  shouldRecenterMap,
+} from "../utils/mapUtils";
+import { saveStartLocationToPreferences } from "../utils/localStorage";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 
-const defaults = {
-  zoom: 15,
-  // London as fallback
-  defaultPosition: [51.5074, -0.1278] as LatLngTuple,
-};
-const blueIcon = new L.Icon({
-  iconUrl:
-    "data:image/svg+xml;base64," +
-    btoa(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#4285F4"/>
-        <circle cx="12" cy="9" r="3" fill="white"/>
-      </svg>
-    `),
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
-});
-
-const userLocationIcon = new L.DivIcon({
-  className: "user-location-marker",
-  html: `
-    <div class="user-location-marker">
-      <div class="user-location-pulse"></div>
-      <div class="user-location-dot"></div>
-    </div>
-  `,
-  iconSize: [26, 26],
-  iconAnchor: [13, 13],
-  popupAnchor: [0, -13],
-});
-
-const MapUpdater = ({ center }: { center: LatLngTuple }) => {
+const MapUpdater = ({
+  center,
+  isTracking,
+}: {
+  center: LatLngTuple;
+  isTracking: boolean;
+}) => {
   const map = useMap();
   const prevCenterRef = useRef<LatLngTuple | null>(null);
+  const isTrackingRef = useRef<boolean>(false);
 
   useEffect(() => {
     // Initialize prevCenterRef with current map center on first mount
@@ -60,28 +43,17 @@ const MapUpdater = ({ center }: { center: LatLngTuple }) => {
     }
 
     const prevCenter = prevCenterRef.current;
+    const wasTracking = isTrackingRef.current;
 
-    // Only fly to new position if center has actually changed, prevents map 'shake' when loading for the first time
-    if (
-      !prevCenter ||
-      prevCenter[0] !== center[0] ||
-      prevCenter[1] !== center[1]
-    ) {
-      map.flyTo(center, defaults.zoom, { animate: true, duration: 2.0 });
+    if (shouldRecenterMap(prevCenter, center, isTracking, wasTracking)) {
+      map.flyTo(center, mapDefaults.zoom, { animate: true, duration: 2.0 });
       prevCenterRef.current = center;
     }
-  }, [map, center]);
+
+    isTrackingRef.current = isTracking;
+  }, [map, center, isTracking]);
 
   return null;
-};
-
-// Helper function to ensure LatLngTuple format
-const normalizeToLatLngTuple = (
-  position: LatLngTuple | L.LatLngLiteral | null
-): LatLngTuple => {
-  if (!position) return defaults.defaultPosition;
-  if (Array.isArray(position)) return position;
-  return [position.lat, position.lng];
 };
 
 function MapClickHandler() {
@@ -96,15 +68,8 @@ function MapClickHandler() {
     const newLocation: [number, number] = [lat, lng];
     setStartLocation(newLocation);
 
-    // Save to localStorage
-    try {
-      const saved = localStorage.getItem("routeFormPreferences");
-      const preferences = saved ? JSON.parse(saved) : {};
-      preferences.startLocation = newLocation;
-      localStorage.setItem("routeFormPreferences", JSON.stringify(preferences));
-    } catch (error) {
-      console.error("Failed to save location:", error);
-    }
+    // Save to localStorage using utility function
+    saveStartLocationToPreferences(newLocation);
   });
   return null;
 }
@@ -152,7 +117,7 @@ const Map = () => {
     (isTrackingLocation && userLocation) ||
       userLocation ||
       (isHydrated && startLocation) ||
-      defaults.defaultPosition
+      mapDefaults.defaultPosition
   );
 
   // Don't render until hydrated to prevent hydration mismatch
@@ -163,7 +128,7 @@ const Map = () => {
   return (
     <MapContainer
       center={mapCenter}
-      zoom={defaults.zoom}
+      zoom={mapDefaults.zoom}
       zoomControl={true}
       scrollWheelZoom={true}
       style={{
@@ -171,7 +136,7 @@ const Map = () => {
         width: "100%",
       }}
     >
-      <MapUpdater center={mapCenter} />
+      <MapUpdater center={mapCenter} isTracking={isTrackingLocation} />
       <MapClickHandler />
 
       <TileLayer

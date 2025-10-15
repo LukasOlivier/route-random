@@ -111,3 +111,18 @@ export function saveAcceptedRoute(route: GeneratedRoute): void {
 export function removeAcceptedRoute(): void {
   removeFromLocalStorage("acceptedRoute");
 }
+
+/**
+ * Save start location to localStorage (for map clicks)
+ */
+export function saveStartLocationToPreferences(
+  location: [number, number]
+): void {
+  try {
+    const preferences = loadFormPreferences();
+    preferences.startLocation = location;
+    saveToLocalStorage("routeFormPreferences", preferences);
+  } catch (error) {
+    console.error("Failed to save location to preferences:", error);
+  }
+}
