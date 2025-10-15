@@ -1,16 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Clock,
-  Ruler,
-  Locate,
-  LocateOff,
-  Send,
-  Check,
-  RotateCcw,
-} from "lucide-react";
+import { Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
+import GenerateRouteButton from "./GenerateRouteButton";
+import AcceptRouteButton from "./AcceptRouteButton";
+import ResetRouteButton from "./ResetRouteButton";
 import { useLocationStore, Mode, Pace } from "../../stores/store";
 import LocationSearch from "./LocationSearch";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
@@ -392,38 +387,15 @@ export default function SidebarForm() {
           {generatedRoute ? (
             <div className="flex gap-2">
               {!isRouteAccepted && (
-                <button
-                  type="button"
-                  onClick={handleAcceptRoute}
-                  className="flex-1 bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
-                >
-                  <Check className="inline-block mr-2" size={16} />
-                  Accept
-                </button>
+                <AcceptRouteButton
+                  onAccept={handleAcceptRoute}
+                  className="flex-1"
+                />
               )}
-              <button
-                type="button"
-                onClick={handleResetRoute}
-                className="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
-              >
-                <RotateCcw className="inline-block mr-2" size={16} />
-                Reset
-              </button>
+              <ResetRouteButton onReset={handleResetRoute} className="flex-1" />
             </div>
           ) : (
-            <button
-              type="submit"
-              disabled={isGeneratingRoute}
-              className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
-            >
-              <Send
-                className={`inline-block mr-2 ${
-                  isGeneratingRoute ? "animate-pulse" : ""
-                }`}
-                size={16}
-              />
-              {isGeneratingRoute ? "Generating..." : "Generate Route"}
-            </button>
+            <GenerateRouteButton isGeneratingRoute={isGeneratingRoute} />
           )}
         </div>
       </div>
