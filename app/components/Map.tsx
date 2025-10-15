@@ -4,12 +4,14 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
+  Tooltip,
   useMap,
   useMapEvent,
+  Polyline,
+  Popup,
 } from "react-leaflet";
 import { LatLngTuple } from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as L from "leaflet";
 import { useLocationStore } from "../../stores/store";
 
@@ -56,7 +58,21 @@ function MapClickHandler() {
 }
 
 const Map = () => {
-  const { startLocation, userLocation } = useLocationStore();
+  const { startLocation, userLocation, generatedRoute } = useLocationStore();
+  const markerRef = useRef<L.Marker>(null);
+
+  useEffect(() => {
+    if (markerRef.current && startLocation) {
+      const marker = markerRef.current;
+      let popupContent = "<b>Start Location</b>";
+      if (generatedRoute && generatedRoute.distance != null) {
+        popupContent = `<b>Route Generated!</b><br>Distance: ${generatedRoute.distance.toFixed(
+          2
+        )} km`;
+      }
+      marker.bindPopup(popupContent).openPopup();
+    }
+  }, [startLocation, generatedRoute]);
 
   const mapCenter = userLocation || defaults.defaultPosition;
 
@@ -81,9 +97,23 @@ const Map = () => {
 
       {/* Start location marker */}
       {startLocation && (
-        <Marker position={startLocation} icon={blueIcon}>
-          <Popup>Starting Location</Popup>
-        </Marker>
+        <Marker
+          position={startLocation}
+          icon={blueIcon}
+          ref={markerRef}
+        ></Marker>
+      )}
+
+      {/* Generated route */}
+      {generatedRoute && (
+        <Polyline
+          positions={generatedRoute.coordinates.map(
+            (coord) => [coord[1], coord[0]] as LatLngTuple
+          )}
+          color="#3388ff"
+          weight={4}
+          opacity={0.8}
+        ></Polyline>
       )}
     </MapContainer>
   );

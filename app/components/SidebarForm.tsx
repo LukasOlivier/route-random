@@ -8,7 +8,8 @@ import LocationSearch from "./LocationSearch";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
 
 export default function SidebarForm() {
-  const { startLocation, setUserLocation } = useLocationStore();
+  const { startLocation, setUserLocation, setGeneratedRoute } =
+    useLocationStore();
 
   // Local form state
   const [mode, setMode] = useState<Mode>(Mode.DISTANCE);
@@ -70,17 +71,26 @@ export default function SidebarForm() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
       }
 
       const result = await response.json();
       console.log("Route generated:", result);
 
-      // Handle successful route generation here
-      // You might want to add the generated route to your store
+      // Store the generated route in the store
+      if (result.success && result.route) {
+        setGeneratedRoute(result.route);
+      }
     } catch (error) {
       console.error("Error generating route:", error);
-      alert("Failed to generate route. Please try again.");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate route. Please try again.";
+      alert(errorMessage);
     } finally {
       setIsGeneratingRoute(false);
     }

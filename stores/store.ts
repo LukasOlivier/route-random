@@ -12,16 +12,24 @@ enum Pace {
   CYCLING = "cycling",
 }
 
+type GeneratedRoute = {
+  coordinates: [number, number][];
+  distance: number;
+};
+
 type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
   userLocation: LatLngTuple | null;
+  generatedRoute: GeneratedRoute | null;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
+  setGeneratedRoute: (route: GeneratedRoute | null) => void;
 };
 
 export const useLocationStore = create<LocationStore>((set) => ({
   startLocation: null,
   userLocation: null,
+  generatedRoute: null,
   setStartLocation: (startLocation) => set({ startLocation }),
   setUserLocation: (userLocation) =>
     set((state) => ({
@@ -29,6 +37,8 @@ export const useLocationStore = create<LocationStore>((set) => ({
       // Only set as start location if no start location is already set
       startLocation: state.startLocation || userLocation,
     })),
+  setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
 }));
 
 export { Mode, Pace };
+export type { GeneratedRoute };
