@@ -26,6 +26,7 @@ type LocationStore = {
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
   setCorrectionFactor: (factor: number) => void;
+  resetRoute: () => void;
 };
 
 export const useLocationStore = create<LocationStore>((set) => ({
@@ -56,6 +57,7 @@ export const useLocationStore = create<LocationStore>((set) => ({
     })),
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
   setCorrectionFactor: (correctionFactor) => set({ correctionFactor }),
+  resetRoute: () => set({ generatedRoute: null }),
 }));
 
 export { Mode, Pace };

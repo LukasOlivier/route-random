@@ -11,11 +11,13 @@ interface LocationSearchProps {
     address: string;
   }) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export default function LocationSearch({
   onLocationSelect,
   placeholder = "Search for a location...",
+  disabled = false,
 }: LocationSearchProps) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<LocationResult[]>([]);
@@ -109,7 +111,12 @@ export default function LocationSearch({
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 "
+          disabled={disabled}
+          className={`w-full pl-10 pr-4 py-2 border rounded-md text-white placeholder-gray-400 ${
+            disabled
+              ? "bg-gray-600 border-gray-500 cursor-not-allowed opacity-50"
+              : "bg-gray-800 border-gray-600"
+          }`}
         />
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -118,7 +125,7 @@ export default function LocationSearch({
         )}
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions.length > 0 && !disabled && (
         <div
           ref={suggestionsRef}
           className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto"

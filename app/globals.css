@@ -17,6 +17,15 @@ button:disabled {
   @apply cursor-not-allowed opacity-50;
 }
 
+input:disabled,
+select:disabled {
+  @apply cursor-not-allowed opacity-50 bg-gray-600;
+}
+
+input[type="range"]:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
 /* Add specific styling for inputs with icons */
 .relative input:is([type="number"]),
 .relative input:is([type="text"]) {

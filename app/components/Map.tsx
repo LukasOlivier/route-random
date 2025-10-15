@@ -49,8 +49,13 @@ const MapUpdater = ({ center }: { center: LatLngTuple }) => {
 };
 
 function MapClickHandler() {
-  const { setStartLocation } = useLocationStore();
+  const { setStartLocation, generatedRoute } = useLocationStore();
   const map = useMapEvent("click", (e) => {
+    // Prevent setting new location when route is generated
+    if (generatedRoute) {
+      return;
+    }
+
     const { lat, lng } = e.latlng;
     const newLocation: [number, number] = [lat, lng];
     setStartLocation(newLocation);

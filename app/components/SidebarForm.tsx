@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Clock, Ruler, Locate, LocateOff, Send } from "lucide-react";
+import {
+  Clock,
+  Ruler,
+  Locate,
+  LocateOff,
+  Send,
+  Check,
+  RotateCcw,
+} from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useLocationStore, Mode, Pace } from "../../stores/store";
 import LocationSearch from "./LocationSearch";
@@ -25,6 +33,8 @@ export default function SidebarForm() {
     correctionFactor,
     setCorrectionFactor,
     setStartLocation,
+    generatedRoute,
+    resetRoute,
   } = useLocationStore();
 
   // Local form state with default values
@@ -199,6 +209,16 @@ export default function SidebarForm() {
     </option>
   ));
 
+  const handleAcceptRoute = () => {
+    // You can add any acceptance logic here (e.g., save to favorites, export, etc.)
+    console.log("Route accepted!");
+    alert("Route accepted!");
+  };
+
+  const handleResetRoute = () => {
+    resetRoute();
+  };
+
   return (
     <form
       onSubmit={(e) => generateRoute(e)}
@@ -209,6 +229,7 @@ export default function SidebarForm() {
         <ToggleModeButton
           text="Distance"
           selected={mode === Mode.DISTANCE}
+          disabled={!!generatedRoute}
           onClick={() => {
             setMode(Mode.DISTANCE);
             savePreferences({ mode: Mode.DISTANCE });
@@ -217,6 +238,7 @@ export default function SidebarForm() {
         <ToggleModeButton
           text="Time"
           selected={mode === Mode.TIME}
+          disabled={!!generatedRoute}
           onClick={() => {
             setMode(Mode.TIME);
             savePreferences({ mode: Mode.TIME });
@@ -242,6 +264,7 @@ export default function SidebarForm() {
                 step="0.1"
                 min="0.1"
                 value={distance}
+                disabled={!!generatedRoute}
                 onChange={(e) => {
                   setDistance(e.target.value);
                   savePreferences({ distance: e.target.value });
@@ -267,6 +290,7 @@ export default function SidebarForm() {
                   type="number"
                   min="1"
                   value={time}
+                  disabled={!!generatedRoute}
                   onChange={(e) => {
                     setTime(e.target.value);
                     savePreferences({ time: e.target.value });
@@ -284,6 +308,7 @@ export default function SidebarForm() {
               </label>
               <select
                 className="w-full bg-gray-800 rounded-md px-3 py-2 border border-gray-700"
+                disabled={!!generatedRoute}
                 onChange={(e) => {
                   setPace(e.target.value as Pace);
                   savePreferences({ pace: e.target.value as Pace });
@@ -306,12 +331,13 @@ export default function SidebarForm() {
               <LocationSearch
                 onLocationSelect={handleLocationSelect}
                 placeholder="Search starting location..."
+                disabled={!!generatedRoute}
               />
             </div>
             <button
               type="button"
               onClick={getCurrentLocation}
-              disabled={isGettingLocation || locationError}
+              disabled={isGettingLocation || locationError || !!generatedRoute}
               className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 disabled:bg-gray-600 rounded-md text-white flex items-center"
             >
               {locationError ? (
@@ -337,6 +363,7 @@ export default function SidebarForm() {
             max="1.0"
             step="0.05"
             value={correctionFactor}
+            disabled={!!generatedRoute}
             onChange={(e) => {
               setCorrectionFactor(parseFloat(e.target.value));
               savePreferences({ correctionFactor: parseFloat(e.target.value) });
@@ -353,21 +380,42 @@ export default function SidebarForm() {
           </p>
         </div>
 
-        {/* Submit button */}
+        {/* Submit button or Accept/Reset buttons */}
         <div className="mt-10">
-          <button
-            type="submit"
-            disabled={isGeneratingRoute}
-            className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
-          >
-            <Send
-              className={`inline-block mr-2 ${
-                isGeneratingRoute ? "animate-pulse" : ""
-              }`}
-              size={16}
-            />
-            {isGeneratingRoute ? "Generating..." : "Generate Route"}
-          </button>
+          {generatedRoute ? (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleAcceptRoute}
+                className="flex-1 bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
+              >
+                <Check className="inline-block mr-2" size={16} />
+                Accept
+              </button>
+              <button
+                type="button"
+                onClick={handleResetRoute}
+                className="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
+              >
+                <RotateCcw className="inline-block mr-2" size={16} />
+                Reset
+              </button>
+            </div>
+          ) : (
+            <button
+              type="submit"
+              disabled={isGeneratingRoute}
+              className="w-full bg-blue-500 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
+            >
+              <Send
+                className={`inline-block mr-2 ${
+                  isGeneratingRoute ? "animate-pulse" : ""
+                }`}
+                size={16}
+              />
+              {isGeneratingRoute ? "Generating..." : "Generate Route"}
+            </button>
+          )}
         </div>
       </div>
     </form>
