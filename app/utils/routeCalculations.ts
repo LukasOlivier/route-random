@@ -1,4 +1,4 @@
-import { Pace } from "../stores/store";
+import { Pace } from "../../stores/store";
 
 /**
  * Get the speed in km/h for a given pace

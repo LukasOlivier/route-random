@@ -5,7 +5,7 @@ import { Clock, Ruler, Locate, LocateOff, Send } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useLocationStore, Mode, Pace } from "../../stores/store";
 import LocationSearch from "./LocationSearch";
-import { calculateDistanceFromTime } from "../../utils/routeCalculations";
+import { calculateDistanceFromTime } from "../utils/routeCalculations";
 
 export default function SidebarForm() {
   const { startLocation, setUserLocation } = useLocationStore();
