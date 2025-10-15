@@ -40,12 +40,37 @@ const blueIcon = new L.Icon({
 
 const MapUpdater = ({ center }: { center: LatLngTuple }) => {
   const map = useMap();
+  const prevCenterRef = useRef<LatLngTuple | null>(null);
 
   useEffect(() => {
-    map.flyTo(center, defaults.zoom, { animate: true, duration: 2.0 });
+    // Initialize prevCenterRef with current map center on first mount
+    if (prevCenterRef.current === null) {
+      prevCenterRef.current = [map.getCenter().lat, map.getCenter().lng];
+    }
+
+    const prevCenter = prevCenterRef.current;
+
+    // Only fly to new position if center has actually changed, prevents map 'shake' when loading for the first time
+    if (
+      !prevCenter ||
+      prevCenter[0] !== center[0] ||
+      prevCenter[1] !== center[1]
+    ) {
+      map.flyTo(center, defaults.zoom, { animate: true, duration: 2.0 });
+      prevCenterRef.current = center;
+    }
   }, [map, center]);
 
   return null;
+};
+
+// Helper function to ensure LatLngTuple format
+const normalizeToLatLngTuple = (
+  position: LatLngTuple | L.LatLngLiteral | null
+): LatLngTuple => {
+  if (!position) return defaults.defaultPosition;
+  if (Array.isArray(position)) return position;
+  return [position.lat, position.lng];
 };
 
 function MapClickHandler() {
@@ -74,12 +99,33 @@ function MapClickHandler() {
 }
 
 const Map = () => {
-  const { startLocation, userLocation, generatedRoute } = useLocationStore();
+  const {
+    startLocation,
+    userLocation,
+    generatedRoute,
+    isRouteAccepted,
+    isHydrated,
+    hydrate,
+  } = useLocationStore();
   const markerRef = useRef<L.Marker>(null);
+
+  // Hydrate the store on client-side mount
+  useEffect(() => {
+    if (!isHydrated) {
+      hydrate();
+    }
+  }, [isHydrated, hydrate]);
 
   useEffect(() => {
     if (markerRef.current && startLocation) {
       const marker = markerRef.current;
+
+      // Close popup if route is accepted
+      if (isRouteAccepted) {
+        marker.closePopup();
+        return;
+      }
+
       let popupContent = "<b>Start Location</b>";
       if (generatedRoute && generatedRoute.distance != null) {
         popupContent = `<b>Route Generated!</b><br>Distance: ${generatedRoute.distance.toFixed(
@@ -88,13 +134,16 @@ const Map = () => {
       }
       marker.bindPopup(popupContent).openPopup();
     }
-  }, [startLocation, generatedRoute]);
+  }, [startLocation, generatedRoute, isRouteAccepted]);
 
-  const mapCenter =
-    userLocation ||
-    JSON.parse(localStorage.getItem("routeFormPreferences") || "{}")
-      .startLocation ||
-    defaults.defaultPosition;
+  const mapCenter = normalizeToLatLngTuple(
+    userLocation || (isHydrated && startLocation) || defaults.defaultPosition
+  );
+
+  // Don't render until hydrated to prevent hydration mismatch
+  if (!isHydrated) {
+    return <div>Loading map...</div>;
+  }
 
   return (
     <MapContainer

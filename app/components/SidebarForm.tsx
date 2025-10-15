@@ -35,6 +35,10 @@ export default function SidebarForm() {
     setStartLocation,
     generatedRoute,
     resetRoute,
+    acceptRoute,
+    isRouteAccepted,
+    isHydrated,
+    hydrate,
   } = useLocationStore();
 
   // Local form state with default values
@@ -46,9 +50,15 @@ export default function SidebarForm() {
   const [locationError, setLocationError] = useState(false);
   const [isGeneratingRoute, setIsGeneratingRoute] = useState(false);
 
-  // Load preferences from localStorage on mount
+  // Hydrate the store and load preferences on client-side mount
   useEffect(() => {
+    if (!isHydrated) {
+      hydrate();
+    }
+
     const loadPreferences = () => {
+      if (typeof window === "undefined") return;
+
       try {
         const saved = localStorage.getItem("routeFormPreferences");
         if (saved) {
@@ -65,10 +75,12 @@ export default function SidebarForm() {
     };
 
     loadPreferences();
-  }, [setCorrectionFactor, setStartLocation]);
+  }, [isHydrated, hydrate, setCorrectionFactor]);
 
   // Save preferences to localStorage
   const savePreferences = (updates: Partial<FormPreferences> = {}) => {
+    if (typeof window === "undefined") return;
+
     try {
       const preferences: FormPreferences = {
         mode,
@@ -92,7 +104,6 @@ export default function SidebarForm() {
   };
 
   const generateRoute = async (e: React.FormEvent) => {
-    console.log("Generating route...");
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -150,7 +161,6 @@ export default function SidebarForm() {
       }
 
       const result = await response.json();
-      console.log("Route generated:", result);
 
       // Store the generated route in the store
       if (result.success && result.route) {
@@ -210,9 +220,7 @@ export default function SidebarForm() {
   ));
 
   const handleAcceptRoute = () => {
-    // You can add any acceptance logic here (e.g., save to favorites, export, etc.)
-    console.log("Route accepted!");
-    alert("Route accepted!");
+    acceptRoute();
   };
 
   const handleResetRoute = () => {
@@ -384,14 +392,16 @@ export default function SidebarForm() {
         <div className="mt-10">
           {generatedRoute ? (
             <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleAcceptRoute}
-                className="flex-1 bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
-              >
-                <Check className="inline-block mr-2" size={16} />
-                Accept
-              </button>
+              {!isRouteAccepted && (
+                <button
+                  type="button"
+                  onClick={handleAcceptRoute}
+                  className="flex-1 bg-green-600 hover:bg-green-800 text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center"
+                >
+                  <Check className="inline-block mr-2" size={16} />
+                  Accept
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleResetRoute}

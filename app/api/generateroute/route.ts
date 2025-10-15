@@ -55,15 +55,8 @@ export async function POST(request: NextRequest) {
     // Add some randomness to make routes more interesting
     const waypoints = addRandomnessToWaypoints(baseWaypoints, 0.2);
 
-    console.log("Generated waypoints:", waypoints);
-
     // Generate the actual walking route using ORS
     const route = await generateWalkingRoute(waypoints, orsApiKey);
-
-    console.log("Route generated successfully:", {
-      coordinatesCount: route.coordinates.length,
-      distance: route.distance,
-    });
 
     return NextResponse.json({
       success: true,
