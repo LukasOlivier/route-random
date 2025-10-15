@@ -43,14 +43,11 @@ export async function POST(request: NextRequest) {
       startLng = startLocation.lng;
     }
 
-    console.log("Generating route for:", { startLat, startLng, distance });
-
     // Generate circular waypoints
     const baseWaypoints = generateCircularWaypoints(
       startLat,
       startLng,
-      distance,
-      8
+      distance
     );
 
     // Add some randomness to make routes more interesting

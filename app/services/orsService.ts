@@ -32,16 +32,11 @@ export async function generateWalkingRoute(
   const requestBody = {
     coordinates: waypoints,
     options: {
-      avoid_features: ["ferries", "fords"],
-      profile_params: {
-        weightings: {
-          green: 0.8,
-          quiet: 0.6,
-        },
-      },
+      avoid_features: ["ferries"],
     },
     preference: "recommended",
     units: "km",
+    continue_straight: true,
   };
 
   try {

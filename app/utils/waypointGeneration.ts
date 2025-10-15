@@ -19,8 +19,21 @@ function toDegrees(radians: number): number {
  */
 export function calculateRadius(distance: number): number {
   // Apply correction factor to account for routing detours and road following
-  const correctionFactor = 0.7; // Reduce radius by 30% to compensate for routing overhead
+  const correctionFactor = 0.65; // Reduce radius by 35% to compensate for routing overhead
   return (distance * correctionFactor) / (2 * Math.PI);
+}
+
+/**
+ * Choose round-trip point count based on distance (in kilometers)
+ */
+function getNumPointsForDistance(distanceKm: number): number {
+  let points = 3;
+  // per multiple of 2km, add 1 point, up to max of 12
+  for (let i = 2; i <= distanceKm; i += 2) {
+    points++;
+  }
+  // keep within a sensible range
+  return Math.max(3, Math.min(12, points));
 }
 
 /**
@@ -30,8 +43,11 @@ export function generateCircularWaypoints(
   startLat: number,
   startLng: number,
   distance: number,
-  numWaypoints: number = 8
+  numWaypoints?: number
 ): [number, number][] {
+  // Use dynamic waypoint count if not specified
+  const actualNumWaypoints = numWaypoints || getNumPointsForDistance(distance);
+
   const radius = calculateRadius(distance);
   const waypoints: [number, number][] = [];
 
@@ -49,8 +65,8 @@ export function generateCircularWaypoints(
   const lng1 = toRadians(startLng);
 
   // Generate waypoints around the circle
-  for (let i = 1; i <= numWaypoints; i++) {
-    const bearing = (2 * Math.PI * i) / numWaypoints;
+  for (let i = 1; i <= actualNumWaypoints; i++) {
+    const bearing = (2 * Math.PI * i) / actualNumWaypoints;
 
     // Calculate new latitude
     const lat2 = Math.asin(
