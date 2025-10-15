@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Clock, Ruler, Locate, LocateOff, Send, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Clock, Ruler, Locate, LocateOff, Send } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import { useLocationStore, Mode, Pace } from "../../stores/store";
 import LocationSearch from "./LocationSearch";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
+
+// Add interface for form preferences
+interface FormPreferences {
+  mode: Mode;
+  pace: Pace;
+  distance: string;
+  time: string;
+  correctionFactor: number;
+}
 
 export default function SidebarForm() {
   const {
@@ -14,17 +23,59 @@ export default function SidebarForm() {
     setGeneratedRoute,
     correctionFactor,
     setCorrectionFactor,
+    setStartLocation,
   } = useLocationStore();
 
-  // Local form state
+  // Local form state with default values
   const [mode, setMode] = useState<Mode>(Mode.DISTANCE);
   const [pace, setPace] = useState<Pace>(Pace.WALKING);
+  const [distance, setDistance] = useState("5");
+  const [time, setTime] = useState("30");
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
   const [isGeneratingRoute, setIsGeneratingRoute] = useState(false);
 
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const loadPreferences = () => {
+      try {
+        const saved = localStorage.getItem("routeFormPreferences");
+        if (saved) {
+          const preferences: FormPreferences = JSON.parse(saved);
+          setMode(preferences.mode);
+          setPace(preferences.pace);
+          setDistance(preferences.distance);
+          setTime(preferences.time);
+          setCorrectionFactor(preferences.correctionFactor);
+        }
+      } catch (error) {
+        console.error("Failed to load preferences:", error);
+      }
+    };
+
+    loadPreferences();
+  }, [setCorrectionFactor, setStartLocation]);
+
+  // Save preferences to localStorage
+  const savePreferences = (updates: Partial<FormPreferences> = {}) => {
+    try {
+      const preferences: FormPreferences = {
+        mode,
+        pace,
+        distance,
+        time,
+        correctionFactor,
+        ...updates,
+      };
+      localStorage.setItem("routeFormPreferences", JSON.stringify(preferences));
+    } catch (error) {
+      console.error("Failed to save preferences:", error);
+    }
+  };
+
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
-    setUserLocation([location.lat, location.lon]);
+    const newLocation: [number, number] = [location.lat, location.lon];
+    setUserLocation(newLocation);
   };
 
   const generateRoute = async (e: React.FormEvent) => {
@@ -58,6 +109,8 @@ export default function SidebarForm() {
       alert("Please select a starting location");
       return;
     }
+
+    savePreferences();
 
     try {
       setIsGeneratingRoute(true);
@@ -113,7 +166,8 @@ export default function SidebarForm() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        setUserLocation([latitude, longitude]);
+        const newLocation: [number, number] = [latitude, longitude];
+        setUserLocation(newLocation);
         setIsGettingLocation(false);
         setLocationError(false);
       },
@@ -152,12 +206,18 @@ export default function SidebarForm() {
         <ToggleModeButton
           text="Distance"
           selected={mode === Mode.DISTANCE}
-          onClick={() => setMode(Mode.DISTANCE)}
+          onClick={() => {
+            setMode(Mode.DISTANCE);
+            savePreferences({ mode: Mode.DISTANCE });
+          }}
         />
         <ToggleModeButton
           text="Time"
           selected={mode === Mode.TIME}
-          onClick={() => setMode(Mode.TIME)}
+          onClick={() => {
+            setMode(Mode.TIME);
+            savePreferences({ mode: Mode.TIME });
+          }}
         />
       </div>
       <div className="flex flex-col gap-4">
@@ -178,7 +238,11 @@ export default function SidebarForm() {
                 type="number"
                 step="0.1"
                 min="0.1"
-                defaultValue="5"
+                value={distance}
+                onChange={(e) => {
+                  setDistance(e.target.value);
+                  savePreferences({ distance: e.target.value });
+                }}
                 placeholder="e.g. 5 or 7.5"
                 className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                 required
@@ -199,7 +263,11 @@ export default function SidebarForm() {
                   name="time"
                   type="number"
                   min="1"
-                  defaultValue="30"
+                  value={time}
+                  onChange={(e) => {
+                    setTime(e.target.value);
+                    savePreferences({ time: e.target.value });
+                  }}
                   placeholder="e.g. 30 or 45"
                   className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                   required
@@ -213,7 +281,10 @@ export default function SidebarForm() {
               </label>
               <select
                 className="w-full bg-gray-800 rounded-md px-3 py-2 border border-gray-700"
-                onChange={(e) => setPace(e.target.value as Pace)}
+                onChange={(e) => {
+                  setPace(e.target.value as Pace);
+                  savePreferences({ pace: e.target.value as Pace });
+                }}
                 value={pace}
                 id="pace"
                 name="pace"
@@ -263,7 +334,10 @@ export default function SidebarForm() {
             max="1.0"
             step="0.05"
             value={correctionFactor}
-            onChange={(e) => setCorrectionFactor(parseFloat(e.target.value))}
+            onChange={(e) => {
+              setCorrectionFactor(parseFloat(e.target.value));
+              savePreferences({ correctionFactor: parseFloat(e.target.value) });
+            }}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
           />
           <div className="flex justify-between text-xs text-gray-400 mt-1">

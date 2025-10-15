@@ -42,7 +42,7 @@ const MapUpdater = ({ center }: { center: LatLngTuple }) => {
   const map = useMap();
 
   useEffect(() => {
-    map.flyTo(center, defaults.zoom, { animate: true, duration: 0.9 });
+    map.flyTo(center, defaults.zoom, { animate: true, duration: 2.0 });
   }, [map, center]);
 
   return null;
@@ -52,7 +52,18 @@ function MapClickHandler() {
   const { setStartLocation } = useLocationStore();
   const map = useMapEvent("click", (e) => {
     const { lat, lng } = e.latlng;
-    setStartLocation([lat, lng]);
+    const newLocation: [number, number] = [lat, lng];
+    setStartLocation(newLocation);
+
+    // Save to localStorage
+    try {
+      const saved = localStorage.getItem("routeFormPreferences");
+      const preferences = saved ? JSON.parse(saved) : {};
+      preferences.startLocation = newLocation;
+      localStorage.setItem("routeFormPreferences", JSON.stringify(preferences));
+    } catch (error) {
+      console.error("Failed to save location:", error);
+    }
   });
   return null;
 }
@@ -74,7 +85,11 @@ const Map = () => {
     }
   }, [startLocation, generatedRoute]);
 
-  const mapCenter = userLocation || defaults.defaultPosition;
+  const mapCenter =
+    userLocation ||
+    JSON.parse(localStorage.getItem("routeFormPreferences") || "{}")
+      .startLocation ||
+    defaults.defaultPosition;
 
   return (
     <MapContainer

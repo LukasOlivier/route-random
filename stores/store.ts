@@ -29,7 +29,21 @@ type LocationStore = {
 };
 
 export const useLocationStore = create<LocationStore>((set) => ({
-  startLocation: null,
+  startLocation: (() => {
+    // Load startLocation from localStorage on store initialization
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("routeFormPreferences");
+        if (saved) {
+          const preferences = JSON.parse(saved);
+          return preferences.startLocation || null;
+        }
+      } catch (error) {
+        console.error("Failed to load startLocation from localStorage:", error);
+      }
+    }
+    return null;
+  })(),
   userLocation: null,
   generatedRoute: null,
   correctionFactor: 0.65, // Default value
