@@ -82,13 +82,6 @@ export default function TrackUserLocationButton() {
     }
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      stopTracking();
-    };
-  }, [stopTracking]);
-
   return (
     <FloatingButton
       onClick={toggleTracking}

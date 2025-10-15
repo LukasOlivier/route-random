@@ -39,7 +39,7 @@ export default function Home() {
       {/* Mobile overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50  lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[9999] lg:hidden"
           onClick={toggleSidebar}
         />
       )}

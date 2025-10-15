@@ -24,7 +24,7 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
     <div
       className={`h-screen primary-bg  flex flex-col p-6 transition-transform duration-300 ease-in-out ${
         isOpen
-          ? "fixed inset-0 z-[99999] lg:relative lg:w-1/4 lg:translate-x-0"
+          ? "fixed inset-0 z-[10000] lg:relative lg:w-1/4 lg:translate-x-0"
           : "hidden lg:flex lg:w-1/4"
       }`}
     >
