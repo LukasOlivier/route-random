@@ -15,6 +15,7 @@ export default function ToggleModeButton({
 }: ToggleModeButtonProps) {
   return (
     <button
+      type="button"
       className={`px-4 flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
         selected
           ? "bg-blue-500 text-white"

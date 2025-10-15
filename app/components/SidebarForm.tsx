@@ -22,6 +22,7 @@ export default function SidebarForm() {
   };
 
   const generateRoute = async (e: React.FormEvent) => {
+    console.log("Generating route...");
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -161,6 +162,7 @@ export default function SidebarForm() {
                 type="number"
                 step="0.1"
                 min="0.1"
+                defaultValue="5"
                 placeholder="e.g. 5 or 7.5"
                 className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                 required
@@ -181,6 +183,7 @@ export default function SidebarForm() {
                   name="time"
                   type="number"
                   min="1"
+                  defaultValue="30"
                   placeholder="e.g. 30 or 45"
                   className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
                   required
