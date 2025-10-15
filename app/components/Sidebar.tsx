@@ -1,11 +1,14 @@
 import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
+import { useTranslations } from "next-intl";
 
 interface SidebarProps {
   isOpen?: boolean;
 }
 
 export default function Sidebar({ isOpen = false }: SidebarProps) {
+  const t = useTranslations("Sidebar");
+
   return (
     <div
       className={`h-screen primary-bg  flex flex-col p-6 transition-transform duration-300 ease-in-out ${
@@ -18,16 +21,16 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
       <header>
         <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
           <Footprints size={24} />
-          Route Random
+          {t("title")}
         </h1>
         <h2 className="text-sm text-extra mt-1 mb-4">
-          A project made by{" "}
+          {t("subtitle")}{" "}
           <a
             className="underline"
             target="_blank"
             href="https://www.lukasolivier.be"
           >
-            Lukas Olivier
+            {t("authorLink")}
           </a>
         </h2>
       </header>
@@ -41,18 +44,10 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
       {/* Footer */}
       <footer className="mt-auto text-xs text-extra leading-relaxed space-y-4">
         <h3 className="text-sm font-medium dark:text-gray-300 mb-2 text-gray-800">
-          About Route Random
+          {t("aboutTitle")}
         </h3>
-        <p>
-          Route Random is a free random route generator that creates random
-          circular routes for runners, joggers, and walkers. Generate random
-          routes based on your desired distance and starting location anywhere
-          in the world.
-        </p>
-        <p>
-          Perfect for discovering new paths, exploring your neighborhood, or
-          finding new routes to keep your workouts exciting.
-        </p>
+        <p>{t("aboutDescription1")}</p>
+        <p>{t("aboutDescription2")}</p>
       </footer>
     </div>
   );

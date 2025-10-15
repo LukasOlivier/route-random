@@ -204,7 +204,7 @@ export default function SidebarForm() {
                 Pace:
               </label>
               <select
-                className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200"
+                className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
                 disabled={!!generatedRoute}
                 onChange={(e) => {
                   setPace(e.target.value as Pace);
