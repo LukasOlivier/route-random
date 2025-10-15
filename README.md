@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# <img src="public/logo-route-random.png" alt="Route Random Logo" width="48" height="48" style="vertical-align:middle;"> Route Random
 
-## Getting Started
+<p>
+  <img src="https://img.shields.io/badge/React-61dafb?logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Leaflet-199900?logo=leaflet&logoColor=white" alt="Leaflet" />
+  <img src="https://img.shields.io/badge/OpenRouteService-ff6600?logo=OpenStreetMap&logoColor=white" alt="OpenRouteService" />
+  <img src="https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white" alt="TypeScript" />
+</p>
 
-First, run the development server:
+> **Discover new routes, anywhere.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Route Random is a modern web application built with **React** and **Next.js** that serves as your personal route generator. Instantly create unique, circular routes for walking, running, or cycling tailored to your distance and location. Whether you're training for a marathon, exploring a new city, or just want to shake up your daily routine, Route Random helps you find the perfect path.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![Screenshot of Route Random](public/screenshot-desktop.png)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Smart Route Generation**: Get random, circular routes that start and end at your chosen point.
+- **Flexible Distance**: Set your desired distance—Route Random adapts the route for you.
+- **Location Search & Map Click**: Find your start by address or simply click on the map.
+- **Live Location Tracking**: Real-time GPS tracking with high accuracy positioning (mobile optimized).
+- **Export to GPX & GeoJSON**: Download routes for Garmin, Strava, or any fitness app.
+- **Privacy First**: No accounts, no tracking, no nonsense.
+- **Modern Tech Stack**: Built with React, Next.js, and TypeScript for optimal performance and developer experience.
 
-## Learn More
+## 🛠️ Technical
 
-To learn more about Next.js, take a look at the following resources:
+This application showcases modern web development practices using:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend**: React with Next.js
+- **Styling**: Tailwind CSS for responsive, utility-first design
+- **Maps**: Leaflet.js for interactive mapping functionality
+- **Geolocation**: Browser Geolocation API with watchPosition for continuous location updates
+- **Language**: TypeScript for type safety and better developer experience
+- **API Integration**: OpenRouteService for route calculation and geocoding
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌍 Powered By
 
-## Deploy on Vercel
+This project would not be possible without these amazing open-source projects and services:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [OpenStreetMap](https://www.openstreetmap.org/) – Free, editable map of the world
+- [Leaflet](https://leafletjs.com/) – Open-source JavaScript library for interactive maps
+- [OpenRouteService](https://openrouteservice.org/) – Routing and geospatial API services
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<p align="center" style="margin-top: 5rem;">
+  <sub>Made by <a href="https://www.lukasolivier.be" target="_blank">Lukas Olivier</a></sub>
+</p>
