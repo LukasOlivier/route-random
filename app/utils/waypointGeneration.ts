@@ -15,9 +15,12 @@ function toDegrees(radians: number): number {
 /**
  * Calculate the radius in kilometers for a circular route
  * Uses the formula: radius = circumference / (2 * π)
+ * Applies a correction factor to account for routing overhead
  */
 export function calculateRadius(distance: number): number {
-  return distance / (2 * Math.PI);
+  // Apply correction factor to account for routing detours and road following
+  const correctionFactor = 0.7; // Reduce radius by 30% to compensate for routing overhead
+  return (distance * correctionFactor) / (2 * Math.PI);
 }
 
 /**
