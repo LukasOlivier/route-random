@@ -24,6 +24,7 @@ import { saveStartLocationToPreferences } from "../utils/localStorage";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import MapLoading from "./MapLoading";
 
 const MapUpdater = ({
   center,
@@ -122,7 +123,7 @@ const Map = () => {
 
   // Don't render until hydrated to prevent hydration mismatch
   if (!isHydrated) {
-    return <div>Loading map...</div>;
+    return <MapLoading />;
   }
 
   return (

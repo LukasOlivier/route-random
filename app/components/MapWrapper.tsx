@@ -2,12 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
+import MapLoading from "./MapLoading";
 
 export default function Page() {
   const Map = useMemo(
     () =>
       dynamic(() => import("@/app/components/Map"), {
-        loading: () => <p>A map is loading</p>,
+        loading: () => <MapLoading />,
         ssr: false,
       }),
     []
