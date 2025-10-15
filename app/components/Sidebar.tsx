@@ -1,4 +1,4 @@
-import { Footprints, Globe } from "lucide-react";
+import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";

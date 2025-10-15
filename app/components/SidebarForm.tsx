@@ -15,7 +15,6 @@ export default function SidebarForm() {
   const t = useTranslations("SidebarForm");
 
   const {
-    startLocation,
     setUserLocation,
     generatedRoute,
     resetRoute,

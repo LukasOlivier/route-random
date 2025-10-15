@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
@@ -60,7 +60,7 @@ export default function TrackUserLocationButton() {
     setLocationTracking(true);
   };
 
-  const stopTracking = () => {
+  const stopTracking = useCallback(() => {
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
@@ -72,7 +72,7 @@ export default function TrackUserLocationButton() {
     }
 
     setLocationTracking(false);
-  };
+  }, [setLocationTracking]);
 
   const toggleTracking = () => {
     if (isTrackingLocation) {
@@ -87,7 +87,7 @@ export default function TrackUserLocationButton() {
     return () => {
       stopTracking();
     };
-  }, []);
+  }, [stopTracking]);
 
   return (
     <FloatingButton
