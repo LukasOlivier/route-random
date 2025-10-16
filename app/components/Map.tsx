@@ -29,6 +29,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import MapLoading from "./MapLoading";
+import MapLoadingOverlay from "./MapLoadingOverlay";
+import { useRouteFormStore } from "../../stores";
 
 const MapUpdater = ({
   center,
@@ -91,6 +93,7 @@ const Map = () => {
     updateWaypoint,
     hydrate,
   } = useLocationStore();
+  const { isGeneratingRoute } = useRouteFormStore();
 
   const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
@@ -152,83 +155,88 @@ const Map = () => {
     : null;
 
   return (
-    <MapContainer
-      center={mapCenter}
-      zoom={mapDefaults.zoom}
-      zoomControl={true}
-      scrollWheelZoom={true}
-      style={{
-        height: "100%",
-        width: "100%",
-      }}
-    >
-      <MapUpdater center={mapCenter} isTracking={isTrackingLocation} />
-      <MapClickHandler />
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={mapCenter}
+        zoom={mapDefaults.zoom}
+        zoomControl={true}
+        scrollWheelZoom={true}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <MapUpdater center={mapCenter} isTracking={isTrackingLocation} />
+        <MapClickHandler />
 
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — &copy; Carto'
-        url="https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png"
-      />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors — &copy; Carto'
+          url="https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png"
+        />
 
-      {/* Start location marker */}
-      {startLocation && (
-        <Marker
-          position={startLocation}
-          icon={blueIcon}
-          ref={markerRef}
-        ></Marker>
-      )}
-
-      {/* User location marker (when tracking) */}
-      {isTrackingLocation && userLocation && (
-        <Marker position={userLocation} icon={userLocationIcon}></Marker>
-      )}
-
-      {/* Generated route with overlap detection */}
-      {routeSegments && (
-        <>
-          {/* Normal route segments */}
-          {routeSegments.normalSegments.map((segment, index) => (
-            <Polyline
-              key={`normal-${index}`}
-              positions={segment}
-              color="#3388ff"
-              weight={4}
-              opacity={0.8}
-            />
-          ))}
-
-          {/* Overlapping route segments in red */}
-          {routeSegments.overlappingSegments.map((segment, index) => (
-            <Polyline
-              key={`overlap-${index}`}
-              positions={segment}
-              color="#ff0000"
-              weight={5}
-              opacity={0.9}
-            />
-          ))}
-        </>
-      )}
-
-      {/* Waypoint markers */}
-      {generatedRoute?.waypoints &&
-        generatedRoute.waypoints.slice(1, -1).map((waypoint, index) => (
+        {/* Start location marker */}
+        {startLocation && (
           <Marker
-            key={`waypoint-${index}`}
-            position={waypoint}
-            icon={createNumberedWaypointIcon(index + 1)}
-            draggable={!isRouteAccepted}
-            eventHandlers={{
-              dragend: (e) => {
-                const marker = e.target;
-                const position = marker.getLatLng();
-                handleWaypointDrag(index + 1, position);
-              },
-            }}
-          />
-        ))}
-    </MapContainer>
+            position={startLocation}
+            icon={blueIcon}
+            ref={markerRef}
+          ></Marker>
+        )}
+
+        {/* User location marker (when tracking) */}
+        {isTrackingLocation && userLocation && (
+          <Marker position={userLocation} icon={userLocationIcon}></Marker>
+        )}
+
+        {/* Generated route with overlap detection */}
+        {routeSegments && (
+          <>
+            {/* Normal route segments */}
+            {routeSegments.normalSegments.map((segment, index) => (
+              <Polyline
+                key={`normal-${index}`}
+                positions={segment}
+                color="#3388ff"
+                weight={4}
+                opacity={0.8}
+              />
+            ))}
+
+            {/* Overlapping route segments in red */}
+            {routeSegments.overlappingSegments.map((segment, index) => (
+              <Polyline
+                key={`overlap-${index}`}
+                positions={segment}
+                color="#ff0000"
+                weight={5}
+                opacity={0.9}
+              />
+            ))}
+          </>
+        )}
+
+        {/* Waypoint markers */}
+        {generatedRoute?.waypoints &&
+          generatedRoute.waypoints.slice(1, -1).map((waypoint, index) => (
+            <Marker
+              key={`waypoint-${index}`}
+              position={waypoint}
+              icon={createNumberedWaypointIcon(index + 1)}
+              draggable={!isRouteAccepted}
+              eventHandlers={{
+                dragend: (e) => {
+                  const marker = e.target;
+                  const position = marker.getLatLng();
+                  handleWaypointDrag(index + 1, position);
+                },
+              }}
+            />
+          ))}
+      </MapContainer>
+
+      {/* Loading overlay for route generation */}
+      <MapLoadingOverlay isVisible={isGeneratingRoute} />
+    </div>
   );
 };
 

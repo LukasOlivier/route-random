@@ -61,5 +61,9 @@
   },
   "AcceptRouteButton": {
     "accept": "Accept"
+  },
+  "MapLoadingOverlay": {
+    "generatingRoute": "Generating your route...",
+    "pleaseWait": "Please wait..."
   }
 }
