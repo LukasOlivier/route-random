@@ -23,6 +23,7 @@ import {
   shouldRecenterMap,
 } from "../utils/mapUtils";
 import { saveStartLocationToPreferences } from "../utils/localStorage";
+import { getRouteSegmentsWithOverlaps } from "../utils/routeAnalysis";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
@@ -145,6 +146,11 @@ const Map = () => {
     }
   };
 
+  // Get route segments with overlap information
+  const routeSegments = generatedRoute
+    ? getRouteSegmentsWithOverlaps(generatedRoute.coordinates)
+    : null;
+
   return (
     <MapContainer
       center={mapCenter}
@@ -178,39 +184,50 @@ const Map = () => {
         <Marker position={userLocation} icon={userLocationIcon}></Marker>
       )}
 
-      {/* Generated route */}
-      {generatedRoute && (
+      {/* Generated route with overlap detection */}
+      {routeSegments && (
         <>
-          <Polyline
-            positions={generatedRoute.coordinates.map(
-              (coord) => [coord[1], coord[0]] as LatLngTuple
-            )}
-            color="#3388ff"
-            weight={4}
-            opacity={0.8}
-          />
+          {/* Normal route segments */}
+          {routeSegments.normalSegments.map((segment, index) => (
+            <Polyline
+              key={`normal-${index}`}
+              positions={segment}
+              color="#3388ff"
+              weight={4}
+              opacity={0.8}
+            />
+          ))}
 
-          {/* Waypoint markers */}
-          {generatedRoute.waypoints &&
-            generatedRoute.waypoints
-              .slice(1, -1) // Skip first and last waypoint since they are start/end locations
-              .map((waypoint, index) => (
-                <Marker
-                  key={`waypoint-${index}`}
-                  position={waypoint}
-                  icon={createNumberedWaypointIcon(index + 1)}
-                  draggable={!isRouteAccepted}
-                  eventHandlers={{
-                    dragend: (e) => {
-                      const marker = e.target;
-                      const position = marker.getLatLng();
-                      handleWaypointDrag(index + 1, position); // Adjust index for original waypoint array
-                    },
-                  }}
-                />
-              ))}
+          {/* Overlapping route segments in red */}
+          {routeSegments.overlappingSegments.map((segment, index) => (
+            <Polyline
+              key={`overlap-${index}`}
+              positions={segment}
+              color="#ff0000"
+              weight={5}
+              opacity={0.9}
+            />
+          ))}
         </>
       )}
+
+      {/* Waypoint markers */}
+      {generatedRoute?.waypoints &&
+        generatedRoute.waypoints.slice(1, -1).map((waypoint, index) => (
+          <Marker
+            key={`waypoint-${index}`}
+            position={waypoint}
+            icon={createNumberedWaypointIcon(index + 1)}
+            draggable={!isRouteAccepted}
+            eventHandlers={{
+              dragend: (e) => {
+                const marker = e.target;
+                const position = marker.getLatLng();
+                handleWaypointDrag(index + 1, position);
+              },
+            }}
+          />
+        ))}
     </MapContainer>
   );
 };

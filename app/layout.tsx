@@ -61,7 +61,7 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/icons.png" />
+        <link rel="icon" href="/icon.png" />
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body

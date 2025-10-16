@@ -21,6 +21,7 @@ Route Random is a modern web application built with **React** and **Next.js** th
 - **Flexible Distance**: Set your desired distance—Route Random adapts the route for you.
 - **Location Search & Map Click**: Find your start by address or simply click on the map.
 - **Live Location Tracking**: Real-time GPS tracking with high accuracy positioning (mobile optimized).
+- **Overlap Detection**: Visual highlighting of route segments that cross each other in red.
 - **Export to GPX & GeoJSON**: Download routes for Garmin, Strava, or any fitness app.
 - **Privacy First**: No accounts, no tracking, no nonsense.
 - **Modern Tech Stack**: Built with React, Next.js, and TypeScript for optimal performance and developer experience.
