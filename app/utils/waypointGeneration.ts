@@ -27,11 +27,12 @@ export function calculateRadius(
 
 /**
  * Choose round-trip point count based on distance (in kilometers)
+ * Optimized for better route distribution
  */
-function getNumPointsForDistance(distanceKm: number): number {
-  let points = 3;
-  // per multiple of 2km, add 1 point, up to max of 12
-  for (let i = 2; i <= distanceKm; i += 2) {
+export function getNumPointsForDistance(distanceKm: number): number {
+  let points = 5;
+  // per multiple of 5km, add 1 point, up to max of 12
+  for (let i = 5; i <= distanceKm; i += 5) {
     points++;
   }
   // keep within a sensible range

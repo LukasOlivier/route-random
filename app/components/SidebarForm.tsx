@@ -252,31 +252,6 @@ export default function SidebarForm() {
           </div>
         </div>
 
-        {/* Route Complexity Slider */}
-        <div>
-          <label
-            className="block text-sm font-medium dark:text-gray-300 text-gray-800 mb-2 items-center gap-2"
-            htmlFor="complexity"
-          >
-            {t("routeComplexity")} {Math.round(correctionFactor * 100)}%
-          </label>
-          <input
-            type="range"
-            name="complexity"
-            id="complexity"
-            min="0.3"
-            max="1.0"
-            step="0.05"
-            value={correctionFactor}
-            disabled={!!generatedRoute}
-            onChange={(e) => {
-              setCorrectionFactor(parseFloat(e.target.value));
-            }}
-            className="w-full h-2 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider bg-gray-300"
-          />
-          <p className="text-xs text-extra mt-1">{t("complexityNote")}</p>
-        </div>
-
         {/* Submit button or Accept/Reset buttons */}
         <div className="mt-10 hidden lg:block">
           {generatedRoute ? (

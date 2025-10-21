@@ -22,8 +22,6 @@
     "startingLocation": "Startlocatie",
     "searchLocationPlaceholder": "Zoek startlocatie...",
     "useCurrentLocation": "Gebruik huidige locatie",
-    "routeComplexity": "Route complexiteit:",
-    "complexityNote": "Wanneer gegenereerde routes te kort zijn, overweeg de complexiteit te verhogen.",
     "geolocationNotSupported": "Geolocatie wordt niet ondersteund door deze browser.",
     "locationError": "Kan uw huidige locatie niet ophalen."
   },

@@ -22,8 +22,6 @@
     "startingLocation": "Starting Location",
     "searchLocationPlaceholder": "Search starting location...",
     "useCurrentLocation": "Use current location",
-    "routeComplexity": "Route Complexity:",
-    "complexityNote": "When generated routes are too short, consider increasing the complexity.",
     "geolocationNotSupported": "Geolocation is not supported by this browser.",
     "locationError": "Unable to get your current location."
   },

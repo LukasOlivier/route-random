@@ -117,9 +117,9 @@ const Map = () => {
 
       let popupContent = `<b>${t("startLocation")}</b>`;
       if (generatedRoute && generatedRoute.distance != null) {
-        popupContent = `<b>${t("routeGenerated")}</b><br>${t(
-          "distance"
-        )}: ${generatedRoute.distance.toFixed(2)} km`;
+        popupContent = `<b>${t("routeGenerated")}</b><br>${t("distance")}: ${(
+          generatedRoute.distance / 1000
+        ).toFixed(2)} km`;
       }
       marker.bindPopup(popupContent).openPopup();
     }
