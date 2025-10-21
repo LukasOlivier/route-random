@@ -209,11 +209,9 @@ function extractElevationData(route: ORSRoute):
     const feature = route.features?.[0];
     if (!feature) return undefined;
 
-    const ascent = feature.properties?.segments?.[0]?.ascent;
-    const descent = feature.properties?.segments?.[0]?.descent;
-
     // Extract elevation profile if available
-    const elevationData = (feature.properties as any)?.elevation;
+    const elevationData = (feature.properties as { elevation?: number[] })
+      ?.elevation;
     let profile: number[] = [];
     let min = Infinity;
     let max = -Infinity;
@@ -228,10 +226,12 @@ function extractElevationData(route: ORSRoute):
     let totalGain = 0;
     let totalLoss = 0;
 
-    feature.properties.segments.forEach((segment: any) => {
-      if (segment.ascent) totalGain += segment.ascent;
-      if (segment.descent) totalLoss += segment.descent;
-    });
+    feature.properties.segments.forEach(
+      (segment: { ascent?: number; descent?: number }) => {
+        if (segment.ascent) totalGain += segment.ascent;
+        if (segment.descent) totalLoss += segment.descent;
+      }
+    );
 
     if (totalGain > 0 || totalLoss > 0 || profile.length > 0) {
       return {

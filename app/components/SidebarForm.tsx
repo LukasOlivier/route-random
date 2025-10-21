@@ -29,12 +29,10 @@ export default function SidebarForm() {
     pace,
     distance,
     time,
-    correctionFactor,
     setMode,
     setPace,
     setDistance,
     setTime,
-    setCorrectionFactor,
     hydrate: hydrateForm,
     isHydrated: isFormHydrated,
   } = useRouteFormStore();

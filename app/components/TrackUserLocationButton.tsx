@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
