@@ -2,15 +2,55 @@ import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 
 interface SidebarProps {
   isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function Sidebar({ isOpen = false }: SidebarProps) {
+export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const router = useRouter();
+  const touchStartY = useRef<number | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - touchStartY.current;
+    // Only allow dragging down (positive delta)
+    setDragOffset(Math.max(0, deltaY));
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY.current;
+
+    setIsDragging(false);
+
+    // Close if dragged more than 100px or 20% of drawer height
+    if (deltaY > 100 && onClose) {
+      // Animate out before closing
+      setDragOffset(window.innerHeight);
+      setTimeout(() => {
+        onClose();
+        setDragOffset(0);
+      }, 200);
+    } else {
+      // Snap back
+      setDragOffset(0);
+    }
+    touchStartY.current = null;
+  };
 
   const handleLanguageChange = (newLocale: string) => {
     // Set the locale cookie
@@ -22,12 +62,20 @@ export default function Sidebar({ isOpen = false }: SidebarProps) {
 
   return (
     <div
-      className={`h-screen primary-bg  flex flex-col p-6 transition-transform duration-300 ease-in-out ${
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        transform: isOpen ? `translateY(${dragOffset}px)` : undefined,
+        transition: isDragging ? "none" : "transform 0.2s ease-out",
+      }}
+      className={`primary-bg flex flex-col p-6 ${
         isOpen
-          ? "fixed inset-0 z-[10000] lg:relative lg:w-1/4 lg:translate-x-0"
-          : "hidden lg:flex lg:w-1/4"
+          ? "fixed left-0 right-0 bottom-0 z-[10000] h-[75vh] overflow-y-auto rounded-t-2xl shadow-2xl lg:relative lg:top-auto lg:max-h-none lg:w-1/4 lg:rounded-none lg:shadow-none lg:overflow-visible lg:transform-none lg:transition-none"
+          : "hidden lg:flex lg:h-screen lg:w-1/4"
       }`}
     >
+      <div className="w-1/4 bg-gray-400 h-1 rounded-full mx-auto my-2 -translate-y-3"></div>
       {/* Header */}
       <header>
         <div className="flex items-base lg:justify-between gap-2 mb-1 flex-wrap">

@@ -29,12 +29,14 @@ type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
   userLocation: LatLngTuple | null;
   generatedRoute: GeneratedRoute | null;
+  routeId: string | null;
   isRouteAccepted: boolean;
   isHydrated: boolean;
   isTrackingLocation: boolean;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
+  setRouteId: (id: string | null) => void;
   updateWaypoint: (index: number, newPosition: [number, number]) => void;
   resetRoute: () => void;
   acceptRoute: () => void;
@@ -46,6 +48,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   startLocation: null,
   userLocation: null,
   generatedRoute: null,
+  routeId: null,
   isRouteAccepted: false,
   isHydrated: false,
   isTrackingLocation: false,
@@ -56,9 +59,14 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       startLocation: state.startLocation || userLocation,
     })),
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
+  setRouteId: (routeId) => set({ routeId }),
   resetRoute: () => {
     removeAcceptedRoute();
-    set({ generatedRoute: null, isRouteAccepted: false });
+    // Clear route ID from URL
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", "/");
+    }
+    set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
   },
   acceptRoute: () => {
     set((state) => {
