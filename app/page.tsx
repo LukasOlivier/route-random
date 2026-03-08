@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <main>
       <div className="fixed right-4 z-[999999] flex flex-col items-end gap-2 pt-4">
-        {!isSidebarOpen && (
+        {!isSidebarOpen && !isLoadingRoute && (
           <>
             <FloatingButton
               onClick={toggleSidebar}
@@ -55,7 +55,14 @@ export default function Home() {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
-        <MapWrapper />
+
+        {isLoadingRoute ? (
+          <div className="flex-1 flex items-center justify-center text-sm text-gray-500">
+            Loading route...
+          </div>
+        ) : (
+          <MapWrapper />
+        )}
       </div>
 
       {/* Mobile Bottom Bar */}

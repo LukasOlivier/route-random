@@ -44,12 +44,24 @@ export function useRouteFromUrl() {
         const data = await response.json();
 
         if (data.success && data.route) {
+          // log the route without the coordinates to avoid cluttering the console
+          console.log("Loaded route from URL:", {
+            id: data.route.id,
+            distance: data.route.distance,
+            waypoints: data.route.waypoints,
+          });
           setGeneratedRoute({
             coordinates: data.route.coordinates,
             distance: data.route.distance,
             waypoints: data.route.waypoints,
           });
           setRouteId(routeId);
+
+          // Set start location from first waypoint so the marker appears
+          if (data.route.waypoints?.length) {
+            const [lat, lng] = data.route.waypoints[0];
+            useLocationStore.getState().setStartLocation([lat, lng]);
+          }
         }
       } catch (err) {
         console.error("Error loading route from URL:", err);

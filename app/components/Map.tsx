@@ -63,6 +63,29 @@ const MapUpdater = ({
   return null;
 };
 
+function RouteFitter() {
+  const map = useMap();
+  const { generatedRoute } = useLocationStore();
+  const hasFittedRef = useRef(false);
+
+  useEffect(() => {
+    if (generatedRoute?.coordinates?.length && !hasFittedRef.current) {
+      const bounds = L.latLngBounds(
+        generatedRoute.coordinates.map(
+          ([lng, lat]) => [lat, lng] as LatLngTuple,
+        ),
+      );
+      map.fitBounds(bounds, { padding: [50, 50], animate: true });
+      hasFittedRef.current = true;
+    }
+    if (!generatedRoute) {
+      hasFittedRef.current = false;
+    }
+  }, [map, generatedRoute]);
+
+  return null;
+}
+
 function MapClickHandler() {
   const { setStartLocation, generatedRoute } = useLocationStore();
   useMapEvent("click", (e) => {
@@ -129,7 +152,7 @@ const Map = () => {
     (isTrackingLocation && userLocation) ||
       userLocation ||
       (isHydrated && startLocation) ||
-      mapDefaults.defaultPosition
+      mapDefaults.defaultPosition,
   );
 
   // Don't render until hydrated to prevent hydration mismatch
@@ -167,6 +190,7 @@ const Map = () => {
         }}
       >
         <MapUpdater center={mapCenter} isTracking={isTrackingLocation} />
+        <RouteFitter />
         <MapClickHandler />
 
         <TileLayer
