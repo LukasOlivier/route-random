@@ -9,6 +9,7 @@ import MobileBottomBar from "./components/MobileBottomBar";
 import TrackUserLocationButton from "./components/TrackUserLocationButton";
 import DownloadButton from "./components/DownloadButton";
 import FloatingButton from "./components/FloatingButton";
+import ShareButton from "./components/ShareButton";
 import { useRouteFromUrl } from "./hooks/useRouteFromUrl";
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
             </FloatingButton>
             <TrackUserLocationButton />
             <DownloadButton />
+            <ShareButton />
           </>
         )}
       </div>

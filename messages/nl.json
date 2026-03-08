@@ -37,6 +37,10 @@
     "downloadRoute": "Route downloaden als GPX",
     "ariaLabel": "Route downloaden als GPX"
   },
+  "ShareButton": {
+    "ariaLabel": "Route delen",
+    "shareRoute": "Route delen"
+  },
   "TrackUserLocationButton": {
     "stopTracking": "Stop locatie volgen",
     "trackLocation": "Locatie volgen",

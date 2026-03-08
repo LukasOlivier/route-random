@@ -2,7 +2,7 @@ import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -16,6 +16,16 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const touchStartY = useRef<number | null>(null);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(true); // Default true for SSR
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -65,17 +75,26 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{
-        transform: isOpen ? `translateY(${dragOffset}px)` : undefined,
-        transition: isDragging ? "none" : "transform 0.2s ease-out",
-      }}
+      style={
+        isMobile
+          ? {
+              transform: isOpen
+                ? `translateY(${dragOffset}px)`
+                : "translateY(100%)",
+              transition: isDragging ? "none" : "transform 0.1s ease-out",
+            }
+          : undefined
+      }
       className={`primary-bg flex flex-col p-6 ${
-        isOpen
-          ? "fixed left-0 right-0 bottom-0 z-[10000] h-[75vh] overflow-y-auto rounded-t-2xl shadow-2xl lg:relative lg:top-auto lg:max-h-none lg:w-1/4 lg:rounded-none lg:shadow-none lg:overflow-visible lg:transform-none lg:transition-none"
-          : "hidden lg:flex lg:h-screen lg:w-1/4"
+        isMobile
+          ? `fixed left-0 right-0 bottom-0 z-[10000] h-[75vh] overflow-y-auto rounded-t-2xl shadow-2xl ${!isOpen ? "pointer-events-none" : ""}`
+          : "h-screen w-1/4"
       }`}
     >
-      <div className="w-1/4 bg-gray-400 h-1 rounded-full mx-auto my-2 -translate-y-3"></div>
+      {/* Drag handle - only show on mobile */}
+      {isMobile && (
+        <div className="w-1/4 bg-gray-400 h-1 rounded-full mx-auto my-2 -translate-y-3"></div>
+      )}
       {/* Header */}
       <header>
         <div className="flex items-base lg:justify-between gap-2 mb-1 flex-wrap">
