@@ -20,38 +20,16 @@ export default function SidebarForm() {
     resetRoute,
     acceptRoute,
     isRouteAccepted,
-    isHydrated,
-    hydrate,
   } = useLocationStore();
 
-  const {
-    mode,
-    pace,
-    distance,
-    time,
-    setMode,
-    setPace,
-    setDistance,
-    setTime,
-    hydrate: hydrateForm,
-    isHydrated: isFormHydrated,
-  } = useRouteFormStore();
+  const { mode, pace, distance, time, setMode, setPace, setDistance, setTime } =
+    useRouteFormStore();
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
 
   // Local state for location functionality
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
-
-  // Hydrate both stores on client-side mount
-  useEffect(() => {
-    if (!isHydrated) {
-      hydrate();
-    }
-    if (!isFormHydrated) {
-      hydrateForm();
-    }
-  }, [isHydrated, hydrate, isFormHydrated, hydrateForm]);
 
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
@@ -93,7 +71,7 @@ export default function SidebarForm() {
         alert(t("locationError"));
         setIsGettingLocation(false);
         setLocationError(true);
-      }
+      },
     );
   };
 

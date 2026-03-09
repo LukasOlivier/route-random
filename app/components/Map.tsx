@@ -22,7 +22,6 @@ import {
   normalizeToLatLngTuple,
   shouldRecenterMap,
 } from "../utils/mapUtils";
-import { saveStartLocationToPreferences } from "../utils/localStorage";
 import { getRouteSegmentsWithOverlaps } from "../utils/routeAnalysis";
 
 import "leaflet/dist/leaflet.css";
@@ -97,9 +96,6 @@ function MapClickHandler() {
     const { lat, lng } = e.latlng;
     const newLocation: [number, number] = [lat, lng];
     setStartLocation(newLocation);
-
-    // Save to localStorage using utility function
-    saveStartLocationToPreferences(newLocation);
   });
   return null;
 }
@@ -111,22 +107,13 @@ const Map = () => {
     userLocation,
     generatedRoute,
     isRouteAccepted,
-    isHydrated,
     isTrackingLocation,
     updateWaypoint,
-    hydrate,
   } = useLocationStore();
   const { isGeneratingRoute } = useRouteFormStore();
 
   const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
-
-  // Hydrate the store on client-side mount
-  useEffect(() => {
-    if (!isHydrated) {
-      hydrate();
-    }
-  }, [isHydrated, hydrate]);
 
   useEffect(() => {
     if (markerRef.current && startLocation) {
@@ -151,14 +138,9 @@ const Map = () => {
   const mapCenter = normalizeToLatLngTuple(
     (isTrackingLocation && userLocation) ||
       userLocation ||
-      (isHydrated && startLocation) ||
+      startLocation ||
       mapDefaults.defaultPosition,
   );
-
-  // Don't render until hydrated to prevent hydration mismatch
-  if (!isHydrated) {
-    return <MapLoading />;
-  }
 
   const handleWaypointDrag = async (index: number, newPosition: L.LatLng) => {
     const newPos: [number, number] = [newPosition.lat, newPosition.lng];

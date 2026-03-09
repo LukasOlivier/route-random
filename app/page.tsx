@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import MapWrapper from "./components/MapWrapper";
@@ -11,10 +11,19 @@ import DownloadButton from "./components/DownloadButton";
 import FloatingButton from "./components/FloatingButton";
 import ShareButton from "./components/ShareButton";
 import { useRouteFromUrl } from "./hooks/useRouteFromUrl";
+import { useLocationStore } from "@/stores/store";
 
 export default function Home() {
   const t = useTranslations("Page");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const initializeFromStorage = useLocationStore(
+    (s) => s.initializeFromStorage,
+  );
+
+  // Load start location from localStorage
+  useEffect(() => {
+    initializeFromStorage();
+  }, [initializeFromStorage]);
 
   // Load route from URL if present
   const { isLoading: isLoadingRoute } = useRouteFromUrl();

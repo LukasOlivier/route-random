@@ -1,12 +1,5 @@
 import { create } from "zustand";
 import { LatLngExpression, LatLngTuple } from "leaflet";
-import {
-  loadStartLocation,
-  loadAcceptedRoute,
-  hasAcceptedRoute,
-  saveAcceptedRoute,
-  removeAcceptedRoute,
-} from "../app/utils/localStorage";
 
 enum Mode {
   TIME = "time",
@@ -31,7 +24,6 @@ type LocationStore = {
   generatedRoute: GeneratedRoute | null;
   routeId: string | null;
   isRouteAccepted: boolean;
-  isHydrated: boolean;
   isTrackingLocation: boolean;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
@@ -40,8 +32,8 @@ type LocationStore = {
   updateWaypoint: (index: number, newPosition: [number, number]) => void;
   resetRoute: () => void;
   acceptRoute: () => void;
-  hydrate: () => void;
   setLocationTracking: (isTracking: boolean) => void;
+  initializeFromStorage: () => void;
 };
 
 export const useLocationStore = create<LocationStore>((set, get) => ({
@@ -50,9 +42,20 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   generatedRoute: null,
   routeId: null,
   isRouteAccepted: false,
-  isHydrated: false,
   isTrackingLocation: false,
-  setStartLocation: (startLocation) => set({ startLocation }),
+  setStartLocation: (startLocation) => {
+    set({ startLocation });
+    // store the start location in localStorage for persistence
+    if (typeof window !== "undefined" && startLocation) {
+      localStorage.setItem(
+        "startLocation",
+        JSON.stringify({
+          lat: (startLocation as LatLngTuple)[0],
+          lng: (startLocation as LatLngTuple)[1],
+        }),
+      );
+    }
+  },
   setUserLocation: (userLocation) =>
     set((state) => ({
       userLocation,
@@ -61,30 +64,22 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
   setRouteId: (routeId) => set({ routeId }),
   resetRoute: () => {
-    removeAcceptedRoute();
     // Clear route ID from URL
     if (typeof window !== "undefined") {
       window.history.pushState({}, "", "/");
     }
     set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
   },
-  acceptRoute: () => {
-    set((state) => {
-      if (state.generatedRoute) {
-        saveAcceptedRoute(state.generatedRoute);
-      }
-      return { isRouteAccepted: true };
-    });
-  },
-  hydrate: () => {
-    set({
-      startLocation: loadStartLocation(),
-      generatedRoute: loadAcceptedRoute(),
-      isRouteAccepted: hasAcceptedRoute(),
-      isHydrated: true,
-    });
-  },
+  acceptRoute: () => set({ isRouteAccepted: true }),
   setLocationTracking: (isTrackingLocation) => set({ isTrackingLocation }),
+  initializeFromStorage: () => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem("startLocation");
+    if (stored) {
+      const { lat, lng } = JSON.parse(stored);
+      set({ startLocation: [lat, lng] as LatLngTuple });
+    }
+  },
   updateWaypoint: (index, newPosition) => {
     set((state) => {
       if (!state.generatedRoute?.waypoints) return state;
