@@ -56,6 +56,7 @@ export function useRouteFromUrl() {
             waypoints: data.route.waypoints,
           });
           setRouteId(routeId);
+          useLocationStore.getState().acceptRoute();
 
           // Set start location from first waypoint so the marker appears
           if (data.route.waypoints?.length) {

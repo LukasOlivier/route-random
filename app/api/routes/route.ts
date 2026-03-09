@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const id = await saveRoute({ coordinates, waypoints, distance });
+    const id = await saveRoute({
+      coordinates: coordinates,
+      waypoints,
+      distance,
+    });
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

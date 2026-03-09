@@ -19,14 +19,14 @@
     "walkingPace": "Wandeltempo (5 km/u)",
     "runningPace": "Hardlooptempo (10 km/u)",
     "cyclingPace": "Fietstempo (15 km/u)",
-    "startingLocation": "Startlocatie",
+    "startingLocation": "Start locatie",
     "searchLocationPlaceholder": "Zoek startlocatie...",
     "useCurrentLocation": "Gebruik huidige locatie",
     "geolocationNotSupported": "Geolocatie wordt niet ondersteund door deze browser.",
     "locationError": "Kan uw huidige locatie niet ophalen."
   },
   "Map": {
-    "startLocation": "Startlocatie",
+    "startLocation": "Start locatie",
     "routeGenerated": "Route gegenereerd!",
     "distance": "Afstand"
   },

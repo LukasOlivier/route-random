@@ -3,29 +3,8 @@
 import { useLocationStore, useRouteFormStore, Mode } from "../../stores";
 import { calculateDistanceFromTime } from "../utils/routeCalculations";
 
-async function saveRouteToDatabase(route: {
-  coordinates: [number, number][];
-  waypoints?: [number, number][];
-  distance: number;
-}): Promise<string | null> {
-  try {
-    const response = await fetch("/api/routes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(route),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data.id;
-    }
-  } catch (error) {
-    console.error("Failed to save route to database:", error);
-  }
-  return null;
-}
-
 export function useRouteGeneration() {
-  const { startLocation, setGeneratedRoute, setRouteId } = useLocationStore();
+  const { startLocation, setGeneratedRoute } = useLocationStore();
 
   const {
     mode,
@@ -98,14 +77,6 @@ export function useRouteGeneration() {
       // Store the generated route in the store
       if (result.success && result.route) {
         setGeneratedRoute(result.route);
-
-        // Save route to database (non-blocking)
-        const routeId = await saveRouteToDatabase(result.route);
-        if (routeId) {
-          setRouteId(routeId);
-          // Update URL with route ID for sharing/bookmarking
-          window.history.pushState({}, "", `/?route=${routeId}`);
-        }
       }
     } catch (error) {
       console.error("Error generating route:", error);
@@ -154,14 +125,6 @@ export function useRouteGeneration() {
 
       if (result.success && result.route) {
         setGeneratedRoute(result.route);
-
-        // Save updated route to database (non-blocking)
-        const routeId = await saveRouteToDatabase(result.route);
-        if (routeId) {
-          setRouteId(routeId);
-          // Update URL with new route ID
-          window.history.pushState({}, "", `/?route=${routeId}`);
-        }
       }
     } catch (error) {
       console.error("Error regenerating route:", error);

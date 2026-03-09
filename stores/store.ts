@@ -31,7 +31,7 @@ type LocationStore = {
   setRouteId: (id: string | null) => void;
   updateWaypoint: (index: number, newPosition: [number, number]) => void;
   resetRoute: () => void;
-  acceptRoute: () => void;
+  acceptRoute: () => Promise<void>;
   setLocationTracking: (isTracking: boolean) => void;
   initializeFromStorage: () => void;
 };
@@ -70,7 +70,27 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     }
     set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
   },
-  acceptRoute: () => set({ isRouteAccepted: true }),
+  acceptRoute: async () => {
+    const { generatedRoute } = get();
+    set({ isRouteAccepted: true });
+
+    if (!generatedRoute) return;
+
+    try {
+      const response = await fetch("/api/routes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(generatedRoute),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        set({ routeId: data.id });
+        window.history.pushState({}, "", `/?route=${data.id}`);
+      }
+    } catch (error) {
+      console.error("Failed to save route to database:", error);
+    }
+  },
   setLocationTracking: (isTrackingLocation) => set({ isTrackingLocation }),
   initializeFromStorage: () => {
     if (typeof window === "undefined") return;
