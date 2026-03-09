@@ -5,7 +5,7 @@ export default function MapLoading() {
   const t = useTranslations("MapLoading");
 
   return (
-    <div className="h-full w-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col items-center justify-center">
+    <div className="h-full w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col items-center justify-center">
       {/* Logo with animation */}
       <div className="flex flex-col items-center ">
         <div className="relative mb-8">

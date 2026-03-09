@@ -4,6 +4,32 @@ import { saveRoute, initializeDatabase } from "@/lib/db";
 // Initialize database on first request
 let initialized = false;
 
+async function notifyDiscord(id: string, distance: number) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const routeUrl = `${process.env.NEXT_PUBLIC_BASE_URL ?? "https://route-random.lukasolivier.be"}/?route=${id}`;
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [
+          {
+            title: "Route accepted!",
+            description: `Someone just accepted a route.`,
+            url: routeUrl,
+            color: 0x22c55e,
+          },
+        ],
+      }),
+    });
+  } catch (error) {
+    console.error("Failed to send Discord notification:", error);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Ensure table exists
@@ -27,6 +53,9 @@ export async function POST(request: NextRequest) {
       waypoints,
       distance,
     });
+
+    // Fire-and-forget — don't block the response
+    notifyDiscord(id, distance);
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
