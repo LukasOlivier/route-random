@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { saveRoute, initializeDatabase } from "@/lib/db";
 
 // Initialize database on first request
@@ -53,8 +54,9 @@ export async function POST(request: NextRequest) {
       distance,
     });
 
-    // Fire-and-forget — don't block the response
-    notifyDiscord(id, distance);
+    // Schedule Discord notification after response is sent, keeping the
+    // function alive until it completes (Next.js 15 `after` API).
+    after(() => notifyDiscord(id, distance));
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
