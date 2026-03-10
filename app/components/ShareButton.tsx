@@ -8,7 +8,7 @@ import FloatingButton from "./FloatingButton";
 
 export default function ShareButton() {
   const t = useTranslations("ShareButton");
-  const { generatedRoute, isRouteAccepted } = useLocationStore();
+  const { generatedRoute, isRouteAccepted, routeId } = useLocationStore();
 
   const shareRoute = async () => {
     const url = window.location.href;
@@ -27,8 +27,8 @@ export default function ShareButton() {
     }
   };
 
-  // Only show button if route is accepted
-  if (!isRouteAccepted || !generatedRoute) {
+  // Only show when we have a DB-backed route id to share
+  if (!isRouteAccepted || !generatedRoute || !routeId) {
     return null;
   }
 
