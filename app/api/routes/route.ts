@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
 
     const id = await saveRoute({
       coordinates: coordinates,
-      waypoints,
       distance,
     });
 
