@@ -53,17 +53,10 @@ export function useRouteFromUrl() {
           setGeneratedRoute({
             coordinates: data.route.coordinates,
             distance: data.route.distance,
-            waypoints: data.route.waypoints,
           });
           setRouteId(routeId);
           // Mark route as accepted without saving to DB again (it's already saved)
           useLocationStore.setState({ isRouteAccepted: true });
-
-          // Set start location from first waypoint so the marker appears
-          if (data.route.waypoints?.length) {
-            const [lat, lng] = data.route.waypoints[0];
-            useLocationStore.getState().setStartLocation([lat, lng]);
-          }
         }
       } catch (err) {
         console.error("Error loading route from URL:", err);

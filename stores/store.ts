@@ -77,10 +77,13 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     if (!generatedRoute) return;
 
     try {
+      // Only store coordinates and distance — waypoints are ephemeral editing
+      // state and must not be persisted (waypoints[0] would expose home location).
+      const { waypoints: _waypoints, ...routeToSave } = generatedRoute;
       const response = await fetch("/api/routes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(generatedRoute),
+        body: JSON.stringify(routeToSave),
       });
       if (response.ok) {
         const data = await response.json();
