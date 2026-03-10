@@ -56,7 +56,8 @@ export function useRouteFromUrl() {
             waypoints: data.route.waypoints,
           });
           setRouteId(routeId);
-          useLocationStore.getState().acceptRoute();
+          // Mark route as accepted without saving to DB again (it's already saved)
+          useLocationStore.setState({ isRouteAccepted: true });
 
           // Set start location from first waypoint so the marker appears
           if (data.route.waypoints?.length) {
