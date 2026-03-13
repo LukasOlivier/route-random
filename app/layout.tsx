@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { WebSite, BreadcrumbList, WithContext } from "schema-dts";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
 
@@ -174,6 +173,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Umami analytics script */}
+        <script
+          defer
+          src="https://umami.lukasolivier.be/script.js"
+          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
+        ></script>
+
         {/* Robots meta tag for SEO */}
         <meta name="robots" content="index, follow" />
 
@@ -257,7 +263,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        <Analytics />
       </body>
     </html>
   );
