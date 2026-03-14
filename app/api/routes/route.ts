@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { coordinates, waypoints, distance } = body;
+    const { coordinates, distance } = body;
 
     if (!coordinates || !distance) {
       return NextResponse.json(

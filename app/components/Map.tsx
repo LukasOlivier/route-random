@@ -27,7 +27,6 @@ import { getRouteSegmentsWithOverlaps } from "../utils/routeAnalysis";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import MapLoading from "./MapLoading";
 import MapLoadingOverlay from "./MapLoadingOverlay";
 import { useRouteFormStore } from "../../stores";
 
@@ -125,7 +124,7 @@ const Map = () => {
         return;
       }
 
-      let popupContent = `<b>${t("startLocation")}</b>`;
+      const popupContent = `<b>${t("startLocation")}</b>`;
 
       marker.bindPopup(popupContent).openPopup();
     }

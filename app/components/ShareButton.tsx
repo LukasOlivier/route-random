@@ -3,7 +3,6 @@
 import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
-import { downloadRouteAsGPX } from "../utils/gpxUtils";
 import FloatingButton from "./FloatingButton";
 
 export default function ShareButton() {
