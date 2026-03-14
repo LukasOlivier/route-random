@@ -37,6 +37,10 @@
     "downloadRoute": "Download route as GPX",
     "ariaLabel": "Download route as GPX"
   },
+  "FullScreenButton": {
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen"
+  },
   "ShareButton": {
     "ariaLabel": "Share route",
     "shareRoute": "Share route"
@@ -52,7 +56,9 @@
     "locationTimeout": "Location request timed out."
   },
   "Page": {
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
   },
   "GenerateRouteButton": {
     "generating": "Generating...",

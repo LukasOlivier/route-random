@@ -33,6 +33,10 @@
   "MapLoading": {
     "loadingText": "Uw avontuur wordt geladen..."
   },
+  "FullScreenButton": {
+    "enterFullscreen": "Volledig scherm",
+    "exitFullscreen": "Volledig scherm verlaten"
+  },
   "DownloadButton": {
     "downloadRoute": "Route downloaden als GPX",
     "ariaLabel": "Route downloaden als GPX"
@@ -52,7 +56,9 @@
     "locationTimeout": "Locatieverzoek verlopen."
   },
   "Page": {
-    "toggleMenu": "Optiemenu tonen/verbergen"
+    "toggleMenu": "Optiemenu tonen/verbergen",
+    "fullscreen": "Volledig scherm",
+    "exitFullscreen": "Volledig scherm verlaten"
   },
   "GenerateRouteButton": {
     "generating": "Genereren...",

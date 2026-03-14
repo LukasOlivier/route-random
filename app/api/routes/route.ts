@@ -18,8 +18,8 @@ async function notifyDiscord(id: string, distance: number) {
       body: JSON.stringify({
         embeds: [
           {
-            title: "Route accepted!",
-            description: `Someone just accepted a route.`,
+            title: "Route generated!",
+            description: `Someone just generated a new route with a distance of ${Math.round(distance)} meters.`,
             url: routeUrl,
             color: 0x22c55e,
           },
