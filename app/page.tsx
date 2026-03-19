@@ -47,6 +47,8 @@ export default function Home() {
               onClick={toggleSidebar}
               ariaLabel={t("toggleMenu")}
               hideOnDesktop={true}
+              umamiEvent="Toggle menu"
+              umamiEventData={{ source: "floating-actions" }}
             >
               <Menu size={24} />
             </FloatingButton>
@@ -66,6 +68,8 @@ export default function Home() {
         <div
           className="fixed inset-0 bg-black/50 z-[9999] lg:hidden"
           onClick={toggleSidebar}
+          data-umami-event="Close menu overlay"
+          data-umami-event-source="mobile"
         />
       )}
 

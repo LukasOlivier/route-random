@@ -37,6 +37,8 @@ export default function ShareButton() {
       ariaLabel={t("ariaLabel")}
       title={t("ariaLabel")}
       showTextOnDesktop={true}
+      umamiEvent="Share route"
+      umamiEventData={{ source: "floating-actions", route_id: String(routeId) }}
     >
       <Share2 size={20} />
       <span className="hidden lg:inline">{t("shareRoute")}</span>

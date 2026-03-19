@@ -27,6 +27,8 @@ export default function DownloadButton() {
       ariaLabel={t("ariaLabel")}
       title={t("ariaLabel")}
       showTextOnDesktop={true}
+      umamiEvent="Download GPX"
+      umamiEventData={{ source: "floating-actions", format: "gpx" }}
     >
       <Download size={20} />
       <span className="hidden lg:inline">{t("downloadRoute")}</span>

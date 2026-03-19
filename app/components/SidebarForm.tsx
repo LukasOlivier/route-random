@@ -110,6 +110,8 @@ export default function SidebarForm() {
           text={t("distanceMode")}
           selected={mode === Mode.DISTANCE}
           disabled={!!generatedRoute}
+          umamiEventName="Mode selected"
+          umamiEventData={{ mode: "distance", source: "sidebar" }}
           onClick={() => {
             setMode(Mode.DISTANCE);
           }}
@@ -118,6 +120,8 @@ export default function SidebarForm() {
           text={t("timeMode")}
           selected={mode === Mode.TIME}
           disabled={!!generatedRoute}
+          umamiEventName="Mode selected"
+          umamiEventData={{ mode: "time", source: "sidebar" }}
           onClick={() => {
             setMode(Mode.TIME);
           }}
@@ -215,6 +219,8 @@ export default function SidebarForm() {
               onClick={getCurrentLocation}
               disabled={isGettingLocation || locationError || !!generatedRoute}
               className="px-3 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 rounded-md dark:text-white flex items-center bg-gray-200 hover:bg-gray-300 transition-colors border-gray-400"
+              data-umami-event="Use current location"
+              data-umami-event-source="sidebar"
             >
               {locationError ? (
                 <LocateOff size={16} />
@@ -236,12 +242,20 @@ export default function SidebarForm() {
                 <AcceptRouteButton
                   onAccept={handleAcceptRoute}
                   className="flex-1"
+                  umamiEventData={{ source: "sidebar" }}
                 />
               )}
-              <ResetRouteButton onReset={handleResetRoute} className="flex-1" />
+              <ResetRouteButton
+                onReset={handleResetRoute}
+                className="flex-1"
+                umamiEventData={{ source: "sidebar" }}
+              />
             </div>
           ) : (
-            <GenerateRouteButton isGeneratingRoute={isGeneratingRoute} />
+            <GenerateRouteButton
+              isGeneratingRoute={isGeneratingRoute}
+              umamiEventData={{ source: "sidebar" }}
+            />
           )}
         </div>
       </div>

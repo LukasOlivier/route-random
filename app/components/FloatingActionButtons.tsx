@@ -45,6 +45,8 @@ export default function FloatingActionButtons({
               type="button"
               onClick={handleAcceptRoute}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-colors flex justify-center items-center"
+              data-umami-event="Accept route"
+              data-umami-event-source="floating-action-buttons"
             >
               <Check className="inline-block mr-2" size={18} />
               Accept Route
@@ -54,6 +56,8 @@ export default function FloatingActionButtons({
             type="button"
             onClick={handleResetRoute}
             className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-colors flex justify-center items-center"
+            data-umami-event="Reset route"
+            data-umami-event-source="floating-action-buttons"
           >
             <RotateCcw className="inline-block mr-2" size={18} />
             Reset
@@ -65,6 +69,8 @@ export default function FloatingActionButtons({
           onClick={onGenerateRoute}
           disabled={isGeneratingRoute || !canGenerate}
           className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-colors flex justify-center items-center"
+          data-umami-event="Generate route"
+          data-umami-event-source="floating-action-buttons"
         >
           <Send
             className={`inline-block mr-2 ${

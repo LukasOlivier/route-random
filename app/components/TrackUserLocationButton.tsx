@@ -54,7 +54,7 @@ export default function TrackUserLocationButton() {
     watchIdRef.current = navigator.geolocation.watchPosition(
       success,
       error,
-      options
+      options,
     );
 
     setLocationTracking(true);
@@ -89,6 +89,15 @@ export default function TrackUserLocationButton() {
       ariaLabel={isTrackingLocation ? t("stopTracking") : t("trackLocation")}
       title={isTrackingLocation ? t("stopTracking") : t("trackYourLocation")}
       hideOnDesktop={true}
+      umamiEvent={
+        isTrackingLocation
+          ? "Stop location tracking"
+          : "Start location tracking"
+      }
+      umamiEventData={{
+        source: "floating-actions",
+        action: isTrackingLocation ? "stop" : "start",
+      }}
     >
       {isTrackingLocation ? (
         <Navigation size={20} />
