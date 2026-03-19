@@ -110,8 +110,6 @@ export default function SidebarForm() {
           text={t("distanceMode")}
           selected={mode === Mode.DISTANCE}
           disabled={!!generatedRoute}
-          umamiEventName="Mode selected"
-          umamiEventData={{ mode: "distance", source: "sidebar" }}
           onClick={() => {
             setMode(Mode.DISTANCE);
           }}
@@ -120,8 +118,6 @@ export default function SidebarForm() {
           text={t("timeMode")}
           selected={mode === Mode.TIME}
           disabled={!!generatedRoute}
-          umamiEventName="Mode selected"
-          umamiEventData={{ mode: "time", source: "sidebar" }}
           onClick={() => {
             setMode(Mode.TIME);
           }}
