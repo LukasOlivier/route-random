@@ -13,6 +13,7 @@ import FullscreenButton from "./components/FullscreenButton";
 import ShareButton from "./components/ShareButton";
 import { useRouteFromUrl } from "./hooks/useRouteFromUrl";
 import { useLocationStore } from "@/stores/store";
+import { useRouteFormStore } from "@/stores";
 
 export default function Home() {
   const t = useTranslations("Page");
@@ -22,12 +23,16 @@ export default function Home() {
   const initializeFromStorage = useLocationStore(
     (s) => s.initializeFromStorage,
   );
+  const initializeFormFromStorage = useRouteFormStore(
+    (s) => s.initializeFromStorage,
+  );
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
 
   // Load start location from localStorage
   useEffect(() => {
     initializeFromStorage();
-  }, [initializeFromStorage]);
+    initializeFormFromStorage();
+  }, [initializeFromStorage, initializeFormFromStorage]);
 
   // Load route from URL if present
   const { isLoading: isLoadingRoute } = useRouteFromUrl();
