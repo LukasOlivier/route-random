@@ -28,7 +28,8 @@
   "Map": {
     "startLocation": "Start Location",
     "routeGenerated": "Route Generated!",
-    "distance": "Distance"
+    "distance": "Distance",
+    "elevation": "Elevation"
   },
   "MapLoading": {
     "loadingText": "Loading your adventure..."

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!orsApiKey) {
       return NextResponse.json(
         { error: "ORS API key not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -49,14 +49,14 @@ export async function POST(request: NextRequest) {
       if (!startLocation) {
         return NextResponse.json(
           { error: "Starting location is required" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       if (!distance || distance <= 0) {
         return NextResponse.json(
           { error: "Valid distance is required" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
         TOLERANCE_CONFIG.minToleranceMeters,
         Math.min(
           TOLERANCE_CONFIG.maxToleranceMeters,
-          targetDistanceMeters * TOLERANCE_CONFIG.scalePercentage
-        )
+          targetDistanceMeters * TOLERANCE_CONFIG.scalePercentage,
+        ),
       );
 
       // Prefer ORS round-trip for distances >= 2km
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
             // Apply correction factor to get closer to target distance
             const adjustedDistance = Math.round(
-              targetDistanceMeters * correctionFactors[attempt - 1]
+              targetDistanceMeters * correctionFactors[attempt - 1],
             );
 
             const attemptRoute = await generateRoundTripRoute(
@@ -112,11 +112,11 @@ export async function POST(request: NextRequest) {
               orsApiKey,
               numPoints,
               attemptSeed,
-              preferences
+              preferences,
             );
 
             const distanceDiff = Math.abs(
-              attemptRoute.distance - targetDistanceMeters
+              attemptRoute.distance - targetDistanceMeters,
             );
 
             // Keep track of best attempt
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             // If within tolerance, use this route
             if (distanceDiff <= distanceTolerance) {
               console.log(
-                `✓ Round-trip route found on attempt ${attempt}: ${attemptRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${distanceDiff}m)`
+                `✓ Round-trip route found on attempt ${attempt}: ${attemptRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${distanceDiff}m)`,
               );
               route = attemptRoute;
               // Extract waypoints from the route for display
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
                 attemptRoute,
                 startLng,
                 startLat,
-                numPoints
+                numPoints,
               );
               break;
             }
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         // If no route within tolerance, use best attempt
         if (!route && bestRoute) {
           console.log(
-            `⚠ Using best round-trip attempt: ${bestRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${bestDistanceDiff}m)`
+            `⚠ Using best round-trip attempt: ${bestRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${bestDistanceDiff}m)`,
           );
           route = bestRoute;
           const numPoints = getNumPointsForDistance(distance);
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
             bestRoute,
             startLng,
             startLat,
-            numPoints
+            numPoints,
           );
         }
       }
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
           startLng,
           distance,
           undefined,
-          correctionFactor || 0.65
+          correctionFactor || 0.65,
         );
         route = await generateWalkingRoute(finalWaypoints, orsApiKey);
       }
@@ -181,6 +181,7 @@ export async function POST(request: NextRequest) {
       route: {
         coordinates: route.coordinates,
         distance: route.distance,
+        elevationGain: route.elevation?.gain,
         waypoints: finalWaypoints
           ? finalWaypoints.map(([lng, lat]) => [lat, lng] as [number, number])
           : undefined,
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
       if (error.message.includes("ORS API error")) {
         return NextResponse.json(
           { error: "Route service unavailable. Please try again later." },
-          { status: 503 }
+          { status: 503 },
         );
       }
       if (error.message.includes("No route found")) {
@@ -203,14 +204,14 @@ export async function POST(request: NextRequest) {
             error:
               "Could not generate a route for this location. Try a different starting point.",
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -222,7 +223,7 @@ function extractWaypointsFromRoute(
   route: { coordinates: [number, number][]; distance: number },
   startLng: number,
   startLat: number,
-  numPoints: number
+  numPoints: number,
 ): [number, number][] {
   const waypoints: [number, number][] = [[startLng, startLat]];
 

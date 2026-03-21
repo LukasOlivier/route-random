@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Ruler, Mountain } from "lucide-react";
 import { useTranslations } from "next-intl";
 import MapWrapper from "./components/MapWrapper";
 import Sidebar from "./components/Sidebar";
@@ -96,8 +96,18 @@ export default function Home() {
       </div>
 
       {!isFullscreen && generatedRoute?.distance != null && (
-        <div className="fixed top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 backdrop-blur-sm text-gray-800 text-md font-semibold px-4 py-1.5 rounded-md shadow-md">
-          {tMap("distance")}: {(generatedRoute.distance / 1000).toFixed(2)} km
+        <div className="fixed top-3 left-1/2 lg:left-[62.5%] -translate-x-1/2 z-[1000] flex items-center gap-2">
+          <div className="bg-white/90 backdrop-blur-sm text-gray-800 text-md font-semibold px-3 py-1.5 rounded-md shadow-md flex items-center gap-1.5">
+            <Ruler size={16} aria-label={tMap("distance")} />
+            <span>{(generatedRoute.distance / 1000).toFixed(2)} km</span>
+          </div>
+
+          {generatedRoute.elevationGain != null && (
+            <div className="bg-white/90 backdrop-blur-sm text-gray-800 text-md font-semibold px-3 py-1.5 rounded-md shadow-md flex items-center gap-1.5">
+              <Mountain size={16} aria-label={tMap("elevation")} />
+              <span>{Math.round(generatedRoute.elevationGain)} m</span>
+            </div>
+          )}
         </div>
       )}
 

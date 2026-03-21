@@ -15,6 +15,7 @@ enum Pace {
 type GeneratedRoute = {
   coordinates: [number, number][];
   distance: number;
+  elevationGain?: number;
   waypoints?: [number, number][];
 };
 

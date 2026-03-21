@@ -28,7 +28,8 @@
   "Map": {
     "startLocation": "Start locatie",
     "routeGenerated": "Route gegenereerd!",
-    "distance": "Afstand"
+    "distance": "Afstand",
+    "elevation": "Hoogte"
   },
   "MapLoading": {
     "loadingText": "Uw avontuur wordt geladen..."
