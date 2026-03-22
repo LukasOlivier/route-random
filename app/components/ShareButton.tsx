@@ -22,6 +22,14 @@ export default function ShareButton() {
         await navigator.clipboard.writeText(url);
       }
     } catch (error) {
+      if (
+        error instanceof DOMException &&
+        (error.name === "AbortError" ||
+          error.message.toLowerCase().includes("share canceled"))
+      ) {
+        return;
+      }
+
       console.error("Error sharing route:", error);
     }
   };
