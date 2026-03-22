@@ -26,7 +26,6 @@ export default function ShareButton() {
     }
   };
 
-  // Only show when we have a DB-backed route id to share
   if (!isRouteAccepted || !generatedRoute || !routeId) {
     return null;
   }

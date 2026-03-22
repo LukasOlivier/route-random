@@ -115,17 +115,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Umami analytics script */}
         <script
           defer
           src="https://umami.lukasolivier.be/script.js"
           data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
         ></script>
 
-        {/* Robots meta tag for SEO */}
         <meta name="robots" content="index, follow" />
 
-        {/* Hreflang alternate links for English and Dutch */}
         <link
           rel="alternate"
           href="https://route-random.lukasolivier.be/"
@@ -145,7 +142,6 @@ export default function RootLayout({
         <link rel="icon" href="/icon.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        {/* JSON-LD Schema markup */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

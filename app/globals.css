@@ -34,13 +34,11 @@ input[type="range"]:disabled {
   @apply cursor-not-allowed opacity-50;
 }
 
-/* Add specific styling for inputs with icons */
 .relative input:is([type="number"]),
 .relative input:is([type="text"]) {
   @apply pl-10;
 }
 
-/* User location pulsing animation */
 @keyframes pulse-location {
   0% {
     transform: scale(1);
@@ -56,7 +54,6 @@ input[type="range"]:disabled {
   }
 }
 
-/* Splash screen fade-in animations */
 @keyframes fade-in {
   from {
     opacity: 0;

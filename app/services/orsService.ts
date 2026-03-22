@@ -36,9 +36,6 @@ export interface RoutePreferences {
   complexity?: "simple" | "moderate" | "complex";
 }
 
-/**
- * Generate a round-trip route using ORS native round-trip API
- */
 export async function generateRoundTripRoute(
   startLat: number,
   startLng: number,
@@ -46,18 +43,16 @@ export async function generateRoundTripRoute(
   apiKey: string,
   numPoints?: number,
   seed?: number,
-  preferences?: RoutePreferences
+  preferences?: RoutePreferences,
 ): Promise<RouteResponse> {
   const actualNumPoints = numPoints ?? 6;
   const url =
     "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
 
-  // Build avoid_features based on user preferences
   const avoidFeatures: string[] = ["ferries"];
   if (preferences?.avoidSteps) avoidFeatures.push("steps");
   if (preferences?.avoidHighways) avoidFeatures.push("highways");
 
-  // Adjust numPoints based on complexity preference
   let adjustedNumPoints = actualNumPoints;
   if (preferences?.complexity === "simple")
     adjustedNumPoints = Math.max(3, actualNumPoints - 2);
@@ -106,7 +101,7 @@ export async function generateRoundTripRoute(
     const coordinates = feature.geometry.coordinates;
     const totalDistance = feature.properties.segments.reduce(
       (sum, segment) => sum + segment.distance,
-      0
+      0,
     );
 
     const elevation = extractElevationData(data);
@@ -122,12 +117,9 @@ export async function generateRoundTripRoute(
   }
 }
 
-/**
- * Generate a walking route using OpenRouteService
- */
 export async function generateWalkingRoute(
   waypoints: [number, number][],
-  apiKey: string
+  apiKey: string,
 ): Promise<RouteResponse> {
   const url =
     "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
@@ -171,7 +163,7 @@ export async function generateWalkingRoute(
     const coordinates = feature.geometry.coordinates;
     const totalDistance = feature.properties.segments.reduce(
       (sum, segment) => sum + segment.distance,
-      0
+      0,
     );
 
     const elevation = extractElevationData(data);
@@ -187,9 +179,6 @@ export async function generateWalkingRoute(
   }
 }
 
-/**
- * Extract elevation data from ORS route response
- */
 function extractElevationData(route: ORSRoute):
   | {
       gain: number;
@@ -203,7 +192,6 @@ function extractElevationData(route: ORSRoute):
     const feature = route.features?.[0];
     if (!feature) return undefined;
 
-    // Extract elevation profile if available
     const elevationData = (feature.properties as { elevation?: number[] })
       ?.elevation;
     let profile: number[] = [];
@@ -216,7 +204,6 @@ function extractElevationData(route: ORSRoute):
       max = Math.max(...elevationData);
     }
 
-    // Sum up elevation gain/loss from all segments
     let totalGain = 0;
     let totalLoss = 0;
 
@@ -224,7 +211,7 @@ function extractElevationData(route: ORSRoute):
       (segment: { ascent?: number; descent?: number }) => {
         if (segment.ascent) totalGain += segment.ascent;
         if (segment.descent) totalLoss += segment.descent;
-      }
+      },
     );
 
     if (totalGain > 0 || totalLoss > 0 || profile.length > 0) {

@@ -1,24 +1,18 @@
 import { Pace } from "../../stores/store";
 
-/**
- * Get the speed in km/h for a given pace
- */
 export function getPaceSpeed(pace: Pace): number {
   switch (pace) {
     case Pace.WALKING:
-      return 5; // km/h
+      return 5;
     case Pace.RUNNING:
-      return 10; // km/h
+      return 10;
     case Pace.CYCLING:
-      return 15; // km/h
+      return 15;
     default:
       return 5;
   }
 }
 
-/**
- * Calculate estimated distance from time (in minutes) and pace
- */
 export function calculateDistanceFromTime(
   timeMinutes: number,
   pace: Pace,

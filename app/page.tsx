@@ -28,13 +28,11 @@ export default function Home() {
   );
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
 
-  // Load start location from localStorage
   useEffect(() => {
     initializeFromStorage();
     initializeFormFromStorage();
   }, [initializeFromStorage, initializeFormFromStorage]);
 
-  // Load route from URL if present
   const { isLoading: isLoadingRoute } = useRouteFromUrl();
 
   const toggleSidebar = () => {
@@ -67,8 +65,6 @@ export default function Home() {
           onToggle={setIsFullscreen}
         />
       </div>
-
-      {/* Mobile overlay - click to close sidebar */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-[9999] lg:hidden"
@@ -111,7 +107,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Mobile Bottom Bar */}
       {!isFullscreen && <MobileBottomBar />}
     </main>
   );

@@ -42,7 +42,6 @@ const MapUpdater = ({
   const isTrackingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Initialize prevCenterRef with current map center on first mount
     if (prevCenterRef.current === null) {
       prevCenterRef.current = [map.getCenter().lat, map.getCenter().lng];
     }
@@ -87,7 +86,6 @@ function RouteFitter() {
 function MapClickHandler() {
   const { setStartLocation, generatedRoute } = useLocationStore();
   useMapEvent("click", (e) => {
-    // Prevent setting new location when route is generated
     if (generatedRoute) {
       return;
     }
@@ -118,7 +116,6 @@ const Map = () => {
     if (markerRef.current && startLocation) {
       const marker = markerRef.current;
 
-      // Close popup if route is accepted
       if (isRouteAccepted) {
         marker.closePopup();
         return;
@@ -141,7 +138,6 @@ const Map = () => {
     const newPos: [number, number] = [newPosition.lat, newPosition.lng];
     updateWaypoint(index, newPos);
 
-    // Regenerate route with new waypoints
     if (generatedRoute?.waypoints) {
       const updatedWaypoints = [...generatedRoute.waypoints];
       updatedWaypoints[index] = newPos;
@@ -149,7 +145,6 @@ const Map = () => {
     }
   };
 
-  // Get route segments with overlap information
   const routeSegments = generatedRoute
     ? getRouteSegmentsWithOverlaps(generatedRoute.coordinates)
     : null;
@@ -175,7 +170,6 @@ const Map = () => {
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Start location marker */}
         {startLocation && (
           <Marker
             position={startLocation}
@@ -184,15 +178,12 @@ const Map = () => {
           ></Marker>
         )}
 
-        {/* User location marker (when tracking) */}
         {isTrackingLocation && userLocation && (
           <Marker position={userLocation} icon={userLocationIcon}></Marker>
         )}
 
-        {/* Generated route with overlap detection */}
         {routeSegments && (
           <>
-            {/* Normal route segments */}
             {routeSegments.normalSegments.map((segment, index) => (
               <Polyline
                 key={`normal-${index}`}
@@ -203,7 +194,6 @@ const Map = () => {
               />
             ))}
 
-            {/* Overlapping route segments in red */}
             {routeSegments.overlappingSegments.map((segment, index) => (
               <Polyline
                 key={`overlap-${index}`}
@@ -216,7 +206,6 @@ const Map = () => {
           </>
         )}
 
-        {/* Waypoint markers */}
         {generatedRoute?.waypoints &&
           generatedRoute.waypoints.slice(1, -1).map((waypoint, index) => (
             <Marker
@@ -235,7 +224,6 @@ const Map = () => {
           ))}
       </MapContainer>
 
-      {/* Loading overlay for route generation */}
       <MapLoadingOverlay isVisible={isGeneratingRoute} />
     </div>
   );

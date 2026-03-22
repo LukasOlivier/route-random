@@ -16,7 +16,6 @@ export default function DownloadButton() {
     }
   };
 
-  // Only show button if route is accepted
   if (!isRouteAccepted || !generatedRoute) {
     return null;
   }

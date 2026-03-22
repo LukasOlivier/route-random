@@ -9,7 +9,6 @@ export function useRouteFromUrl() {
 
   useEffect(() => {
     const loadRouteFromUrl = async () => {
-      // Don't load if we already have a route
       if (generatedRoute) return;
 
       const params = new URLSearchParams(window.location.search);
@@ -17,7 +16,6 @@ export function useRouteFromUrl() {
 
       if (!routeId) return;
 
-      // Validate UUID format
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(routeId)) {
@@ -41,7 +39,6 @@ export function useRouteFromUrl() {
         const data = await response.json();
 
         if (data.success && data.route) {
-          // log the route without the coordinates to avoid cluttering the console
           console.log("Loaded route from URL:", {
             id: data.route.id,
             distance: data.route.distance,
@@ -52,7 +49,6 @@ export function useRouteFromUrl() {
             distance: data.route.distance,
           });
           setRouteId(routeId);
-          // Mark route as accepted without saving to DB again (it's already saved)
           useLocationStore.setState({ isRouteAccepted: true });
         }
       } catch (err) {

@@ -26,7 +26,6 @@ interface RouteFormStore extends RouteFormData {
   initializeFromStorage: () => void;
 }
 
-// Default form values
 const defaultFormData: RouteFormData = {
   mode: Mode.DISTANCE,
   pace: Pace.WALKING,
@@ -60,10 +59,8 @@ const isValidPace = (value: unknown): value is Pace => {
 };
 
 export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
-  // Initial state
   ...defaultFormData,
 
-  // Actions
   setMode: (mode) => {
     set({ mode });
     persistFormData(get());

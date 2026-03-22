@@ -3,7 +3,6 @@ import { LatLngTuple } from "leaflet";
 
 export const mapDefaults = {
   zoom: 15,
-  // London as fallback
   defaultPosition: [51.5074, -0.1278] as LatLngTuple,
 };
 
@@ -34,9 +33,6 @@ export const userLocationIcon = new L.DivIcon({
   popupAnchor: [0, -13],
 });
 
-/**
- * Helper function to ensure LatLngTuple format
- */
 export const normalizeToLatLngTuple = (
   position: LatLngTuple | L.LatLngLiteral | null,
 ): LatLngTuple => {
@@ -45,10 +41,6 @@ export const normalizeToLatLngTuple = (
   return [position.lat, position.lng];
 };
 
-/**
- * Calculate distance between two lat/lng coordinates
- * Returns distance in degrees (for small distances)
- */
 const calculateCoordinateDistance = (
   coord1: LatLngTuple,
   coord2: LatLngTuple,
@@ -58,9 +50,6 @@ const calculateCoordinateDistance = (
   );
 };
 
-/**
- * Determine if map should recenter based on tracking state and distance
- */
 export const shouldRecenterMap = (
   prevCenter: LatLngTuple | null,
   newCenter: LatLngTuple,
@@ -68,15 +57,15 @@ export const shouldRecenterMap = (
   wasTracking: boolean,
   distanceThreshold: number = 0.001,
 ): boolean => {
-  if (!prevCenter) return true; // First load
-  if (isTracking && !wasTracking) return true; // Just started tracking
+  if (!prevCenter) return true;
+  if (isTracking && !wasTracking) return true;
   if (!isTracking && calculateCoordinateDistance(prevCenter, newCenter) > 0)
-    return true; // Manual location change
+    return true;
   if (
     isTracking &&
     calculateCoordinateDistance(prevCenter, newCenter) > distanceThreshold
   )
-    return true; // Significant movement
+    return true;
 
   return false;
 };
