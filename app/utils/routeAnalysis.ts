@@ -5,7 +5,7 @@ function doLinesIntersect(
   p1: [number, number],
   q1: [number, number],
   p2: [number, number],
-  q2: [number, number]
+  q2: [number, number],
 ): boolean {
   // Find the four orientations needed for general and special cases
   const o1 = orientation(p1, q1, p2);
@@ -32,7 +32,7 @@ function doLinesIntersect(
 function orientation(
   p: [number, number],
   q: [number, number],
-  r: [number, number]
+  r: [number, number],
 ): number {
   const val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1]);
   if (val === 0) return 0; // collinear
@@ -45,7 +45,7 @@ function orientation(
 function onSegment(
   p: [number, number],
   q: [number, number],
-  r: [number, number]
+  r: [number, number],
 ): boolean {
   return (
     q[0] <= Math.max(p[0], r[0]) &&
@@ -58,9 +58,7 @@ function onSegment(
 /**
  * Find overlapping segments in a route
  */
-export function findOverlappingSegments(
-  coordinates: [number, number][]
-): number[][] {
+function findOverlappingSegments(coordinates: [number, number][]): number[][] {
   const overlappingSegments: number[][] = [];
 
   for (let i = 0; i < coordinates.length - 1; i++) {
@@ -70,19 +68,19 @@ export function findOverlappingSegments(
 
       const segment1Start = [coordinates[i][1], coordinates[i][0]] as [
         number,
-        number
+        number,
       ];
       const segment1End = [coordinates[i + 1][1], coordinates[i + 1][0]] as [
         number,
-        number
+        number,
       ];
       const segment2Start = [coordinates[j][1], coordinates[j][0]] as [
         number,
-        number
+        number,
       ];
       const segment2End = [coordinates[j + 1][1], coordinates[j + 1][0]] as [
         number,
-        number
+        number,
       ];
 
       if (
@@ -115,7 +113,7 @@ export function getRouteSegmentsWithOverlaps(coordinates: [number, number][]): {
 } {
   const overlappingIndices = findOverlappingSegments(coordinates);
   const overlappingSet = new Set(
-    overlappingIndices.map((seg) => `${seg[0]}-${seg[1]}`)
+    overlappingIndices.map((seg) => `${seg[0]}-${seg[1]}`),
   );
 
   const normalSegments: [number, number][][] = [];

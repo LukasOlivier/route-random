@@ -4,4 +4,3 @@ export type { GeneratedRoute } from "./store";
 
 // Form store exports
 export { useRouteFormStore } from "./formStore";
-export type { RouteFormData } from "./formStore";

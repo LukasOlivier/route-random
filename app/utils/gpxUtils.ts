@@ -6,9 +6,9 @@ import { GeneratedRoute } from "../../stores/store";
  * @param routeName - Optional name for the route (defaults to "Generated Route")
  * @returns GPX XML string
  */
-export function convertRouteToGPX(
+function convertRouteToGPX(
   route: GeneratedRoute,
-  routeName: string = "Generated Route"
+  routeName: string = "Generated Route",
 ): string {
   const now = new Date().toISOString();
 
@@ -45,7 +45,7 @@ ${trackPoints}
  */
 export function downloadRouteAsGPX(
   route: GeneratedRoute,
-  filename?: string
+  filename?: string,
 ): void {
   const gpxContent = convertRouteToGPX(route);
 

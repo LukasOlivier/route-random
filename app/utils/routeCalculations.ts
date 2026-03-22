@@ -21,21 +21,9 @@ export function getPaceSpeed(pace: Pace): number {
  */
 export function calculateDistanceFromTime(
   timeMinutes: number,
-  pace: Pace
+  pace: Pace,
 ): number {
   const speedKmh = getPaceSpeed(pace);
   const timeHours = timeMinutes / 60;
   return speedKmh * timeHours;
-}
-
-/**
- * Calculate estimated time from distance (in km) and pace
- */
-export function calculateTimeFromDistance(
-  distanceKm: number,
-  pace: Pace
-): number {
-  const speedKmh = getPaceSpeed(pace);
-  const timeHours = distanceKm / speedKmh;
-  return timeHours * 60; // Convert to minutes
 }

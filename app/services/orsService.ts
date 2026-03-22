@@ -29,12 +29,6 @@ export interface RouteResponse {
   };
 }
 
-export interface RoundTripOptions {
-  length: number;
-  points?: number;
-  seed?: number;
-}
-
 export interface RoutePreferences {
   avoidSteps?: boolean;
   avoidHighways?: boolean;

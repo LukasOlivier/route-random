@@ -8,7 +8,7 @@ type PersistedRouteFormData = Pick<
   "mode" | "pace" | "distance" | "time"
 >;
 
-export interface RouteFormData {
+interface RouteFormData {
   mode: Mode;
   pace: Pace;
   distance: string;
@@ -22,9 +22,7 @@ interface RouteFormStore extends RouteFormData {
   setPace: (pace: Pace) => void;
   setDistance: (distance: string) => void;
   setTime: (time: string) => void;
-  setCorrectionFactor: (factor: number) => void;
   setIsGeneratingRoute: (isGenerating: boolean) => void;
-  updateFormData: (data: Partial<RouteFormData>) => void;
   initializeFromStorage: () => void;
 }
 
@@ -86,25 +84,8 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
     persistFormData(get());
   },
 
-  setCorrectionFactor: (correctionFactor) => {
-    set({ correctionFactor });
-  },
-
   setIsGeneratingRoute: (isGeneratingRoute) => {
     set({ isGeneratingRoute });
-  },
-
-  updateFormData: (data) => {
-    set(data);
-
-    if (
-      data.mode !== undefined ||
-      data.pace !== undefined ||
-      data.distance !== undefined ||
-      data.time !== undefined
-    ) {
-      persistFormData(get());
-    }
   },
 
   initializeFromStorage: () => {

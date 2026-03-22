@@ -6,7 +6,6 @@ import { useLocationStore } from "../../stores";
 export function useRouteFromUrl() {
   const { setGeneratedRoute, setRouteId, generatedRoute } = useLocationStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadRouteFromUrl = async () => {
@@ -22,21 +21,19 @@ export function useRouteFromUrl() {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(routeId)) {
-        setError("Invalid route ID");
         return;
       }
 
       setIsLoading(true);
-      setError(null);
 
       try {
         const response = await fetch(`/api/routes/${routeId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            setError("Route not found");
+            console.error("Route not found");
           } else {
-            setError("Failed to load route");
+            console.error("Failed to load route");
           }
           return;
         }
@@ -60,7 +57,6 @@ export function useRouteFromUrl() {
         }
       } catch (err) {
         console.error("Error loading route from URL:", err);
-        setError("Failed to load route");
       } finally {
         setIsLoading(false);
       }
@@ -69,9 +65,5 @@ export function useRouteFromUrl() {
     loadRouteFromUrl();
   }, [generatedRoute, setGeneratedRoute, setRouteId]);
 
-  const clearUrlRoute = () => {
-    window.history.pushState({}, "", "/");
-  };
-
-  return { isLoading, error, clearUrlRoute };
+  return { isLoading };
 }

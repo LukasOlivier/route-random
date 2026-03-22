@@ -34,26 +34,11 @@ export const userLocationIcon = new L.DivIcon({
   popupAnchor: [0, -13],
 });
 
-export const waypointIcon = new L.Icon({
-  iconUrl:
-    "data:image/svg+xml;base64," +
-    btoa(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <circle cx="12" cy="12" r="8" fill="#ff6b35" stroke="white" stroke-width="2"/>
-        <circle cx="12" cy="12" r="3" fill="white"/>
-        <path d="M8 8l8 8M16 8l-8 8" stroke="#ff6b35" stroke-width="1" opacity="0.5"/>
-      </svg>
-    `),
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
-  popupAnchor: [0, -12],
-});
-
 /**
  * Helper function to ensure LatLngTuple format
  */
 export const normalizeToLatLngTuple = (
-  position: LatLngTuple | L.LatLngLiteral | null
+  position: LatLngTuple | L.LatLngLiteral | null,
 ): LatLngTuple => {
   if (!position) return mapDefaults.defaultPosition;
   if (Array.isArray(position)) return position;
@@ -64,12 +49,12 @@ export const normalizeToLatLngTuple = (
  * Calculate distance between two lat/lng coordinates
  * Returns distance in degrees (for small distances)
  */
-export const calculateCoordinateDistance = (
+const calculateCoordinateDistance = (
   coord1: LatLngTuple,
-  coord2: LatLngTuple
+  coord2: LatLngTuple,
 ): number => {
   return Math.sqrt(
-    Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2)
+    Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2),
   );
 };
 
@@ -81,7 +66,7 @@ export const shouldRecenterMap = (
   newCenter: LatLngTuple,
   isTracking: boolean,
   wasTracking: boolean,
-  distanceThreshold: number = 0.001
+  distanceThreshold: number = 0.001,
 ): boolean => {
   if (!prevCenter) return true; // First load
   if (isTracking && !wasTracking) return true; // Just started tracking

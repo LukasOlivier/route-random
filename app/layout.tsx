@@ -63,7 +63,7 @@ const websiteSchema: WithContext<WebSite> = {
   description: description,
 };
 
-const BreadcrumbListSchema: WithContext<BreadcrumbList> = {
+const breadcrumbListSchema: WithContext<BreadcrumbList> = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -107,65 +107,7 @@ const webpageSchema = {
   },
 };
 
-const searchActionSchema = {
-  "@context": "https://schema.org",
-  "@type": "SearchAction",
-  target: `${mySite}/search?q={search_term_string}`,
-  "query-input": {
-    "@type": "PropertyValueSpecification",
-    valueRequired: true,
-    valueName: "search_term_string",
-  },
-};
-
-const imageObjectSchema = {
-  "@context": "https://schema.org",
-  "@type": "ImageObject",
-  url: image,
-  width: 1200,
-  height: 630,
-  caption: ogTitle,
-};
-
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Lukas Olivier",
-  url: "https://www.lukasolivier.be",
-};
-
-const readActionSchema = {
-  "@context": "https://schema.org",
-  "@type": "ReadAction",
-  agent: {
-    "@type": "Person",
-    name: "Visitor",
-  },
-  object: mySite,
-  target: {
-    "@type": "EntryPoint",
-    urlTemplate: mySite,
-  },
-};
-
-const entryPointSchema = {
-  "@context": "https://schema.org",
-  "@type": "EntryPoint",
-  urlTemplate: mySite,
-  actionPlatform: [
-    "http://schema.org/DesktopWebPlatform",
-    "http://schema.org/MobileWebPlatform",
-  ],
-};
-
-const propertyValueSpecificationSchema = {
-  "@context": "https://schema.org",
-  "@type": "PropertyValueSpecification",
-  valueRequired: true,
-  valueName: "search_term_string",
-};
-
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -213,49 +155,13 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(BreadcrumbListSchema),
+            __html: JSON.stringify(breadcrumbListSchema),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(webpageSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(searchActionSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(imageObjectSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(readActionSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(entryPointSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(propertyValueSpecificationSchema),
           }}
         />
       </head>
