@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
@@ -8,8 +9,14 @@ import FloatingButton from "./FloatingButton";
 export default function ShareButton() {
   const t = useTranslations("ShareButton");
   const { generatedRoute, isRouteAccepted, routeId } = useLocationStore();
+  const isSharingRef = useRef(false);
 
   const shareRoute = async () => {
+    if (isSharingRef.current) {
+      return;
+    }
+
+    isSharingRef.current = true;
     const url = window.location.href;
 
     try {
@@ -25,12 +32,15 @@ export default function ShareButton() {
       if (
         error instanceof DOMException &&
         (error.name === "AbortError" ||
+          error.name === "InvalidStateError" ||
           error.message.toLowerCase().includes("share canceled"))
       ) {
         return;
       }
 
       console.error("Error sharing route:", error);
+    } finally {
+      isSharingRef.current = false;
     }
   };
 
