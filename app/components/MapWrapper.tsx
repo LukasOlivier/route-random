@@ -11,7 +11,7 @@ export default function Page() {
         loading: () => <MapLoading />,
         ssr: false,
       }),
-    []
+    [],
   );
 
   return (

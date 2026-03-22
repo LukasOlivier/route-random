@@ -76,7 +76,11 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     if (!generatedRoute) return;
 
     try {
-      const { waypoints: _waypoints, ...routeToSave } = generatedRoute;
+      const routeToSave = {
+        coordinates: generatedRoute.coordinates,
+        distance: generatedRoute.distance,
+        elevationGain: generatedRoute.elevationGain,
+      };
       const response = await fetch("/api/routes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
