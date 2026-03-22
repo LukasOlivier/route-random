@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import {
   generateCircularWaypoints,
   getNumPointsForDistance,
@@ -7,6 +8,7 @@ import {
   generateWalkingRoute,
   generateRoundTripRoute,
 } from "../../services/orsService";
+import { notifyDiscord } from "@/app/utils/discordNotifications";
 
 const TOLERANCE_CONFIG = {
   scalePercentage: 0.1,
@@ -174,6 +176,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error generating route:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+
+    after(() =>
+      notifyDiscord({
+        event: "route_generation_failed",
+        errorMessage,
+      }),
+    );
 
     if (error instanceof Error) {
       if (error.message.includes("ORS API error")) {
