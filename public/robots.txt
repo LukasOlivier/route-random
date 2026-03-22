@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://route-random.lukasolivier.be/sitemap.xml

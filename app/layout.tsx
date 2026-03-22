@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 const description =
   "Route Random is a free route generator that creates random routes for. Generate random routes based on your desired distance or time and start exploring!";
-const ogTitle = "Route Random - Free Random Route Generator";
+const ogTitle =
+  "Route Random - Generate Free Walking, Running & Cycling Routes";
 const image = "https://route-random.lukasolivier.be/og-image.png";
 const mySite = "https://route-random.lukasolivier.be";
 
@@ -107,6 +108,27 @@ const webpageSchema = {
   },
 };
 
+const softwareApplicationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Route Random",
+  description: description,
+  url: mySite,
+  applicationCategory: "Lifestyle",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "EUR",
+  },
+  author: {
+    "@type": "Person",
+    name: "Lukas Olivier",
+    url: "https://lukasolivier.be",
+  },
+  image: image,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -158,6 +180,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(webpageSchema),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(softwareApplicationSchema),
           }}
         />
       </head>
