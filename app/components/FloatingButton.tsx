@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { buildUmamiAttributes } from "../utils/umamiUtils";
 
 interface FloatingButtonProps {
   onClick: () => void;
@@ -44,12 +45,7 @@ export default function FloatingButton({
   const borderClasses =
     variant === "default" ? "border dark:border-gray-700 border-gray-200" : "";
 
-  const umamiDataAttributes = Object.fromEntries(
-    Object.entries(umamiEventData).map(([key, value]) => [
-      `data-umami-event-${key}`,
-      value,
-    ]),
-  );
+  const umamiAttributes = buildUmamiAttributes(umamiEventData);
 
   return (
     <button
@@ -58,7 +54,7 @@ export default function FloatingButton({
       aria-label={ariaLabel}
       title={title || ariaLabel}
       data-umami-event={umamiEvent}
-      {...umamiDataAttributes}
+      {...umamiAttributes}
     >
       {children}
     </button>

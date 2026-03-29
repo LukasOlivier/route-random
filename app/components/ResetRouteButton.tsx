@@ -2,6 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ActionButton from "./ActionButton";
 
 interface ResetRouteButtonProps {
   onReset: () => void;
@@ -20,24 +21,17 @@ export default function ResetRouteButton({
 }: ResetRouteButtonProps) {
   const t = useTranslations("ResetRouteButton");
 
-  const umamiDataAttributes = Object.fromEntries(
-    Object.entries(umamiEventData).map(([key, value]) => [
-      `data-umami-event-${key}`,
-      value,
-    ]),
-  );
-
   return (
-    <button
-      type="button"
+    <ActionButton
       onClick={onReset}
       disabled={disabled}
-      className={`bg-gray-500 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-md transition-colors flex justify-center items-center ${className}`}
-      data-umami-event={umamiEventName}
-      {...umamiDataAttributes}
+      variant="secondary"
+      icon={<RotateCcw size={16} />}
+      className={className}
+      umamiEventName={umamiEventName}
+      umamiEventData={umamiEventData}
     >
-      <RotateCcw className="inline-block mr-2" size={16} />
       {t("reset")}
-    </button>
+    </ActionButton>
   );
 }

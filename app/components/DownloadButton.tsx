@@ -5,20 +5,17 @@ import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import { downloadRouteAsGPX } from "../utils/gpxUtils";
 import FloatingButton from "./FloatingButton";
+import { withRouteGuard } from "./withRouteGuard";
 
-export default function DownloadButton() {
+function DownloadButtonContent() {
   const t = useTranslations("DownloadButton");
-  const { generatedRoute, isRouteAccepted } = useLocationStore();
+  const { generatedRoute } = useLocationStore();
 
   const handleDownload = () => {
     if (generatedRoute) {
       downloadRouteAsGPX(generatedRoute);
     }
   };
-
-  if (!isRouteAccepted || !generatedRoute) {
-    return null;
-  }
 
   return (
     <FloatingButton
@@ -34,3 +31,5 @@ export default function DownloadButton() {
     </FloatingButton>
   );
 }
+
+export default withRouteGuard(DownloadButtonContent);
