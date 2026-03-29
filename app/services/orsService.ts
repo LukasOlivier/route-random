@@ -29,11 +29,17 @@ export interface RouteResponse {
   };
 }
 
-export interface RoutePreferences {
-  avoidSteps?: boolean;
-  avoidHighways?: boolean;
-  avoidUnpaved?: boolean;
-  complexity?: "simple" | "moderate" | "complex";
+const ORS_API_URL =
+  "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
+const COMMON_AVOID_FEATURES = ["ferries", "steps"];
+
+function buildOrsRequestHeaders(apiKey: string) {
+  return {
+    Accept:
+      "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+    Authorization: apiKey,
+    "Content-Type": "application/json; charset=utf-8",
+  };
 }
 
 export async function generateRoundTripRoute(
@@ -41,24 +47,7 @@ export async function generateRoundTripRoute(
   startLng: number,
   targetDistance: number,
   apiKey: string,
-  numPoints?: number,
-  seed?: number,
-  preferences?: RoutePreferences,
 ): Promise<RouteResponse> {
-  const actualNumPoints = numPoints ?? 6;
-  const url =
-    "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
-
-  const avoidFeatures: string[] = ["ferries"];
-  if (preferences?.avoidSteps) avoidFeatures.push("steps");
-  if (preferences?.avoidHighways) avoidFeatures.push("highways");
-
-  let adjustedNumPoints = actualNumPoints;
-  if (preferences?.complexity === "simple")
-    adjustedNumPoints = Math.max(3, actualNumPoints - 2);
-  if (preferences?.complexity === "complex")
-    adjustedNumPoints = Math.min(12, actualNumPoints + 3);
-
   const requestBody = {
     coordinates: [[startLng, startLat]],
     preference: "recommended",
@@ -67,22 +56,17 @@ export async function generateRoundTripRoute(
     options: {
       round_trip: {
         length: targetDistance,
-        points: adjustedNumPoints,
-        seed: seed ?? Math.floor(Math.random() * 100000),
+        points: 6,
+        seed: Math.floor(Math.random() * 100000),
       },
-      avoid_features: avoidFeatures,
+      avoid_features: COMMON_AVOID_FEATURES,
     },
   };
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(ORS_API_URL, {
       method: "POST",
-      headers: {
-        Accept:
-          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        Authorization: apiKey,
-        "Content-Type": "application/json; charset=utf-8",
-      },
+      headers: buildOrsRequestHeaders(apiKey),
       body: JSON.stringify(requestBody),
     });
 
@@ -121,30 +105,20 @@ export async function generateWalkingRoute(
   waypoints: [number, number][],
   apiKey: string,
 ): Promise<RouteResponse> {
-  const url =
-    "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
-
   const requestBody = {
     coordinates: waypoints,
     elevation: true,
     extra_info: ["surface", "waytype", "steepness"],
     options: {
-      avoid_features: ["ferries", "steps"],
+      avoid_features: COMMON_AVOID_FEATURES,
     },
     preference: "recommended",
-    units: "km",
-    continue_straight: true,
   };
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(ORS_API_URL, {
       method: "POST",
-      headers: {
-        Accept:
-          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        Authorization: apiKey,
-        "Content-Type": "application/json; charset=utf-8",
-      },
+      headers: buildOrsRequestHeaders(apiKey),
       body: JSON.stringify(requestBody),
     });
 

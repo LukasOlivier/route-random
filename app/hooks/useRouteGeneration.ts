@@ -11,7 +11,6 @@ export function useRouteGeneration() {
     pace,
     distance,
     time,
-    correctionFactor,
     isGeneratingRoute,
     setIsGeneratingRoute,
   } = useRouteFormStore();
@@ -51,7 +50,6 @@ export function useRouteGeneration() {
       const requestBody = {
         startLocation: startLocation,
         distance: finalDistance,
-        correctionFactor: correctionFactor,
       };
 
       const response = await fetch("/api/generateroute", {
@@ -120,9 +118,16 @@ export function useRouteGeneration() {
 
       if (result.success && result.route) {
         setGeneratedRoute(result.route);
+      } else {
+        throw new Error("Failed to regenerate route");
       }
     } catch (error) {
       console.error("Error regenerating route:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to regenerate route. Please try again.";
+      alert(errorMessage);
     } finally {
       setIsGeneratingRoute(false);
     }
