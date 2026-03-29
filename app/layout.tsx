@@ -20,10 +20,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteTitle =
-  "Route Random | Free Random Running, Walking & Cycling Route Generator";
+const siteTitle = "Route Random | Free Running, Walking Route Generator";
 const description =
-  "Generate unique, circular routes in seconds. Route Random is a free, no-account-needed generator for runners, walkers, and cyclists looking to discover new paths and beat routine boredom.";
+  "Route Random is a free generator for runners, walkers, and cyclists looking to discover new paths and beat routine boredom.";
 const image = "https://route-random.lukasolivier.be/og-image.png";
 const mySite = "https://route-random.lukasolivier.be";
 

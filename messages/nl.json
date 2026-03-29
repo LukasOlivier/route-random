@@ -74,5 +74,23 @@
   "MapLoadingOverlay": {
     "generatingRoute": "Uw route wordt gegenereerd...",
     "pleaseWait": "Even geduld alstublieft..."
+  },
+  "SeoSection": {
+    "heading": "Waarom ik Route Random heb gebouwd",
+    "paragraph1": "Hey, ik ben Lukas. Ik loop veel, en ik werd eerlijk gezegd moe van telkens dezelfde rondjes. Daarom heb ik Route Random gebouwd: een simpele routegenerator die willekeurige, cirkelvormige routes maakt op basis van je afstand en startpunt. Je kunt een adres zoeken of op de kaart klikken, en een paar seconden later heb je een frisse lus die je meestal weer dicht bij je start brengt.",
+    "paragraph2": "Ik heb de app bewust praktisch gehouden. Je kunt wisselen tussen afstand en tijd, kiezen voor wandelen, hardlopen of fietsen, en de route nog aanpassen als je meer controle wilt. Als de route goed zit, exporteer je die als GPX of GeoJSON voor Garmin, Strava of bijna elke fitnessapp of sporthorloge. Geen account, geen gedoe, geen enge tracking, gewoon snel een nieuwe route wanneer je vaste parcours begint te vervelen.",
+    "paragraph3": "Ik heb dit eerst voor mezelf gemaakt, maar ik deel het nu omdat andere lopers en wandelaars er misschien ook iets aan hebben. Onder de motorkap draait het op OpenStreetMap, Leaflet en OpenRouteService. Wil je het proberen of doorsturen naar iemand, dan vind je hieronder alle links.",
+    "exploreTitle": "Handige links",
+    "linkHome": "Open Route Random",
+    "linkSitemap": "XML sitemap",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Web app manifest",
+    "shareTitle": "Deel het",
+    "shareDescription": "Helpt Route Random je om uit je routine te breken? Deel het gerust.",
+    "shareX": "Delen op X",
+    "shareFacebook": "Delen op Facebook",
+    "shareLinkedIn": "Delen op LinkedIn",
+    "shareReddit": "Delen op Reddit",
+    "shareTweetText": "Check deze app: Route Random. In enkele seconden krijg je nieuwe cirkelroutes voor hardlopen, wandelen en fietsen"
   }
 }

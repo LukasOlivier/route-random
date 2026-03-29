@@ -24,10 +24,10 @@ export default function Sidebar({ isMobile }: SidebarProps) {
       )}
       <header>
         <div className="flex items-base lg:justify-between gap-2 mb-1 flex-wrap">
-          <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
+          <h2 className="text-2xl font-bold flex items-center gap-2 dark:text-white text-black">
             <Footprints size={24} />
             {t("title")}
-          </h1>
+          </h2>
 
           <select
             value={locale}

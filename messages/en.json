@@ -74,5 +74,23 @@
   "MapLoadingOverlay": {
     "generatingRoute": "Generating your route...",
     "pleaseWait": "Please wait..."
+  },
+  "SeoSection": {
+    "heading": "Why I built Route Random for my own runs",
+    "paragraph1": "Hey, I am Lukas. I run a lot, and I got tired of repeating the same loops every week. That is why I built Route Random: a simple running route generator that creates random circular routes based on your distance and starting point. You can search an address or click on the map, and in a few seconds you get a fresh loop that usually brings you back close to where you started.",
+    "paragraph2": "I kept the app practical on purpose. You can switch between distance and time, choose walking, running, or cycling, and tweak your route if you want more control. When the route looks good, you can export it as GPX or GeoJSON and use it in Garmin, Strava, or pretty much any fitness app or watch. No account wall, no endless setup, and no creepy tracking, just a quick way to find new roads when your usual route feels boring.",
+    "paragraph3": "I originally made this for myself, but I decided to share it because other runners and walkers might find it useful too. Under the hood it uses OpenStreetMap, Leaflet, and OpenRouteService. If you want to try it or share it with a friend, all the links are below.",
+    "exploreTitle": "Useful links",
+    "linkHome": "Open Route Random",
+    "linkSitemap": "XML sitemap",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Web app manifest",
+    "shareTitle": "Share it",
+    "shareDescription": "If Route Random helps you break out of your routine, feel free to share it.",
+    "shareX": "Share on X",
+    "shareFacebook": "Share on Facebook",
+    "shareLinkedIn": "Share on LinkedIn",
+    "shareReddit": "Share on Reddit",
+    "shareTweetText": "Check out this app: Route Random. It creates fresh circular running, walking, and cycling routes in seconds"
   }
 }
