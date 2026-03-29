@@ -1,5 +1,6 @@
 import ClientPageWrapper from "./components/ClientPageWrapper";
 import RouteStats from "./components/RouteStats";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
@@ -40,6 +41,11 @@ export default async function Home() {
             {t("exploreTitle")}
           </h2>
           <ul className="mt-3 space-y-2 text-base text-gray-700 dark:text-gray-300">
+            <li>
+              <Link className="underline" href="/">
+                {t("linkHome")}
+              </Link>
+            </li>
             <li>
               <a className="underline" href="/sitemap.xml">
                 {t("linkSitemap")}

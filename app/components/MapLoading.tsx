@@ -18,9 +18,9 @@ export default function MapLoading() {
           />
         </div>
 
-        <h1 className="text-3xl font-bold text-white mb-2 animated-fade-in">
+        <p className="text-3xl font-bold text-white mb-2 animated-fade-in">
           Route Random
-        </h1>
+        </p>
 
         <p className="text-gray-300 text-lg animated-fade-in">
           {t("loadingText")}
