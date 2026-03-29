@@ -39,13 +39,11 @@ function extractWaypointsFromCoordinates(
   numWaypoints: number = 5,
 ): [number, number][] {
   if (coordinates.length <= numWaypoints + 1) {
-    // If we don't have enough points, return all coordinates (start, end, and any intermediate points)
     return coordinates;
   }
 
   const waypoints: [number, number][] = [];
 
-  // Always include the starting location (first coordinate)
   waypoints.push(coordinates[0]);
 
   const step = Math.floor((coordinates.length - 1) / (numWaypoints + 1));
@@ -55,7 +53,6 @@ function extractWaypointsFromCoordinates(
     waypoints.push(coordinates[index]);
   }
 
-  // Always include the ending location (last coordinate) if not already included
   if (waypoints[waypoints.length - 1] !== coordinates[coordinates.length - 1]) {
     waypoints.push(coordinates[coordinates.length - 1]);
   }
@@ -144,13 +141,11 @@ export async function generateRoundTripRoute(
 
       const distanceDiff = Math.abs(totalDistance - targetDistance);
 
-      // Update best route if this one is closer to target
       if (distanceDiff < bestDistanceDiff) {
         bestDistanceDiff = distanceDiff;
         bestRoute = route;
       }
 
-      // If within tolerance, return immediately
       if (distanceDiff <= toleranceMeters) {
         console.log(
           `✓ Route found within tolerance: ${(totalDistance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(distanceDiff / 1000).toFixed(2)}km)`,
@@ -164,13 +159,11 @@ export async function generateRoundTripRoute(
     } catch (error) {
       console.log(`Retry attempt with factor ${factor} failed:`, error);
       if (factor === correctionFactors[correctionFactors.length - 1]) {
-        // Last attempt failed
         throw error;
       }
     }
   }
 
-  // Return best attempt found
   if (bestRoute) {
     console.log(
       `⚠ Using best attempt: ${(bestRoute.distance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(bestDistanceDiff / 1000).toFixed(2)}km)`,
