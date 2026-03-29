@@ -63,9 +63,11 @@ export async function POST(request: NextRequest) {
         coordinates: route.coordinates,
         distance: route.distance,
         elevationGain: route.elevation?.gain,
-        waypoints: finalWaypoints
-          ? finalWaypoints.map(([lng, lat]) => [lat, lng] as [number, number])
-          : undefined,
+        waypoints: route.waypoints
+          ? route.waypoints.map(([lng, lat]) => [lat, lng] as [number, number])
+          : finalWaypoints
+            ? finalWaypoints.map(([lng, lat]) => [lat, lng] as [number, number])
+            : undefined,
       },
     });
   } catch (error) {
