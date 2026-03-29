@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import type { WebSite, BreadcrumbList, WithContext } from "schema-dts";
+import type {
+  WebSite,
+  BreadcrumbList,
+  WithContext,
+  SoftwareApplication,
+  WebPage,
+} from "schema-dts";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
@@ -14,34 +20,34 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteTitle =
+  "Route Random | Free Random Running, Walking & Cycling Route Generator";
 const description =
-  "Route Random is a free route generator that creates random routes for. Generate random routes based on your desired distance or time and start exploring!";
-const ogTitle =
-  "Route Random - Generate Free Walking, Running & Cycling Routes";
+  "Generate unique, circular routes in seconds. Route Random is a free, no-account-needed generator for runners, walkers, and cyclists looking to discover new paths and beat routine boredom.";
 const image = "https://route-random.lukasolivier.be/og-image.png";
 const mySite = "https://route-random.lukasolivier.be";
 
 export const metadata: Metadata = {
-  title: ogTitle,
+  title: siteTitle,
   description: description,
   keywords:
-    "route generator, random route, free route planner, walking routes, cycling routes, running routes, route randomizer, GPX export, distance planner, time-based routes, explore routes, outdoor navigation, route planning, adventure routes, map generator, route explorer",
+    "random route generator, running loop generator, circular route finder, free running routes, cycling route generator, walk planner, distance-based routes, GPX export, discovery tool, street completion, route randomizer",
   metadataBase: new URL(mySite),
   alternates: {
     canonical: mySite,
   },
   openGraph: {
-    siteName: mySite,
+    siteName: "Route Random",
     type: "website",
     url: mySite,
-    title: ogTitle,
+    title: siteTitle,
     description: description,
     images: [
       {
         url: image,
         width: 1200,
         height: 630,
-        alt: ogTitle,
+        alt: "Route Random - Free Random Route Generator for Runners, Walkers & Cyclists",
       },
     ],
   },
@@ -49,7 +55,7 @@ export const metadata: Metadata = {
     site: "@route-random",
     creator: "@route-random",
     card: "summary_large_image",
-    title: ogTitle,
+    title: siteTitle,
     description: description,
     images: [image],
   },
@@ -77,10 +83,10 @@ const breadcrumbListSchema: WithContext<BreadcrumbList> = {
   ],
 };
 
-const webpageSchema = {
+const webpageSchema: WithContext<WebPage> = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: ogTitle,
+  name: siteTitle,
   url: mySite,
   description: description,
   image: image,
@@ -90,31 +96,20 @@ const webpageSchema = {
     url: mySite,
     name: "Route Random",
   },
-  primaryImageOfPage: {
-    "@type": "ImageObject",
-    url: image,
-    width: 1200,
-    height: 630,
-    caption: ogTitle,
-  },
   author: {
     "@type": "Person",
     name: "Lukas Olivier",
     url: "https://lukasolivier.be",
   },
-  potentialAction: {
-    "@type": "ReadAction",
-    target: mySite,
-  },
 };
 
-const softwareApplicationSchema = {
+const softwareApplicationSchema: WithContext<SoftwareApplication> = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "Route Random",
   description: description,
   url: mySite,
-  applicationCategory: "Lifestyle",
+  applicationCategory: "HealthAndFitnessApplication",
   operatingSystem: "Web",
   offers: {
     "@type": "Offer",
@@ -160,15 +155,12 @@ export default function RootLayout({
           href="https://route-random.lukasolivier.be/"
           hrefLang="x-default"
         />
-        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon.png" />
         <meta name="theme-color" content="#ffffff" />
 
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <script
           type="application/ld+json"
@@ -178,9 +170,7 @@ export default function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(webpageSchema),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
         />
         <script
           type="application/ld+json"

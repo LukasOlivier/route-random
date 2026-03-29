@@ -2,61 +2,15 @@ import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
 
 interface SidebarProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+  isMobile: boolean;
 }
 
-export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
+export default function Sidebar({ isMobile }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const router = useRouter();
-  const touchStartY = useRef<number | null>(null);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1023px)");
-    setIsMobile(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
-    setIsDragging(true);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY.current === null) return;
-    const currentY = e.touches[0].clientY;
-    const deltaY = currentY - touchStartY.current;
-    setDragOffset(Math.max(0, deltaY));
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartY.current === null) return;
-    const touchEndY = e.changedTouches[0].clientY;
-    const deltaY = touchEndY - touchStartY.current;
-
-    setIsDragging(false);
-
-    if (deltaY > 100 && onClose) {
-      setDragOffset(window.innerHeight);
-      setTimeout(() => {
-        onClose();
-        setDragOffset(0);
-      }, 200);
-    } else {
-      setDragOffset(0);
-    }
-    touchStartY.current = null;
-  };
 
   const handleLanguageChange = (newLocale: string) => {
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`;
@@ -64,26 +18,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   };
 
   return (
-    <div
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={
-        isMobile
-          ? {
-              transform: isOpen
-                ? `translateY(${dragOffset}px)`
-                : "translateY(100%)",
-              transition: isDragging ? "none" : "transform 0.1s ease-out",
-            }
-          : undefined
-      }
-      className={`primary-bg flex flex-col p-6 ${
-        isMobile
-          ? `fixed left-0 right-0 bottom-0 z-[10000] h-[75vh] overflow-y-auto rounded-t-2xl shadow-2xl ${!isOpen ? "pointer-events-none" : ""}`
-          : "h-screen w-1/4"
-      }`}
-    >
+    <>
       {isMobile && (
         <div className="w-1/4 bg-gray-400 h-1 rounded-full mx-auto my-2 -translate-y-3"></div>
       )}
@@ -128,6 +63,6 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <p>{t("aboutDescription1")}</p>
         <p>{t("aboutDescription2")}</p>
       </footer>
-    </div>
+    </>
   );
 }
