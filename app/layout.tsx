@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import type { WebSite, BreadcrumbList, WithContext } from "schema-dts";
+import type {
+  WebSite,
+  BreadcrumbList,
+  WithContext,
+  SoftwareApplication,
+  WebPage,
+} from "schema-dts";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
@@ -14,33 +20,34 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteTitle =
+  "Route Random | Free Random Running, Walking & Cycling Route Generator";
 const description =
-  "Route Random is a free route generator that creates random routes for. Generate random routes based on your desired distance or time and start exploring!";
-const ogTitle = "Route Random - Free Random Route Generator";
+  "Generate unique, circular routes in seconds. Route Random is a free, no-account-needed generator for runners, walkers, and cyclists looking to discover new paths and beat routine boredom.";
 const image = "https://route-random.lukasolivier.be/og-image.png";
 const mySite = "https://route-random.lukasolivier.be";
 
 export const metadata: Metadata = {
-  title: ogTitle,
+  title: siteTitle,
   description: description,
   keywords:
-    "route generator, random route, free route planner, walking routes, cycling routes, running routes, route randomizer, GPX export, distance planner, time-based routes, explore routes, outdoor navigation, route planning, adventure routes, map generator, route explorer",
+    "random route generator, running loop generator, circular route finder, free running routes, cycling route generator, walk planner, distance-based routes, GPX export, discovery tool, street completion, route randomizer",
   metadataBase: new URL(mySite),
   alternates: {
     canonical: mySite,
   },
   openGraph: {
-    siteName: mySite,
+    siteName: "Route Random",
     type: "website",
     url: mySite,
-    title: ogTitle,
+    title: siteTitle,
     description: description,
     images: [
       {
         url: image,
         width: 1200,
         height: 630,
-        alt: ogTitle,
+        alt: "Route Random - Free Random Route Generator for Runners, Walkers & Cyclists",
       },
     ],
   },
@@ -48,7 +55,7 @@ export const metadata: Metadata = {
     site: "@route-random",
     creator: "@route-random",
     card: "summary_large_image",
-    title: ogTitle,
+    title: siteTitle,
     description: description,
     images: [image],
   },
@@ -63,7 +70,7 @@ const websiteSchema: WithContext<WebSite> = {
   description: description,
 };
 
-const BreadcrumbListSchema: WithContext<BreadcrumbList> = {
+const breadcrumbListSchema: WithContext<BreadcrumbList> = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -76,10 +83,10 @@ const BreadcrumbListSchema: WithContext<BreadcrumbList> = {
   ],
 };
 
-const webpageSchema = {
+const webpageSchema: WithContext<WebPage> = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: ogTitle,
+  name: siteTitle,
   url: mySite,
   description: description,
   image: image,
@@ -89,83 +96,35 @@ const webpageSchema = {
     url: mySite,
     name: "Route Random",
   },
-  primaryImageOfPage: {
-    "@type": "ImageObject",
-    url: image,
-    width: 1200,
-    height: 630,
-    caption: ogTitle,
+  author: {
+    "@type": "Person",
+    name: "Lukas Olivier",
+    url: "https://lukasolivier.be",
+  },
+};
+
+const softwareApplicationSchema: WithContext<SoftwareApplication> = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Route Random",
+  description: description,
+  url: mySite,
+  applicationCategory: "HealthAndFitnessApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "EUR",
   },
   author: {
     "@type": "Person",
     name: "Lukas Olivier",
     url: "https://lukasolivier.be",
   },
-  potentialAction: {
-    "@type": "ReadAction",
-    target: mySite,
-  },
+  image: image,
 };
 
-const searchActionSchema = {
-  "@context": "https://schema.org",
-  "@type": "SearchAction",
-  target: `${mySite}/search?q={search_term_string}`,
-  "query-input": {
-    "@type": "PropertyValueSpecification",
-    valueRequired: true,
-    valueName: "search_term_string",
-  },
-};
-
-const imageObjectSchema = {
-  "@context": "https://schema.org",
-  "@type": "ImageObject",
-  url: image,
-  width: 1200,
-  height: 630,
-  caption: ogTitle,
-};
-
-const personSchema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Lukas Olivier",
-  url: "https://www.lukasolivier.be",
-};
-
-const readActionSchema = {
-  "@context": "https://schema.org",
-  "@type": "ReadAction",
-  agent: {
-    "@type": "Person",
-    name: "Visitor",
-  },
-  object: mySite,
-  target: {
-    "@type": "EntryPoint",
-    urlTemplate: mySite,
-  },
-};
-
-const entryPointSchema = {
-  "@context": "https://schema.org",
-  "@type": "EntryPoint",
-  urlTemplate: mySite,
-  actionPlatform: [
-    "http://schema.org/DesktopWebPlatform",
-    "http://schema.org/MobileWebPlatform",
-  ],
-};
-
-const propertyValueSpecificationSchema = {
-  "@context": "https://schema.org",
-  "@type": "PropertyValueSpecification",
-  valueRequired: true,
-  valueName: "search_term_string",
-};
-
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -173,17 +132,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Umami analytics script */}
         <script
           defer
           src="https://umami.lukasolivier.be/script.js"
           data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
         ></script>
 
-        {/* Robots meta tag for SEO */}
         <meta name="robots" content="index, follow" />
 
-        {/* Hreflang alternate links for English and Dutch */}
         <link
           rel="alternate"
           href="https://route-random.lukasolivier.be/"
@@ -199,63 +155,27 @@ export default async function RootLayout({
           href="https://route-random.lukasolivier.be/"
           hrefLang="x-default"
         />
-        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon.png" />
         <meta name="theme-color" content="#ffffff" />
 
-        {/* JSON-LD Schema markup */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(BreadcrumbListSchema),
+            __html: JSON.stringify(breadcrumbListSchema),
           }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(webpageSchema),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(searchActionSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(imageObjectSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(personSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(readActionSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(entryPointSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(propertyValueSpecificationSchema),
+            __html: JSON.stringify(softwareApplicationSchema),
           }}
         />
       </head>

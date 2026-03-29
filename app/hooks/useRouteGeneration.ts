@@ -20,11 +20,9 @@ export function useRouteGeneration() {
     distance?: string;
     time?: string;
   }) => {
-    // Get distance and time from either formData (for form submission) or store (for direct calls)
     const distanceInput = formData?.distance || distance;
     const timeInput = formData?.time || time;
 
-    // Calculate the final distance to send
     let finalDistance: number;
 
     if (mode === Mode.DISTANCE) {
@@ -42,7 +40,6 @@ export function useRouteGeneration() {
       finalDistance = calculateDistanceFromTime(timeMinutes, pace);
     }
 
-    // Validate required fields
     if (!startLocation) {
       alert("Please select a starting location");
       return;
@@ -74,7 +71,6 @@ export function useRouteGeneration() {
 
       const result = await response.json();
 
-      // Store the generated route in the store
       if (result.success && result.route) {
         setGeneratedRoute(result.route);
       }
@@ -98,7 +94,6 @@ export function useRouteGeneration() {
     try {
       setIsGeneratingRoute(true);
 
-      // Convert waypoints to the format expected by the API
       const waypointsForApi = waypoints.map(([lat, lng]) => [lng, lat]);
 
       const requestBody = {
@@ -128,7 +123,6 @@ export function useRouteGeneration() {
       }
     } catch (error) {
       console.error("Error regenerating route:", error);
-      // Don't show alert for waypoint adjustments to avoid interrupting user
     } finally {
       setIsGeneratingRoute(false);
     }

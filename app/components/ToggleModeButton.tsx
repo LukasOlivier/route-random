@@ -1,7 +1,5 @@
 "use client";
 
-// A button to toggle between time based or distance based generation
-
 interface ToggleModeButtonProps {
   text: string;
   selected: boolean;

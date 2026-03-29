@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRoute, initializeDatabase } from "@/lib/db";
 
-// Initialize database on first request
 let initialized = false;
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Ensure table exists
     if (!initialized) {
       await initializeDatabase();
       initialized = true;
@@ -17,7 +15,6 @@ export async function GET(
 
     const { id } = await params;
 
-    // Validate UUID format
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {

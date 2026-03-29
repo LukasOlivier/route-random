@@ -46,7 +46,6 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   isTrackingLocation: false,
   setStartLocation: (startLocation) => {
     set({ startLocation });
-    // store the start location in localStorage for persistence
     if (typeof window !== "undefined" && startLocation) {
       localStorage.setItem(
         "startLocation",
@@ -65,7 +64,6 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
   setRouteId: (routeId) => set({ routeId }),
   resetRoute: () => {
-    // Clear route ID from URL
     if (typeof window !== "undefined") {
       window.history.pushState({}, "", "/");
     }
@@ -78,9 +76,11 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     if (!generatedRoute) return;
 
     try {
-      // Only store coordinates and distance — waypoints are ephemeral editing
-      // state and must not be persisted (waypoints[0] would expose home location).
-      const { waypoints: _waypoints, ...routeToSave } = generatedRoute;
+      const routeToSave = {
+        coordinates: generatedRoute.coordinates,
+        distance: generatedRoute.distance,
+        elevationGain: generatedRoute.elevationGain,
+      };
       const response = await fetch("/api/routes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

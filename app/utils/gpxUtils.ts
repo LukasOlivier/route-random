@@ -1,18 +1,11 @@
 import { GeneratedRoute } from "../../stores/store";
 
-/**
- * Converts a route to GPX (GPS Exchange Format) XML string
- * @param route - The generated route with coordinates and distance
- * @param routeName - Optional name for the route (defaults to "Generated Route")
- * @returns GPX XML string
- */
-export function convertRouteToGPX(
+function convertRouteToGPX(
   route: GeneratedRoute,
-  routeName: string = "Generated Route"
+  routeName: string = "Generated Route",
 ): string {
   const now = new Date().toISOString();
 
-  // Create waypoints (track points) from coordinates
   const trackPoints = route.coordinates
     .map(([lon, lat]) => {
       return `      <trkpt lat="${lat}" lon="${lon}"></trkpt>`;
@@ -38,18 +31,12 @@ ${trackPoints}
   return gpxContent;
 }
 
-/**
- * Downloads a route as a GPX file
- * @param route - The generated route to download
- * @param filename - Optional filename (defaults to route-{timestamp}.gpx)
- */
 export function downloadRouteAsGPX(
   route: GeneratedRoute,
-  filename?: string
+  filename?: string,
 ): void {
   const gpxContent = convertRouteToGPX(route);
 
-  // Create filename with timestamp if not provided
   const finalFilename =
     filename ||
     `route-random-${new Date()
@@ -57,7 +44,6 @@ export function downloadRouteAsGPX(
       .slice(0, 19)
       .replace(/:/g, "-")}.gpx`;
 
-  // Create blob and download
   const blob = new Blob([gpxContent], { type: "application/gpx+xml" });
   const url = URL.createObjectURL(blob);
 
@@ -67,7 +53,6 @@ export function downloadRouteAsGPX(
   document.body.appendChild(link);
   link.click();
 
-  // Clean up
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }

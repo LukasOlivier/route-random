@@ -27,7 +27,6 @@ export default function SidebarForm() {
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
 
-  // Local state for location functionality
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
 
@@ -43,7 +42,6 @@ export default function SidebarForm() {
     const distanceInput = formData.get("distance") as string;
     const timeInput = formData.get("time") as string;
 
-    // Call the hook's generateRoute function with form data
     await generateRoute({
       distance: distanceInput,
       time: timeInput,
@@ -104,7 +102,6 @@ export default function SidebarForm() {
       onSubmit={handleGenerateRoute}
       className="flex flex-col gap-4 flex-grow"
     >
-      {/* Toggling between time and distance mode */}
       <div className="w-full flex gap-2">
         <ToggleModeButton
           text={t("distanceMode")}
@@ -126,7 +123,6 @@ export default function SidebarForm() {
       <div className="flex flex-col gap-4">
         {mode === Mode.DISTANCE ? (
           <div>
-            {/* Distance specific fields */}
             <label
               htmlFor="distance"
               className="block text-sm font-medium mb-1"
@@ -154,7 +150,6 @@ export default function SidebarForm() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {/* Time specific fields */}
             <div>
               <label htmlFor="time" className="block text-sm font-medium mb-1">
                 {t("desiredDuration")}
@@ -177,7 +172,6 @@ export default function SidebarForm() {
               </div>
             </div>
             <div>
-              {/* Pacing selector */}
               <label htmlFor="pace" className="block text-sm font-medium mb-1 ">
                 {t("pace")}
               </label>
@@ -230,7 +224,6 @@ export default function SidebarForm() {
           </div>
         </div>
 
-        {/* Submit button or Accept/Reset buttons */}
         <div className="mt-10 hidden lg:block">
           {generatedRoute ? (
             <div className="flex gap-2 flex-wrap">

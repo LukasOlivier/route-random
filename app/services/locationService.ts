@@ -10,11 +10,11 @@ interface NominatimResponse {
   lat: string;
   lon: string;
   place_id: string;
-  [key: string]: unknown; // For other properties we don't use
+  [key: string]: unknown;
 }
 
 export async function searchLocations(
-  query: string
+  query: string,
 ): Promise<LocationResult[]> {
   if (!query.trim() || query.length < 3) {
     return [];
@@ -23,8 +23,8 @@ export async function searchLocations(
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        query
-      )}&limit=5&addressdetails=1`
+        query,
+      )}&limit=5&addressdetails=1`,
     );
 
     if (!response.ok) {

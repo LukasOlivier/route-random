@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import {
   generateCircularWaypoints,
   getNumPointsForDistance,
@@ -7,10 +8,10 @@ import {
   generateWalkingRoute,
   generateRoundTripRoute,
 } from "../../services/orsService";
+import { notifyDiscord } from "@/app/utils/discordNotifications";
 
-// Configuration for distance tolerance
 const TOLERANCE_CONFIG = {
-  scalePercentage: 0.1, // 10% tolerance
+  scalePercentage: 0.1,
   minToleranceMeters: 500,
   maxToleranceMeters: 2000,
 };
@@ -24,12 +25,11 @@ export async function POST(request: NextRequest) {
       correctionFactor,
       waypoints,
       regenerate,
-      useRoundTrip = true, // Default to using ORS round-trip
+      useRoundTrip = true,
       seed,
       preferences,
     } = body;
 
-    // Validate ORS API key
     const orsApiKey = process.env.ORS_API_KEY;
     if (!orsApiKey) {
       return NextResponse.json(
@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
     let route;
 
     if (regenerate && waypoints) {
-      // Use existing waypoints for regeneration (user moved a marker)
       finalWaypoints = waypoints;
       route = await generateWalkingRoute(waypoints, orsApiKey);
     } else {
@@ -60,7 +59,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Extract coordinates from startLocation
       let startLat: number, startLng: number;
       if (Array.isArray(startLocation)) {
         [startLat, startLng] = startLocation;
@@ -69,10 +67,8 @@ export async function POST(request: NextRequest) {
         startLng = startLocation.lng;
       }
 
-      // Convert distance from km to meters for ORS
       const targetDistanceMeters = distance * 1000;
 
-      // Calculate distance tolerance
       const distanceTolerance = Math.max(
         TOLERANCE_CONFIG.minToleranceMeters,
         Math.min(
@@ -81,18 +77,15 @@ export async function POST(request: NextRequest) {
         ),
       );
 
-      // Prefer ORS round-trip for distances >= 2km
       const shouldUseRoundTrip =
         useRoundTrip !== false && targetDistanceMeters >= 2000;
 
       if (shouldUseRoundTrip) {
-        // Use ORS native round-trip with retry logic
         const maxAttempts = 3;
         let bestRoute = null;
         let bestDistanceDiff = Infinity;
 
-        // Start with a smaller correction and adjust in subsequent attempts
-        const correctionFactors = [0.78, 0.72, 0.68]; // Try different adjustments
+        const correctionFactors = [0.78, 0.72, 0.68];
 
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
           try {
@@ -100,7 +93,6 @@ export async function POST(request: NextRequest) {
               seed !== undefined ? seed + attempt - 1 : undefined;
             const numPoints = getNumPointsForDistance(distance);
 
-            // Apply correction factor to get closer to target distance
             const adjustedDistance = Math.round(
               targetDistanceMeters * correctionFactors[attempt - 1],
             );
@@ -119,19 +111,16 @@ export async function POST(request: NextRequest) {
               attemptRoute.distance - targetDistanceMeters,
             );
 
-            // Keep track of best attempt
             if (distanceDiff < bestDistanceDiff) {
               bestDistanceDiff = distanceDiff;
               bestRoute = attemptRoute;
             }
 
-            // If within tolerance, use this route
             if (distanceDiff <= distanceTolerance) {
               console.log(
                 `✓ Round-trip route found on attempt ${attempt}: ${attemptRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${distanceDiff}m)`,
               );
               route = attemptRoute;
-              // Extract waypoints from the route for display
               finalWaypoints = extractWaypointsFromRoute(
                 attemptRoute,
                 startLng,
@@ -146,7 +135,6 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // If no route within tolerance, use best attempt
         if (!route && bestRoute) {
           console.log(
             `⚠ Using best round-trip attempt: ${bestRoute.distance}m (target: ${targetDistanceMeters}m, diff: ${bestDistanceDiff}m)`,
@@ -162,7 +150,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Fallback to custom circular waypoint generation
       if (!route) {
         console.log("Using custom circular waypoint generation");
         finalWaypoints = generateCircularWaypoints(
@@ -190,7 +177,16 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error generating route:", error);
 
-    // Provide more specific error messages
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+
+    after(() =>
+      notifyDiscord({
+        event: "route_generation_failed",
+        errorMessage,
+      }),
+    );
+
     if (error instanceof Error) {
       if (error.message.includes("ORS API error")) {
         return NextResponse.json(
@@ -216,9 +212,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Extract waypoints from a generated route for visualization
- */
 function extractWaypointsFromRoute(
   route: { coordinates: [number, number][]; distance: number },
   startLng: number,
