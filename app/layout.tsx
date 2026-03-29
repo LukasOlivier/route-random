@@ -8,7 +8,11 @@ import type {
 } from "schema-dts";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
+import { getValidatedEnv } from "@/lib/env";
 import "./globals.css";
+
+// Validate environment variables at startup
+getValidatedEnv();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

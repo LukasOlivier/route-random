@@ -1,3 +1,7 @@
+import { getLogger } from "@/lib/logger";
+
+const logger = getLogger("orsService");
+
 export interface ORSRoute {
   type: string;
   features: Array<{
@@ -75,6 +79,11 @@ export async function generateRoundTripRoute(
   targetDistance: number,
   apiKey: string,
 ): Promise<RouteResponse> {
+  logger.info(
+    { startLat, startLng, targetDistance },
+    "Starting round trip route generation",
+  );
+
   const correctionFactors = [0.82, 0.75, 0.68];
   const toleranceMeters = Math.max(500, targetDistance * 0.1);
 
@@ -114,12 +123,22 @@ export async function generateRoundTripRoute(
 
       if (!response.ok) {
         const errorText = await response.text();
+        logger.warn(
+          {
+            status: response.status,
+            factor,
+            correctedDistance,
+            errorText,
+          },
+          "ORS API returned error status",
+        );
         throw new Error(`ORS API error: ${response.status} - ${errorText}`);
       }
 
       const data: ORSRoute = await response.json();
 
       if (!data.features || data.features.length === 0) {
+        logger.warn({ factor }, "ORS API returned no features");
         throw new Error("No route found");
       }
 
@@ -147,17 +166,35 @@ export async function generateRoundTripRoute(
       }
 
       if (distanceDiff <= toleranceMeters) {
-        console.log(
-          `✓ Route found within tolerance: ${(totalDistance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(distanceDiff / 1000).toFixed(2)}km)`,
+        logger.info(
+          {
+            factor,
+            distance: (totalDistance / 1000).toFixed(2),
+            target: (targetDistance / 1000).toFixed(2),
+            diff: (distanceDiff / 1000).toFixed(2),
+          },
+          "Route found within tolerance",
         );
         return route;
       }
 
-      console.log(
-        `Attempt with factor ${factor}: ${(totalDistance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(distanceDiff / 1000).toFixed(2)}km)`,
+      logger.debug(
+        {
+          factor,
+          distance: (totalDistance / 1000).toFixed(2),
+          target: (targetDistance / 1000).toFixed(2),
+          diff: (distanceDiff / 1000).toFixed(2),
+        },
+        "Route attempt",
       );
     } catch (error) {
-      console.log(`Retry attempt with factor ${factor} failed:`, error);
+      logger.warn(
+        {
+          factor,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Retry attempt failed",
+      );
       if (factor === correctionFactors[correctionFactors.length - 1]) {
         throw error;
       }
@@ -165,12 +202,21 @@ export async function generateRoundTripRoute(
   }
 
   if (bestRoute) {
-    console.log(
-      `⚠ Using best attempt: ${(bestRoute.distance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(bestDistanceDiff / 1000).toFixed(2)}km)`,
+    logger.info(
+      {
+        distance: (bestRoute.distance / 1000).toFixed(2),
+        target: (targetDistance / 1000).toFixed(2),
+        diff: (bestDistanceDiff / 1000).toFixed(2),
+      },
+      "Using best attempt instead of ideal match",
     );
     return bestRoute;
   }
 
+  logger.error(
+    { targetDistance },
+    "Failed to generate route after all attempts",
+  );
   throw new Error("No route found");
 }
 
@@ -178,6 +224,11 @@ export async function generateWalkingRoute(
   waypoints: [number, number][],
   apiKey: string,
 ): Promise<RouteResponse> {
+  logger.info(
+    { waypointCount: waypoints.length },
+    "Starting walking route generation",
+  );
+
   const requestBody = {
     coordinates: waypoints,
     elevation: true,
@@ -203,12 +254,17 @@ export async function generateWalkingRoute(
 
     if (!response.ok) {
       const errorText = await response.text();
+      logger.error(
+        { status: response.status, errorText },
+        "ORS API error for walking route",
+      );
       throw new Error(`ORS API error: ${response.status} - ${errorText}`);
     }
 
     const data: ORSRoute = await response.json();
 
     if (!data.features || data.features.length === 0) {
+      logger.warn("ORS API returned no features for walking route");
       throw new Error("No route found");
     }
 
@@ -221,6 +277,14 @@ export async function generateWalkingRoute(
 
     const elevation = extractElevationData(data);
 
+    logger.info(
+      {
+        distance: (totalDistance / 1000).toFixed(2),
+        waypointCount: waypoints.length,
+      },
+      "Walking route generated successfully",
+    );
+
     return {
       coordinates,
       distance: totalDistance,
@@ -228,7 +292,13 @@ export async function generateWalkingRoute(
       waypoints,
     };
   } catch (error) {
-    console.error("Error calling ORS API:", error);
+    logger.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        waypointCount: waypoints.length,
+      },
+      "Error calling ORS API",
+    );
     throw error;
   }
 }
@@ -280,7 +350,10 @@ function extractElevationData(route: ORSRoute):
 
     return undefined;
   } catch (error) {
-    console.error("Error extracting elevation data:", error);
+    logger.warn(
+      { error: error instanceof Error ? error.message : String(error) },
+      "Error extracting elevation data",
+    );
     return undefined;
   }
 }
