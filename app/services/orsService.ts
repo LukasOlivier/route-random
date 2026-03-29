@@ -27,13 +27,46 @@ export interface RouteResponse {
     max: number;
     profile: number[];
   };
+  waypoints?: [number, number][];
 }
 
-export interface RoutePreferences {
-  avoidSteps?: boolean;
-  avoidHighways?: boolean;
-  avoidUnpaved?: boolean;
-  complexity?: "simple" | "moderate" | "complex";
+const ORS_API_URL =
+  "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
+const COMMON_AVOID_FEATURES = ["ferries"];
+
+function extractWaypointsFromCoordinates(
+  coordinates: [number, number][],
+  numWaypoints: number = 5,
+): [number, number][] {
+  if (coordinates.length <= numWaypoints + 1) {
+    return coordinates;
+  }
+
+  const waypoints: [number, number][] = [];
+
+  waypoints.push(coordinates[0]);
+
+  const step = Math.floor((coordinates.length - 1) / (numWaypoints + 1));
+
+  for (let i = 1; i <= numWaypoints; i++) {
+    const index = Math.min(i * step, coordinates.length - 1);
+    waypoints.push(coordinates[index]);
+  }
+
+  if (waypoints[waypoints.length - 1] !== coordinates[coordinates.length - 1]) {
+    waypoints.push(coordinates[coordinates.length - 1]);
+  }
+
+  return waypoints;
+}
+
+function buildOrsRequestHeaders(apiKey: string) {
+  return {
+    Accept:
+      "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
+    Authorization: apiKey,
+    "Content-Type": "application/json; charset=utf-8",
+  };
 }
 
 export async function generateRoundTripRoute(
@@ -41,110 +74,130 @@ export async function generateRoundTripRoute(
   startLng: number,
   targetDistance: number,
   apiKey: string,
-  numPoints?: number,
-  seed?: number,
-  preferences?: RoutePreferences,
 ): Promise<RouteResponse> {
-  const actualNumPoints = numPoints ?? 6;
-  const url =
-    "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
+  const correctionFactors = [0.82, 0.75, 0.68];
+  const toleranceMeters = Math.max(500, targetDistance * 0.1);
 
-  const avoidFeatures: string[] = ["ferries"];
-  if (preferences?.avoidSteps) avoidFeatures.push("steps");
-  if (preferences?.avoidHighways) avoidFeatures.push("highways");
+  let bestRoute: RouteResponse | null = null;
+  let bestDistanceDiff = Infinity;
 
-  let adjustedNumPoints = actualNumPoints;
-  if (preferences?.complexity === "simple")
-    adjustedNumPoints = Math.max(3, actualNumPoints - 2);
-  if (preferences?.complexity === "complex")
-    adjustedNumPoints = Math.min(12, actualNumPoints + 3);
+  for (const factor of correctionFactors) {
+    try {
+      const correctedDistance = Math.round(targetDistance * factor);
 
-  const requestBody = {
-    coordinates: [[startLng, startLat]],
-    preference: "recommended",
-    elevation: true,
-    extra_info: ["surface", "waytype", "steepness"],
-    options: {
-      round_trip: {
-        length: targetDistance,
-        points: adjustedNumPoints,
-        seed: seed ?? Math.floor(Math.random() * 100000),
-      },
-      avoid_features: avoidFeatures,
-    },
-  };
+      const requestBody = {
+        coordinates: [[startLng, startLat]],
+        preference: "recommended",
+        elevation: true,
+        extra_info: ["surface", "waytype", "steepness", "traildifficulty"],
+        options: {
+          round_trip: {
+            length: correctedDistance,
+            points: 6,
+            seed: Math.floor(Math.random() * 100000),
+          },
+          avoid_features: COMMON_AVOID_FEATURES,
+          profile_params: {
+            weightings: {
+              green: 1,
+              quiet: 1,
+            },
+          },
+        },
+      };
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept:
-          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        Authorization: apiKey,
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify(requestBody),
-    });
+      const response = await fetch(ORS_API_URL, {
+        method: "POST",
+        headers: buildOrsRequestHeaders(apiKey),
+        body: JSON.stringify(requestBody),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`ORS API error: ${response.status} - ${errorText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`ORS API error: ${response.status} - ${errorText}`);
+      }
+
+      const data: ORSRoute = await response.json();
+
+      if (!data.features || data.features.length === 0) {
+        throw new Error("No route found");
+      }
+
+      const feature = data.features[0];
+      const coordinates = feature.geometry.coordinates;
+      const totalDistance = feature.properties.segments.reduce(
+        (sum, segment) => sum + segment.distance,
+        0,
+      );
+
+      const elevation = extractElevationData(data);
+      const waypoints = extractWaypointsFromCoordinates(coordinates, 5);
+      const route: RouteResponse = {
+        coordinates,
+        distance: totalDistance,
+        elevation,
+        waypoints,
+      };
+
+      const distanceDiff = Math.abs(totalDistance - targetDistance);
+
+      if (distanceDiff < bestDistanceDiff) {
+        bestDistanceDiff = distanceDiff;
+        bestRoute = route;
+      }
+
+      if (distanceDiff <= toleranceMeters) {
+        console.log(
+          `✓ Route found within tolerance: ${(totalDistance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(distanceDiff / 1000).toFixed(2)}km)`,
+        );
+        return route;
+      }
+
+      console.log(
+        `Attempt with factor ${factor}: ${(totalDistance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(distanceDiff / 1000).toFixed(2)}km)`,
+      );
+    } catch (error) {
+      console.log(`Retry attempt with factor ${factor} failed:`, error);
+      if (factor === correctionFactors[correctionFactors.length - 1]) {
+        throw error;
+      }
     }
-
-    const data: ORSRoute = await response.json();
-
-    if (!data.features || data.features.length === 0) {
-      throw new Error("No route found");
-    }
-
-    const feature = data.features[0];
-    const coordinates = feature.geometry.coordinates;
-    const totalDistance = feature.properties.segments.reduce(
-      (sum, segment) => sum + segment.distance,
-      0,
-    );
-
-    const elevation = extractElevationData(data);
-
-    return {
-      coordinates,
-      distance: totalDistance,
-      elevation,
-    };
-  } catch (error) {
-    console.error("Error calling ORS round-trip API:", error);
-    throw error;
   }
+
+  if (bestRoute) {
+    console.log(
+      `⚠ Using best attempt: ${(bestRoute.distance / 1000).toFixed(2)}km (target: ${(targetDistance / 1000).toFixed(2)}km, diff: ${(bestDistanceDiff / 1000).toFixed(2)}km)`,
+    );
+    return bestRoute;
+  }
+
+  throw new Error("No route found");
 }
 
 export async function generateWalkingRoute(
   waypoints: [number, number][],
   apiKey: string,
 ): Promise<RouteResponse> {
-  const url =
-    "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
-
   const requestBody = {
     coordinates: waypoints,
     elevation: true,
-    extra_info: ["surface", "waytype", "steepness"],
+    extra_info: ["surface", "waytype", "steepness", "traildifficulty"],
     options: {
-      avoid_features: ["ferries", "steps"],
+      avoid_features: COMMON_AVOID_FEATURES,
+      profile_params: {
+        weightings: {
+          green: 1,
+          quiet: 1,
+        },
+      },
     },
     preference: "recommended",
-    units: "km",
-    continue_straight: true,
   };
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(ORS_API_URL, {
       method: "POST",
-      headers: {
-        Accept:
-          "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-        Authorization: apiKey,
-        "Content-Type": "application/json; charset=utf-8",
-      },
+      headers: buildOrsRequestHeaders(apiKey),
       body: JSON.stringify(requestBody),
     });
 
@@ -172,6 +225,7 @@ export async function generateWalkingRoute(
       coordinates,
       distance: totalDistance,
       elevation,
+      waypoints,
     };
   } catch (error) {
     console.error("Error calling ORS API:", error);

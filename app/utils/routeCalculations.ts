@@ -1,23 +1,15 @@
 import { Pace } from "../../stores/store";
 
-export function getPaceSpeed(pace: Pace): number {
-  switch (pace) {
-    case Pace.WALKING:
-      return 5;
-    case Pace.RUNNING:
-      return 10;
-    case Pace.CYCLING:
-      return 15;
-    default:
-      return 5;
-  }
-}
+const PACE_SPEEDS: Record<Pace, number> = {
+  [Pace.WALKING]: 5,
+  [Pace.RUNNING]: 10,
+  [Pace.CYCLING]: 15,
+};
 
 export function calculateDistanceFromTime(
   timeMinutes: number,
   pace: Pace,
 ): number {
-  const speedKmh = getPaceSpeed(pace);
-  const timeHours = timeMinutes / 60;
-  return speedKmh * timeHours;
+  const speedKmh = PACE_SPEEDS[pace] ?? 5;
+  return (speedKmh * timeMinutes) / 60;
 }

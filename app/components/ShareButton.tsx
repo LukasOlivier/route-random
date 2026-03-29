@@ -5,10 +5,11 @@ import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import FloatingButton from "./FloatingButton";
+import { withRouteGuard } from "./withRouteGuard";
 
-export default function ShareButton() {
+function ShareButtonContent() {
   const t = useTranslations("ShareButton");
-  const { generatedRoute, isRouteAccepted, routeId } = useLocationStore();
+  const { routeId } = useLocationStore();
   const isSharingRef = useRef(false);
 
   const shareRoute = async () => {
@@ -44,7 +45,7 @@ export default function ShareButton() {
     }
   };
 
-  if (!isRouteAccepted || !generatedRoute || !routeId) {
+  if (!routeId) {
     return null;
   }
 
@@ -62,3 +63,5 @@ export default function ShareButton() {
     </FloatingButton>
   );
 }
+
+export default withRouteGuard(ShareButtonContent);
