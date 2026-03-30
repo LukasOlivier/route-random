@@ -46,14 +46,14 @@ gradle
 build/
 res/
 app/src/
-
 *.apk
 *.aab
 *.keystore
 *.jks
 *.bat
-*.gradle
+*.gradlec
 *.idsig
+*.gradle
 gradlew
 gradle.properties
 manifest-checksum.txt

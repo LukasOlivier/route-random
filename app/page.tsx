@@ -42,8 +42,8 @@ export default async function Home() {
           </h2>
           <ul className="mt-3 space-y-2 text-base text-gray-700 dark:text-gray-300">
             <li>
-              <Link className="underline" href="/">
-                {t("linkHome")}
+              <Link className="underline" href="/privacy-policy">
+                {t("linkPrivacy")}
               </Link>
             </li>
             <li>
