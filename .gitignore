@@ -40,6 +40,20 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# temp
-old-app
-.env*.local
+# bubblewrap
+gradle
+.gradle
+build/
+res/
+app/src/
+
+*.apk
+*.aab
+*.keystore
+*.jks
+*.bat
+*.gradle
+*.idsig
+gradlew
+gradle.properties
+manifest-checksum.txt
