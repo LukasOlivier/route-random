@@ -56,6 +56,19 @@
     "locationUnavailable": "Location information unavailable.",
     "locationTimeout": "Location request timed out."
   },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Please enter a distance",
+    "enterTimeDuration": "Please enter a time duration",
+    "selectStartLocation": "Please select a starting location",
+    "routeServiceUnavailable": "Route service unavailable. Please try again later.",
+    "routeRateLimited": "Too many people are generating routes right now. Please try again later or support me through buymeacoffee.com/lukasolivier to increase the limit.",
+    "noRouteFound": "Could not generate a route for this location. Try a different starting point.",
+    "failedGenerate": "Failed to generate route. Please try again.",
+    "failedRegenerate": "Failed to regenerate route. Please try again."
+  },
+  "Notifications": {
+    "close": "Close notification"
+  },
   "Page": {
     "toggleMenu": "Toggle menu",
     "fullscreen": "Fullscreen",

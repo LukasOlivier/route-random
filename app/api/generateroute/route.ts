@@ -5,6 +5,7 @@ import {
   generateRoundTripRoute,
 } from "../../services/orsService";
 import { notifyDiscord } from "@/app/utils/discordNotifications";
+import type { RouteResponse } from "../../services/orsService";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     let finalWaypoints: [number, number][] | undefined;
-    let route;
+    let route: RouteResponse;
 
     if (regenerate && waypoints) {
       finalWaypoints = waypoints;
@@ -64,9 +65,14 @@ export async function POST(request: NextRequest) {
         distance: route.distance,
         elevationGain: route.elevation?.gain,
         waypoints: route.waypoints
-          ? route.waypoints.map(([lng, lat]) => [lat, lng] as [number, number])
+          ? route.waypoints.map(
+              ([lng, lat]: [number, number]) => [lat, lng] as [number, number],
+            )
           : finalWaypoints
-            ? finalWaypoints.map(([lng, lat]) => [lat, lng] as [number, number])
+            ? finalWaypoints.map(
+                ([lng, lat]: [number, number]) =>
+                  [lat, lng] as [number, number],
+              )
             : undefined,
       },
     });
@@ -84,15 +90,32 @@ export async function POST(request: NextRequest) {
     );
 
     if (error instanceof Error) {
+      if (
+        error.message.includes("429") ||
+        error.message.includes("Rate Limit")
+      ) {
+        return NextResponse.json(
+          {
+            errorCode: "route_rate_limited",
+            error:
+              "Too many users are generating routes right now. Please try again later.",
+          },
+          { status: 429 },
+        );
+      }
       if (error.message.includes("ORS API error")) {
         return NextResponse.json(
-          { error: "Route service unavailable. Please try again later." },
+          {
+            errorCode: "route_service_unavailable",
+            error: "Route service unavailable. Please try again later.",
+          },
           { status: 503 },
         );
       }
       if (error.message.includes("No route found")) {
         return NextResponse.json(
           {
+            errorCode: "route_not_found",
             error:
               "Could not generate a route for this location. Try a different starting point.",
           },

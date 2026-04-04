@@ -9,6 +9,7 @@ import TrackUserLocationButton from "./TrackUserLocationButton";
 import DownloadButton from "./DownloadButton";
 import FloatingButton from "./FloatingButton";
 import FullscreenButton from "./FullscreenButton";
+import NotificationCenter from "./NotificationCenter";
 import ShareButton from "./ShareButton";
 import MapWrapper from "./MapWrapper";
 import { useRouteFromUrl } from "@/app/hooks/useRouteFromUrl";
@@ -45,6 +46,7 @@ export default function ClientPageWrapper({
 
   return (
     <>
+      <NotificationCenter offsetForSidebar={!isFullscreen} />
       <div
         className={`fixed right-4 z-[999999] flex flex-col items-end gap-2 pt-4`}
       >
