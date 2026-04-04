@@ -3,11 +3,12 @@
 import { useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useLocationStore } from "../../stores/store";
+import { useLocationStore, useNotificationStore } from "../../stores";
 import FloatingButton from "./FloatingButton";
 
 export default function TrackUserLocationButton() {
   const t = useTranslations("TrackUserLocationButton");
+  const showNotification = useNotificationStore((s) => s.showNotification);
   const { isTrackingLocation, setLocationTracking, setUserLocation } =
     useLocationStore();
 
@@ -15,7 +16,7 @@ export default function TrackUserLocationButton() {
 
   const startTracking = () => {
     if (!navigator.geolocation) {
-      alert(t("geolocationNotSupported"));
+      showNotification(t("geolocationNotSupported"), { variant: "error" });
       return;
     }
 
@@ -46,7 +47,7 @@ export default function TrackUserLocationButton() {
           message = t("locationTimeout");
           break;
       }
-      alert(message);
+      showNotification(message, { variant: "error" });
     };
 
     watchIdRef.current = navigator.geolocation.watchPosition(

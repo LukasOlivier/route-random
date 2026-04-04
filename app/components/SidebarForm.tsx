@@ -6,7 +6,13 @@ import ToggleModeButton from "./ToggleModeButton";
 import GenerateRouteButton from "./GenerateRouteButton";
 import AcceptRouteButton from "./AcceptRouteButton";
 import ResetRouteButton from "./ResetRouteButton";
-import { useLocationStore, Mode, Pace, useRouteFormStore } from "../../stores";
+import {
+  useLocationStore,
+  Mode,
+  Pace,
+  useRouteFormStore,
+  useNotificationStore,
+} from "../../stores";
 import LocationSearch from "./LocationSearch";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import { useTranslations } from "next-intl";
@@ -26,6 +32,7 @@ export default function SidebarForm() {
     useRouteFormStore();
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
+  const showNotification = useNotificationStore((s) => s.showNotification);
 
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
@@ -50,7 +57,7 @@ export default function SidebarForm() {
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert(t("geolocationNotSupported"));
+      showNotification(t("geolocationNotSupported"), { variant: "error" });
       setLocationError(true);
       return;
     }
@@ -66,7 +73,7 @@ export default function SidebarForm() {
       },
       (error) => {
         console.error("Error getting location:", error);
-        alert(t("locationError"));
+        showNotification(t("locationError"), { variant: "error" });
         setIsGettingLocation(false);
         setLocationError(true);
       },

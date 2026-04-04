@@ -56,6 +56,19 @@
     "locationUnavailable": "Locatie-informatie niet beschikbaar.",
     "locationTimeout": "Locatieverzoek verlopen."
   },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Voer een afstand in",
+    "enterTimeDuration": "Voer een tijdsduur in",
+    "selectStartLocation": "Selecteer een startlocatie",
+    "routeServiceUnavailable": "Routeservice niet beschikbaar. Probeer het later opnieuw.",
+    "routeRateLimited": "Er worden nu te veel routes gegenereerd. Probeer het later opnieuw of steun mij via buymeacoffee.com/lukasolivier om de limiet te verhogen.",
+    "noRouteFound": "Kon geen route genereren voor deze locatie. Probeer een ander startpunt.",
+    "failedGenerate": "Route genereren mislukt. Probeer het opnieuw.",
+    "failedRegenerate": "Route opnieuw genereren mislukt. Probeer het opnieuw."
+  },
+  "Notifications": {
+    "close": "Melding sluiten"
+  },
   "Page": {
     "toggleMenu": "Optiemenu tonen/verbergen",
     "fullscreen": "Volledig scherm",
