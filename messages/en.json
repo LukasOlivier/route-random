@@ -23,7 +23,14 @@
     "searchLocationPlaceholder": "Search starting location...",
     "useCurrentLocation": "Use current location",
     "geolocationNotSupported": "Geolocation is not supported by this browser.",
-    "locationError": "Unable to get your current location."
+    "locationError": "Unable to get your current location.",
+    "allowLocationPrompt": "Allow location access in the browser prompt to continue.",
+    "locationPermissionDenied": "Location permission is off for this app. Enable it in your browser or device settings.",
+    "locationPermissionBlocked": "Location request was blocked. Please allow location access and try again.",
+    "locationServicesDisabled": "Location services seem to be off on your device. Turn them on and try again.",
+    "locationUnavailable": "Location information is currently unavailable.",
+    "locationTimeout": "Location request took too long. Move to a clearer area and try again.",
+    "unableToGetLocation": "Unable to get your current location."
   },
   "Map": {
     "startLocation": "Start Location",
@@ -51,8 +58,12 @@
     "trackLocation": "Track location",
     "trackYourLocation": "Track location",
     "geolocationNotSupported": "Geolocation is not supported by this browser.",
+    "allowLocationPrompt": "Allow location access in the browser prompt to continue.",
     "unableToGetLocation": "Unable to get your location.",
+    "locationPermissionDenied": "Location permission is off for this app. Enable it in your browser or device settings.",
+    "locationPermissionBlocked": "Location request was blocked. Please allow location access and try again.",
     "locationAccessDenied": "Location access denied. Please enable location permissions.",
+    "locationServicesDisabled": "Location services seem to be off on your device. Turn them on and try again.",
     "locationUnavailable": "Location information unavailable.",
     "locationTimeout": "Location request timed out."
   },

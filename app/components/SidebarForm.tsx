@@ -16,6 +16,10 @@ import {
 import LocationSearch from "./LocationSearch";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import { useTranslations } from "next-intl";
+import {
+  getLocationErrorMessageKey,
+  getLocationPermissionState,
+} from "../utils/geolocationDiagnostics";
 
 export default function SidebarForm() {
   const t = useTranslations("SidebarForm");
@@ -55,7 +59,7 @@ export default function SidebarForm() {
     });
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
       showNotification(t("geolocationNotSupported"), { variant: "error" });
       setLocationError(true);
@@ -63,6 +67,25 @@ export default function SidebarForm() {
     }
 
     setIsGettingLocation(true);
+    setLocationError(false);
+
+    const permissionState = await getLocationPermissionState();
+    if (permissionState === "denied") {
+      showNotification(t("locationPermissionDenied"), {
+        variant: "error",
+        durationMs: 6500,
+      });
+      setIsGettingLocation(false);
+      setLocationError(true);
+      return;
+    }
+
+    if (permissionState === "prompt") {
+      showNotification(t("allowLocationPrompt"), {
+        durationMs: 5000,
+      });
+    }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
@@ -71,11 +94,17 @@ export default function SidebarForm() {
         setIsGettingLocation(false);
         setLocationError(false);
       },
-      (error) => {
+      async (error) => {
         console.error("Error getting location:", error);
-        showNotification(t("locationError"), { variant: "error" });
+        const messageKey = await getLocationErrorMessageKey(error);
+        showNotification(t(messageKey), { variant: "error" });
         setIsGettingLocation(false);
         setLocationError(true);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 5000,
       },
     );
   };
@@ -213,8 +242,10 @@ export default function SidebarForm() {
               type="button"
               title={t("useCurrentLocation")}
               aria-label={t("useCurrentLocation")}
-              onClick={getCurrentLocation}
-              disabled={isGettingLocation || locationError || !!generatedRoute}
+              onClick={() => {
+                void getCurrentLocation();
+              }}
+              disabled={isGettingLocation || !!generatedRoute}
               className="px-3 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 rounded-md dark:text-white flex items-center bg-gray-200 hover:bg-gray-300 transition-colors border-gray-400"
               data-umami-event="Use current location"
               data-umami-event-source="sidebar"
