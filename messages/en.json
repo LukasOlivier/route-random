@@ -105,5 +105,14 @@
     "shareLinkedIn": "Share on LinkedIn",
     "shareReddit": "Share on Reddit",
     "shareTweetText": "Check out this app: Route Random. It creates fresh circular running, walking, and cycling routes in seconds"
+  },
+  "LegendButton": {
+    "ariaLabel": "Legend",
+    "tooltip": "Legend",
+    "modalTitle": "Route Legend",
+    "normalSegment": "Normal Route",
+    "normalDescription": "The main part of your generated route.",
+    "overlapSegment": "Overlapping Route",
+    "overlapDescription": "An overlapping section where your route goes back and forth. Sometimes a perfect loop isn't possible, so you may need to cover a section twice."
   }
 }

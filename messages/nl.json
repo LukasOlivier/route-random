@@ -105,5 +105,14 @@
     "shareLinkedIn": "Delen op LinkedIn",
     "shareReddit": "Delen op Reddit",
     "shareTweetText": "Check deze app: Route Random. In enkele seconden krijg je nieuwe cirkelroutes voor hardlopen, wandelen en fietsen"
+  },
+  "LegendButton": {
+    "ariaLabel": "Legende",
+    "tooltip": "Legende",
+    "modalTitle": "Routelegende",
+    "normalSegment": "Normale Route",
+    "normalDescription": "Het belangrijkste deel van de gegenereerde route.",
+    "overlapSegment": "Overlappende Route",
+    "overlapDescription": "Een overlappend deel waar je route heen en terug gaat. Soms is een perfecte lus niet mogelijk, dus het kan zijn dat je een stukje dubbel moet afleggen."
   }
 }

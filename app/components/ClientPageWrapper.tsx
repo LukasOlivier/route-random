@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SidebarInteractive from "./SidebarInteractive";
 import MobileBottomBar from "./MobileBottomBar";
@@ -11,6 +11,7 @@ import FloatingButton from "./FloatingButton";
 import FullscreenButton from "./FullscreenButton";
 import NotificationCenter from "./NotificationCenter";
 import ShareButton from "./ShareButton";
+import LegendButton from "./LegendButton";
 import MapWrapper from "./MapWrapper";
 import { useRouteFromUrl } from "@/app/hooks/useRouteFromUrl";
 import { useLocationStore } from "@/stores/store";
@@ -50,26 +51,31 @@ export default function ClientPageWrapper({
       <div
         className={`fixed right-4 z-[999999] flex flex-col items-end gap-2 pt-4`}
       >
+        {!isFullscreen && (
+          <FloatingButton
+            onClick={toggleSidebar}
+            ariaLabel={t("toggleMenu")}
+            hideOnDesktop={true}
+            umamiEvent="Toggle menu"
+            umamiEventData={{ source: "floating-actions" }}
+          >
+            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </FloatingButton>
+        )}
         {!isSidebarOpen && !isLoadingRoute && !isFullscreen && (
           <>
-            <FloatingButton
-              onClick={toggleSidebar}
-              ariaLabel={t("toggleMenu")}
-              hideOnDesktop={true}
-              umamiEvent="Toggle menu"
-              umamiEventData={{ source: "floating-actions" }}
-            >
-              <Menu size={24} />
-            </FloatingButton>
+            <LegendButton />
             <TrackUserLocationButton />
             <DownloadButton />
             <ShareButton />
           </>
         )}
-        <FullscreenButton
-          isFullscreen={isFullscreen}
-          onToggle={setIsFullscreen}
-        />
+        {!isSidebarOpen && (
+          <FullscreenButton
+            isFullscreen={isFullscreen}
+            onToggle={setIsFullscreen}
+          />
+        )}
       </div>
       {isSidebarOpen && (
         <div
