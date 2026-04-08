@@ -23,7 +23,14 @@
     "searchLocationPlaceholder": "Zoek startlocatie...",
     "useCurrentLocation": "Gebruik huidige locatie",
     "geolocationNotSupported": "Geolocatie wordt niet ondersteund door deze browser.",
-    "locationError": "Kan uw huidige locatie niet ophalen."
+    "locationError": "Kan uw huidige locatie niet ophalen.",
+    "allowLocationPrompt": "Sta locatietoegang toe in de browsermelding om verder te gaan.",
+    "locationPermissionDenied": "Locatierechten staan uit voor deze app. Schakel ze in via browser- of apparaatinstellingen.",
+    "locationPermissionBlocked": "Locatieverzoek is geblokkeerd. Sta locatietoegang toe en probeer opnieuw.",
+    "locationServicesDisabled": "Locatieservices lijken uit te staan op uw apparaat. Schakel ze in en probeer opnieuw.",
+    "locationUnavailable": "Locatie-informatie is momenteel niet beschikbaar.",
+    "locationTimeout": "Locatieverzoek duurde te lang. Ga naar een open plek en probeer opnieuw.",
+    "unableToGetLocation": "Kan uw huidige locatie niet ophalen."
   },
   "Map": {
     "startLocation": "Start locatie",
@@ -51,8 +58,12 @@
     "trackLocation": "Locatie volgen",
     "trackYourLocation": "Locatie volgen",
     "geolocationNotSupported": "Geolocatie wordt niet ondersteund door deze browser.",
+    "allowLocationPrompt": "Sta locatietoegang toe in de browsermelding om verder te gaan.",
     "unableToGetLocation": "Kan uw locatie niet ophalen.",
+    "locationPermissionDenied": "Locatierechten staan uit voor deze app. Schakel ze in via browser- of apparaatinstellingen.",
+    "locationPermissionBlocked": "Locatieverzoek is geblokkeerd. Sta locatietoegang toe en probeer opnieuw.",
     "locationAccessDenied": "Locatietoegang geweigerd. Schakel locatiemachtigingen in.",
+    "locationServicesDisabled": "Locatieservices lijken uit te staan op uw apparaat. Schakel ze in en probeer opnieuw.",
     "locationUnavailable": "Locatie-informatie niet beschikbaar.",
     "locationTimeout": "Locatieverzoek verlopen."
   },

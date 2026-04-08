@@ -1,9 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore, useNotificationStore } from "../../stores";
+import {
+  getLocationErrorMessageKey,
+  getLocationPermissionState,
+} from "../utils/geolocationDiagnostics";
 import FloatingButton from "./FloatingButton";
 
 export default function TrackUserLocationButton() {
@@ -14,15 +18,38 @@ export default function TrackUserLocationButton() {
 
   const watchIdRef = useRef<number | null>(null);
 
-  const startTracking = () => {
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
+
+  const startTracking = async () => {
     if (!navigator.geolocation) {
       showNotification(t("geolocationNotSupported"), { variant: "error" });
       return;
     }
 
+    const permissionState = await getLocationPermissionState();
+    if (permissionState === "denied") {
+      showNotification(t("locationPermissionDenied"), {
+        variant: "error",
+        durationMs: 6500,
+      });
+      return;
+    }
+
+    if (permissionState === "prompt") {
+      showNotification(t("allowLocationPrompt"), {
+        durationMs: 5000,
+      });
+    }
+
     const options = {
       enableHighAccuracy: true,
-      timeout: 10000,
+      timeout: 12000,
       maximumAge: 5000,
     };
 
@@ -31,22 +58,12 @@ export default function TrackUserLocationButton() {
       setUserLocation([latitude, longitude]);
     };
 
-    const error = (error: GeolocationPositionError) => {
+    const error = async (error: GeolocationPositionError) => {
       console.error("Error getting location:", error);
       setLocationTracking(false);
 
-      let message = t("unableToGetLocation");
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          message = t("locationAccessDenied");
-          break;
-        case error.POSITION_UNAVAILABLE:
-          message = t("locationUnavailable");
-          break;
-        case error.TIMEOUT:
-          message = t("locationTimeout");
-          break;
-      }
+      const messageKey = await getLocationErrorMessageKey(error);
+      const message = t(messageKey);
       showNotification(message, { variant: "error" });
     };
 
@@ -72,7 +89,7 @@ export default function TrackUserLocationButton() {
     if (isTrackingLocation) {
       stopTracking();
     } else {
-      startTracking();
+      void startTracking();
     }
   };
 
