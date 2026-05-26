@@ -57,3 +57,6 @@ app/src/
 gradlew
 gradle.properties
 manifest-checksum.txt
+
+# Visual Studio Code
+.vscode/*
