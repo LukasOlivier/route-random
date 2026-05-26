@@ -11,7 +11,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getValidatedEnv } from "@/lib/env";
 import "./globals.css";
 
-// Validate environment variables at startup
 getValidatedEnv();
 
 const geistSans = Geist({
@@ -139,6 +138,15 @@ export default function RootLayout({
           defer
           src="https://umami.lukasolivier.be/script.js"
           data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
+        ></script>
+
+        <script
+          defer
+          src="https://umami.lukasolivier.be/recorder.js"
+          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
+          data-sample-rate="0.15"
+          data-mask-level="moderate"
+          data-max-duration="300000"
         ></script>
 
         <meta name="robots" content="index, follow" />
