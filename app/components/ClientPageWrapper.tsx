@@ -39,6 +39,14 @@ export default function ClientPageWrapper({
     initializeFormFromStorage();
   }, [initializeFromStorage, initializeFormFromStorage]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+
+    if (mediaQuery.matches) {
+      setIsSidebarOpen(true);
+    }
+  }, []);
+
   const { isLoading: isLoadingRoute } = useRouteFromUrl();
 
   const toggleSidebar = () => {
