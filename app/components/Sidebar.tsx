@@ -2,6 +2,7 @@ import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface SidebarProps {
   isMobile: boolean;
@@ -40,7 +41,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
           </select>
         </div>
 
-        <h2 className="text-sm text-extra mt-1 mb-4">
+        <h2 className="text-sm text-extra my-2">
           {t("subtitle")}{" "}
           <a
             className="underline"
@@ -52,16 +53,23 @@ export default function Sidebar({ isMobile }: SidebarProps) {
         </h2>
       </header>
 
-      <div className="border-t border-gray-700 my-4" />
-
+      <div className="border-t border-gray-700 my-2" />
       <SidebarForm />
 
-      <footer className="mt-auto text-xs text-extra leading-relaxed space-y-4">
+      <footer className="mt-auto text-xs text-extra leading-relaxed space-y-2">
         <h3 className="text-sm font-medium dark:text-gray-300 mb-2 text-gray-800">
           {t("aboutTitle")}
         </h3>
         <p>{t("aboutDescription1")}</p>
         <p>{t("aboutDescription2")}</p>
+        <nav className="mb-4">
+          <Link
+            href="/about"
+            className="block text-xs font-medium dark:text-gray-300 text-gray-800 hover:underline"
+          >
+            {t("aboutLink")}
+          </Link>
+        </nav>
       </footer>
     </>
   );

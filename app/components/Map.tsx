@@ -101,6 +101,7 @@ const Map = () => {
   const t = useTranslations("Map");
   const {
     startLocation,
+    isStartLocationFromStorage,
     userLocation,
     generatedRoute,
     isRouteAccepted,
@@ -113,7 +114,7 @@ const Map = () => {
   const markerRef = useRef<L.Marker>(null);
 
   useEffect(() => {
-    if (markerRef.current && startLocation) {
+    if (markerRef.current && startLocation && !isStartLocationFromStorage) {
       const marker = markerRef.current;
 
       if (isRouteAccepted) {
@@ -125,7 +126,13 @@ const Map = () => {
 
       marker.bindPopup(popupContent).openPopup();
     }
-  }, [startLocation, generatedRoute, isRouteAccepted, t]);
+  }, [
+    startLocation,
+    isStartLocationFromStorage,
+    generatedRoute,
+    isRouteAccepted,
+    t,
+  ]);
 
   const mapCenter = normalizeToLatLngTuple(
     (isTrackingLocation && userLocation) ||
@@ -170,7 +177,7 @@ const Map = () => {
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {startLocation && (
+        {startLocation && !isStartLocationFromStorage && (
           <Marker
             position={startLocation}
             icon={blueIcon}

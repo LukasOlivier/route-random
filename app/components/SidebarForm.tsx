@@ -136,7 +136,7 @@ export default function SidebarForm() {
   return (
     <form
       onSubmit={handleGenerateRoute}
-      className="flex flex-col gap-4 flex-grow"
+      className="flex flex-col gap-4 flex-grow mb-4"
     >
       <div className="w-full flex gap-2">
         <ToggleModeButton
@@ -185,7 +185,7 @@ export default function SidebarForm() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <div>
               <label htmlFor="time" className="block text-sm font-medium mb-1">
                 {t("desiredDuration")}
@@ -262,7 +262,7 @@ export default function SidebarForm() {
           </div>
         </div>
 
-        <div className="mt-10 hidden lg:block">
+        <div className="hidden lg:block">
           {generatedRoute ? (
             <div className="flex gap-2 flex-wrap">
               {!isRouteAccepted && (

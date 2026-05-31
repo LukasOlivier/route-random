@@ -1,3 +1,8 @@
+allowBuilds:
+  "@parcel/watcher": true
+  "@swc/core": true
+  sharp: true
+  unrs-resolver: true
 overrides:
   brace-expansion@<1.1.13: ">=1.1.13"
   brace-expansion@>=4.0.0 <5.0.5: ">=5.0.5"

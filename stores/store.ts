@@ -21,6 +21,7 @@ type GeneratedRoute = {
 
 type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
+  isStartLocationFromStorage: boolean;
   userLocation: LatLngTuple | null;
   generatedRoute: GeneratedRoute | null;
   routeId: string | null;
@@ -39,13 +40,14 @@ type LocationStore = {
 
 export const useLocationStore = create<LocationStore>((set, get) => ({
   startLocation: null,
+  isStartLocationFromStorage: false,
   userLocation: null,
   generatedRoute: null,
   routeId: null,
   isRouteAccepted: false,
   isTrackingLocation: false,
   setStartLocation: (startLocation) => {
-    set({ startLocation });
+    set({ startLocation, isStartLocationFromStorage: false });
     if (typeof window !== "undefined" && startLocation) {
       localStorage.setItem(
         "startLocation",
@@ -56,11 +58,27 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       );
     }
   },
-  setUserLocation: (userLocation) =>
-    set((state) => ({
+  setUserLocation: (userLocation) => {
+    set({
       userLocation,
-      startLocation: state.startLocation || userLocation,
-    })),
+      startLocation: userLocation,
+      isStartLocationFromStorage: false,
+    });
+
+    if (typeof window !== "undefined") {
+      if (userLocation) {
+        localStorage.setItem(
+          "startLocation",
+          JSON.stringify({
+            lat: userLocation[0],
+            lng: userLocation[1],
+          }),
+        );
+      } else {
+        localStorage.removeItem("startLocation");
+      }
+    }
+  },
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
   setRouteId: (routeId) => set({ routeId }),
   resetRoute: () => {
@@ -101,7 +119,10 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     const stored = localStorage.getItem("startLocation");
     if (stored) {
       const { lat, lng } = JSON.parse(stored);
-      set({ startLocation: [lat, lng] as LatLngTuple });
+      set({
+        startLocation: [lat, lng] as LatLngTuple,
+        isStartLocationFromStorage: true,
+      });
     }
   },
   updateWaypoint: (index, newPosition) => {
