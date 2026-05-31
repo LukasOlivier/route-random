@@ -126,5 +126,16 @@
     "normalDescription": "Het belangrijkste deel van de gegenereerde route.",
     "overlapSegment": "Overlappende Route",
     "overlapDescription": "Een overlappend deel waar je route heen en terug gaat. Soms is een perfecte lus niet mogelijk, dus het kan zijn dat je een stukje dubbel moet afleggen."
+  },
+  "Feedback": {
+    "feedbackPrompt": "Wat vind je van deze route?",
+    "feedbackAfterAccept": "Wat vind je ervan?",
+    "like": "Goed",
+    "neutral": "Kan beter",
+    "dislike": "Niet leuk",
+    "feedbackPlaceholder": "Wat was er mis met de gegenereerde routes?",
+    "back": "Terug",
+    "send": "Verzenden",
+    "sending": "Verzenden..."
   }
 }

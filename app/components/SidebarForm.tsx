@@ -32,8 +32,17 @@ export default function SidebarForm() {
     isRouteAccepted,
   } = useLocationStore();
 
-  const { mode, pace, distance, time, setMode, setPace, setDistance, setTime } =
-    useRouteFormStore();
+  const {
+    mode,
+    pace,
+    distance,
+    time,
+    setMode,
+    setPace,
+    setDistance,
+    setTime,
+    resetSessionCount,
+  } = useRouteFormStore();
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
   const showNotification = useNotificationStore((s) => s.showNotification);
@@ -127,6 +136,7 @@ export default function SidebarForm() {
 
   const handleAcceptRoute = () => {
     acceptRoute();
+    resetSessionCount();
   };
 
   const handleResetRoute = () => {

@@ -13,6 +13,7 @@ import NotificationCenter from "./NotificationCenter";
 import ShareButton from "./ShareButton";
 import LegendButton from "./LegendButton";
 import MapWrapper from "./MapWrapper";
+import FeedbackWidget from "./FeedbackWidget";
 import { useRouteFromUrl } from "@/app/hooks/useRouteFromUrl";
 import { useLocationStore } from "@/stores/store";
 import { useRouteFormStore } from "@/stores";
@@ -27,12 +28,22 @@ export default function ClientPageWrapper({
   const t = useTranslations("Page");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackContext, setFeedbackContext] = useState<"accept" | "no-fit">(
+    "accept",
+  );
+  const [resetCount, setResetCount] = useState(0);
   const initializeFromStorage = useLocationStore(
     (s) => s.initializeFromStorage,
   );
   const initializeFormFromStorage = useRouteFormStore(
     (s) => s.initializeFromStorage,
   );
+  const generatedRoute = useLocationStore((s) => s.generatedRoute);
+  const routeId = useLocationStore((s) => s.routeId);
+  const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
+  const distance = useRouteFormStore((s) => s.distance);
+  const mode = useRouteFormStore((s) => s.mode);
 
   useEffect(() => {
     initializeFromStorage();
@@ -46,6 +57,31 @@ export default function ClientPageWrapper({
       setIsSidebarOpen(true);
     }
   }, []);
+
+  // Show feedback widget when route is accepted
+  useEffect(() => {
+    if (isRouteAccepted && generatedRoute) {
+      setShowFeedback(true);
+      setFeedbackContext("accept");
+      setResetCount(0); // Reset counter after accepting
+    }
+  }, [isRouteAccepted, generatedRoute]);
+
+  // Track reset attempts
+  useEffect(() => {
+    if (!generatedRoute && isRouteAccepted === false) {
+      setResetCount((prev) => {
+        const newCount = prev + 1;
+        // Show feedback after 3 consecutive resets
+        if (newCount >= 3) {
+          setShowFeedback(true);
+          setFeedbackContext("no-fit");
+          return 0; // Reset counter after showing feedback
+        }
+        return newCount;
+      });
+    }
+  }, [generatedRoute, isRouteAccepted]);
 
   const { isLoading: isLoadingRoute } = useRouteFromUrl();
 
@@ -118,6 +154,21 @@ export default function ClientPageWrapper({
       )}
 
       {!isFullscreen && <MobileBottomBar />}
+
+      {showFeedback && (
+        <FeedbackWidget
+          routeId={routeId || undefined}
+          generatedDistance={generatedRoute?.distance}
+          requestedDistance={distance ? parseFloat(distance) : undefined}
+          isAcceptFlow={feedbackContext === "accept"}
+          customTitle={
+            feedbackContext === "no-fit"
+              ? "It seems like you can't find a fitting route... can we help?"
+              : undefined
+          }
+          onClose={() => setShowFeedback(false)}
+        />
+      )}
     </>
   );
 }

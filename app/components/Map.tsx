@@ -9,7 +9,7 @@ import {
   Polyline,
 } from "react-leaflet";
 import { LatLngTuple } from "leaflet";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as L from "leaflet";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
@@ -28,6 +28,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import MapLoadingOverlay from "./MapLoadingOverlay";
+import FeedbackWidget from "./FeedbackWidget";
 import { useRouteFormStore } from "../../stores";
 
 const MapUpdater = ({
@@ -105,13 +106,51 @@ const Map = () => {
     userLocation,
     generatedRoute,
     isRouteAccepted,
+    routeId,
     isTrackingLocation,
     updateWaypoint,
   } = useLocationStore();
-  const { isGeneratingRoute } = useRouteFormStore();
+  const {
+    isGeneratingRoute,
+    routesGeneratedInSession,
+    incrementRoutesGenerated,
+  } = useRouteFormStore();
 
   const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackContext, setFeedbackContext] = useState<
+    "generation" | "accept"
+  >("generation");
+  const previousRouteRef = useRef<typeof generatedRoute>(null);
+
+  // Show feedback when user accepts a route
+  useEffect(() => {
+    if (isRouteAccepted) {
+      setShowFeedback(true);
+      setFeedbackContext("accept");
+    }
+  }, [isRouteAccepted]);
+
+  // Track route generations and show feedback
+  useEffect(() => {
+    if (
+      generatedRoute &&
+      previousRouteRef.current !== generatedRoute &&
+      !showFeedback
+    ) {
+      previousRouteRef.current = generatedRoute;
+      incrementRoutesGenerated();
+    }
+  }, [generatedRoute, showFeedback, incrementRoutesGenerated]);
+
+  // Show feedback after 2+ route generations
+  useEffect(() => {
+    if (routesGeneratedInSession >= 2 && !showFeedback) {
+      setShowFeedback(true);
+      setFeedbackContext("generation");
+    }
+  }, [routesGeneratedInSession, showFeedback]);
 
   useEffect(() => {
     if (markerRef.current && startLocation && !isStartLocationFromStorage) {

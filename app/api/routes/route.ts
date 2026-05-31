@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
 
     logger.info({ id, distance }, "Route saved successfully");
 
+    /*
     after(() =>
       notifyDiscord({
         event: "route_generated",
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
         distance,
       }),
     );
+    */
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

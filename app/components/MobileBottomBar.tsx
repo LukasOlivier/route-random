@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocationStore } from "../../stores";
+import { useLocationStore, useRouteFormStore } from "../../stores";
 import GenerateRouteButton from "./GenerateRouteButton";
 import AcceptRouteButton from "./AcceptRouteButton";
 import ResetRouteButton from "./ResetRouteButton";
@@ -10,10 +10,13 @@ export default function MobileBottomBar() {
   const { generatedRoute, resetRoute, acceptRoute, isRouteAccepted } =
     useLocationStore();
 
+  const { resetSessionCount } = useRouteFormStore();
+
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
 
   const handleAcceptRoute = () => {
     acceptRoute();
+    resetSessionCount();
   };
 
   const handleResetRoute = () => {

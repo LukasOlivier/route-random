@@ -126,5 +126,16 @@
     "normalDescription": "The main part of your generated route.",
     "overlapSegment": "Overlapping Route",
     "overlapDescription": "An overlapping section where your route goes back and forth. Sometimes a perfect loop isn't possible, so you may need to cover a section twice."
+  },
+  "Feedback": {
+    "feedbackPrompt": "How's this route?",
+    "feedbackAfterAccept": "What do you think?",
+    "like": "Like it",
+    "neutral": "Could be better",
+    "dislike": "Dislike it",
+    "feedbackPlaceholder": "What was wrong with the generated routes?",
+    "back": "Back",
+    "send": "Send",
+    "sending": "Sending..."
   }
 }

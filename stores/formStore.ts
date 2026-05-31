@@ -18,11 +18,14 @@ interface RouteFormData {
 }
 
 interface RouteFormStore extends RouteFormData {
+  routesGeneratedInSession: number;
   setMode: (mode: Mode) => void;
   setPace: (pace: Pace) => void;
   setDistance: (distance: string) => void;
   setTime: (time: string) => void;
   setIsGeneratingRoute: (isGenerating: boolean) => void;
+  incrementRoutesGenerated: () => void;
+  resetSessionCount: () => void;
   initializeFromStorage: () => void;
 }
 
@@ -60,6 +63,7 @@ const isValidPace = (value: unknown): value is Pace => {
 
 export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
   ...defaultFormData,
+  routesGeneratedInSession: 0,
 
   setMode: (mode) => {
     set({ mode });
@@ -83,6 +87,16 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
 
   setIsGeneratingRoute: (isGeneratingRoute) => {
     set({ isGeneratingRoute });
+  },
+
+  incrementRoutesGenerated: () => {
+    set((state) => ({
+      routesGeneratedInSession: state.routesGeneratedInSession + 1,
+    }));
+  },
+
+  resetSessionCount: () => {
+    set({ routesGeneratedInSession: 0 });
   },
 
   initializeFromStorage: () => {
