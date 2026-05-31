@@ -28,7 +28,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import MapLoadingOverlay from "./MapLoadingOverlay";
-import FeedbackWidget from "./FeedbackWidget";
 import { useRouteFormStore } from "../../stores";
 
 const MapUpdater = ({
@@ -106,7 +105,6 @@ const Map = () => {
     userLocation,
     generatedRoute,
     isRouteAccepted,
-    routeId,
     isTrackingLocation,
     updateWaypoint,
   } = useLocationStore();
@@ -119,6 +117,7 @@ const Map = () => {
   const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [feedbackContext, setFeedbackContext] = useState<
     "generation" | "accept"
   >("generation");

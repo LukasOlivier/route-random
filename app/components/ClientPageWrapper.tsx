@@ -29,10 +29,10 @@ export default function ClientPageWrapper({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [resetCount, setResetCount] = useState(0);
   const [feedbackContext, setFeedbackContext] = useState<"accept" | "no-fit">(
     "accept",
   );
-  const [resetCount, setResetCount] = useState(0);
   const initializeFromStorage = useLocationStore(
     (s) => s.initializeFromStorage,
   );
@@ -43,7 +43,6 @@ export default function ClientPageWrapper({
   const routeId = useLocationStore((s) => s.routeId);
   const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
   const distance = useRouteFormStore((s) => s.distance);
-  const mode = useRouteFormStore((s) => s.mode);
 
   useEffect(() => {
     initializeFromStorage();
