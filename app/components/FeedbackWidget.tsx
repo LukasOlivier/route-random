@@ -31,6 +31,11 @@ export default function FeedbackWidget({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReactionSelect = (reaction: FeedbackReaction) => {
+    if (reaction === "like") {
+      onClose();
+      return;
+    }
+
     setSelectedReaction(reaction);
   };
 
@@ -66,7 +71,7 @@ export default function FeedbackWidget({
     (isAcceptFlow ? t("feedbackAfterAccept") : t("feedbackPrompt"));
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 lg:bottom-6 lg:right-6 lg:left-auto bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg z-[9999] max-w-sm">
+    <div className="fixed bottom-24 left-4 right-4 lg:bottom-6 lg:right-6 lg:left-auto bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg z-9999 max-w-sm">
       <div className="flex justify-between items-start mb-3">
         <div>
           <p className="font-medium text-slate-100 mb-1">{displayTitle}</p>

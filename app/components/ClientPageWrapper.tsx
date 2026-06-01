@@ -60,7 +60,7 @@ export default function ClientPageWrapper({
   // Show feedback widget when route is accepted
   useEffect(() => {
     if (isRouteAccepted && generatedRoute) {
-      setShowFeedback(true);
+      setShowFeedback(Math.random() < 0.25);
       setFeedbackContext("accept");
       setResetCount(0); // Reset counter after accepting
     }
@@ -88,11 +88,16 @@ export default function ClientPageWrapper({
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleFullscreenToggle = (nextIsFullscreen: boolean) => {
+    setIsFullscreen(nextIsFullscreen);
+    setShowFeedback(false);
+  };
+
   return (
     <>
       <NotificationCenter offsetForSidebar={!isFullscreen} />
       <div
-        className={`fixed right-4 z-[999999] flex flex-col items-end gap-2 pt-4`}
+        className={`fixed right-4 z-999999 flex flex-col items-end gap-2 pt-4`}
       >
         {!isFullscreen && (
           <FloatingButton
@@ -116,13 +121,13 @@ export default function ClientPageWrapper({
         {!isSidebarOpen && (
           <FullscreenButton
             isFullscreen={isFullscreen}
-            onToggle={setIsFullscreen}
+            onToggle={handleFullscreenToggle}
           />
         )}
       </div>
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-[9999] lg:hidden"
+          className="fixed inset-0 bg-black/50 z-9999 lg:hidden"
           onClick={toggleSidebar}
           data-umami-event="Close menu overlay"
           data-umami-event-source="mobile"
@@ -147,7 +152,7 @@ export default function ClientPageWrapper({
       </div>
 
       {!isFullscreen && (
-        <div className="fixed top-3 left-1/2 lg:left-[62.5%] -translate-x-1/2 z-[1000] flex items-center gap-2">
+        <div className="fixed top-3 left-1/2 lg:left-[62.5%] -translate-x-1/2 z-1000 flex items-center gap-2">
           {children}
         </div>
       )}
