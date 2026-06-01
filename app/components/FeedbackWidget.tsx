@@ -10,6 +10,7 @@ type FeedbackReaction = "like" | "neutral" | "dislike";
 interface FeedbackWidgetProps {
   routeId?: string;
   generatedDistance?: number;
+  routeCoordinates?: [number, number][];
   requestedDistance?: number;
   isAcceptFlow?: boolean;
   customTitle?: string;
@@ -19,6 +20,7 @@ interface FeedbackWidgetProps {
 export default function FeedbackWidget({
   routeId,
   generatedDistance,
+  routeCoordinates,
   requestedDistance,
   isAcceptFlow = false,
   customTitle,
@@ -46,6 +48,8 @@ export default function FeedbackWidget({
     await sendFeedbackToDiscord({
       reaction: selectedReaction,
       routeId,
+      routeCoordinates,
+      routeDistanceMeters: generatedDistance,
       generatedDistance: generatedDistance
         ? generatedDistance / 1000
         : undefined,

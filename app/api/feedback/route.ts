@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { initializeDatabase, saveRoute } from "@/lib/db";
 
 type FeedbackReaction = "like" | "neutral" | "dislike";
 
@@ -16,10 +17,14 @@ const reactionDescriptions = {
 
 export async function POST(request: NextRequest) {
   try {
+    await initializeDatabase();
+
     const body = await request.json();
     const {
       reaction,
       routeId,
+      routeCoordinates,
+      routeDistanceMeters,
       generatedDistance,
       requestedDistance,
       additionalFeedback,
@@ -39,6 +44,17 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_BASE_URL ??
       "https://route-random.lukasolivier.be";
 
+    let savedRouteId = routeId;
+
+    if (!savedRouteId && routeCoordinates && routeDistanceMeters) {
+      savedRouteId = await saveRoute({
+        coordinates: routeCoordinates,
+        distance: routeDistanceMeters,
+      });
+    }
+
+    const routeUrl = savedRouteId ? `${baseUrl}/?route=${savedRouteId}` : null;
+
     const reactionEmoji_ = reactionEmoji[reaction as FeedbackReaction];
     const reactionDesc = reactionDescriptions[reaction as FeedbackReaction];
 
@@ -54,6 +70,10 @@ export async function POST(request: NextRequest) {
       description += `\n\n> ${additionalFeedback}`;
     }
 
+    if (routeUrl) {
+      description += `\n\nRoute: ${routeUrl}`;
+    }
+
     const embeds = [
       {
         title: "Route Feedback Received",
@@ -64,7 +84,7 @@ export async function POST(request: NextRequest) {
             : reaction === "neutral"
               ? 0xf59e0b // Amber for neutral
               : 0xef4444, // Red for dislike
-        ...(routeId && { url: `${baseUrl}/?route=${routeId}` }),
+        ...(routeUrl && { url: routeUrl }),
       },
     ];
 

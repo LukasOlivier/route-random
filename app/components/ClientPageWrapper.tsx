@@ -163,6 +163,7 @@ export default function ClientPageWrapper({
         <FeedbackWidget
           routeId={routeId || undefined}
           generatedDistance={generatedRoute?.distance}
+          routeCoordinates={generatedRoute?.coordinates}
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}
           customTitle={
