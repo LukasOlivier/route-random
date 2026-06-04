@@ -16,26 +16,26 @@ jobs:
     name: Snyk Open Source (Dependencies)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.4.0
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
+      - uses: snyk/actions/setup@master
+
       - name: Snyk OSS scan (upload report)
-        uses: snyk/actions/node@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --sarif-file-output=snyk-oss.sarif
+        run: snyk test --severity-threshold=high --sarif-file-output=snyk-oss.sarif
 
       - name: Upload OSS results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
@@ -44,37 +44,34 @@ jobs:
           category: snyk-open-source
 
       - name: Snyk OSS scan (fail gate)
-        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
+        run: snyk test --severity-threshold=high
 
   snyk-code-scan:
     name: Snyk Code (SAST)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.4.0
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
+      - uses: snyk/actions/setup@master
+
       - name: Snyk Code scan (upload report)
-        uses: snyk/actions/node@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
-          args: --severity-threshold=high --sarif-file-output=snyk-code.sarif
+        run: snyk code test --severity-threshold=high --sarif-file-output=snyk-code.sarif
 
       - name: Upload Code results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
@@ -83,12 +80,9 @@ jobs:
           category: snyk-code
 
       - name: Snyk Code scan (fail gate)
-        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: code test
-          args: --severity-threshold=high
+        run: snyk code test --severity-threshold=high
 
   deploy:
     name: Deploy to Vercel
@@ -99,20 +93,20 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.4.0
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm install -g vercel@latest
+      - run: pnpm add -g vercel@latest
 
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
