@@ -1,37 +1,76 @@
-name: Snyk Security
+name: Snyk Security Scan
+
 on:
-  push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+      - develop
+
 permissions:
   contents: read
+  security-events: write
+  pull-requests: read
+
 jobs:
-  snyk:
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
+  snyk-dependency-scan:
+    name: Snyk Open Source (Dependencies)
     runs-on: ubuntu-latest
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - name: Set up Snyk CLI
-        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
-      - name: Snyk Open Source
-        run: snyk test --sarif > snyk-oss.sarif || true
-      - name: Snyk Code
-        run: snyk code test --sarif > snyk-code.sarif || true
-      - name: Upload OSS results
+          cache: npm
+
+      - run: npm ci
+
+      - name: Snyk dependency scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --sarif-file-output=snyk-oss.sarif
+
+      - name: Upload OSS results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-oss.sarif
-      - name: Upload Code results
+          category: snyk-open-source
+
+      - name: Fail if vulnerabilities found
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  snyk-code-scan:
+    name: Snyk Code (SAST)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Snyk Code scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high --sarif-file-output=snyk-code.sarif
+
+      - name: Upload Code results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-code.sarif
+          category: snyk-code
+
+      - name: Fail if code vulnerabilities found
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high
