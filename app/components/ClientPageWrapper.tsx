@@ -60,7 +60,9 @@ export default function ClientPageWrapper({
   // Show feedback widget when route is accepted
   useEffect(() => {
     if (isRouteAccepted && generatedRoute) {
-      setShowFeedback(Math.random() < 0.25);
+      setShowFeedback(
+        Math.random() < parseFloat(process.env.FEEDBACK_PROBABILITY || "0.5"),
+      );
       setFeedbackContext("accept");
       setResetCount(0); // Reset counter after accepting
     }
