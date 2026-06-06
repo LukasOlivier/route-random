@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@upstash/redis": "^1.38.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "leaflet-geosearch": "^4.2.2",
