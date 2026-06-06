@@ -38,6 +38,41 @@ const ORS_API_URL =
   "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
 const COMMON_AVOID_FEATURES = ["ferries"];
 
+function wrapLongitude(longitude: number): number {
+  if (!Number.isFinite(longitude)) return longitude;
+
+  const wrapped = ((((longitude + 180) % 360) + 360) % 360) - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
+
+function normalizeOrsCoordinate(
+  coordinate: [number, number],
+): [number, number] {
+  let [longitude, latitude] = coordinate;
+
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    throw new Error(`Invalid coordinate values: ${longitude},${latitude}`);
+  }
+
+  if (Math.abs(latitude) > 90 && Math.abs(longitude) <= 90) {
+    [longitude, latitude] = [latitude, longitude];
+  }
+
+  longitude = wrapLongitude(longitude);
+
+  if (Math.abs(latitude) > 90) {
+    throw new Error(`Invalid latitude value: ${latitude}`);
+  }
+
+  return [longitude, latitude];
+}
+
+function normalizeOrsCoordinates(
+  coordinates: [number, number][],
+): [number, number][] {
+  return coordinates.map((coordinate) => normalizeOrsCoordinate(coordinate));
+}
+
 function extractWaypointsFromCoordinates(
   coordinates: [number, number][],
   numWaypoints: number = 5,
@@ -93,9 +128,10 @@ export async function generateRoundTripRoute(
   for (const factor of correctionFactors) {
     try {
       const correctedDistance = Math.round(targetDistance * factor);
+      const normalizedStart = normalizeOrsCoordinate([startLng, startLat]);
 
       const requestBody = {
-        coordinates: [[startLng, startLat]],
+        coordinates: [normalizedStart],
         preference: "recommended",
         elevation: true,
         extra_info: ["surface", "waytype", "steepness", "traildifficulty"],
@@ -229,8 +265,10 @@ export async function generateWalkingRoute(
     "Starting walking route generation",
   );
 
+  const normalizedWaypoints = normalizeOrsCoordinates(waypoints);
+
   const requestBody = {
-    coordinates: waypoints,
+    coordinates: normalizedWaypoints,
     elevation: true,
     extra_info: ["surface", "waytype", "steepness", "traildifficulty"],
     options: {
@@ -280,7 +318,7 @@ export async function generateWalkingRoute(
     logger.info(
       {
         distance: (totalDistance / 1000).toFixed(2),
-        waypointCount: waypoints.length,
+        waypointCount: normalizedWaypoints.length,
       },
       "Walking route generated successfully",
     );
@@ -289,13 +327,13 @@ export async function generateWalkingRoute(
       coordinates,
       distance: totalDistance,
       elevation,
-      waypoints,
+      waypoints: normalizedWaypoints,
     };
   } catch (error) {
     logger.error(
       {
         error: error instanceof Error ? error.message : String(error),
-        waypointCount: waypoints.length,
+        waypointCount: normalizedWaypoints.length,
       },
       "Error calling ORS API",
     );
