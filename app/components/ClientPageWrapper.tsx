@@ -29,7 +29,7 @@ export default function ClientPageWrapper({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [resetCount, setResetCount] = useState(0);
+  const [, setResetCount] = useState(0);
   const [feedbackContext, setFeedbackContext] = useState<"accept" | "no-fit">(
     "accept",
   );
@@ -57,27 +57,24 @@ export default function ClientPageWrapper({
     }
   }, []);
 
-  // Show feedback widget when route is accepted
   useEffect(() => {
     if (isRouteAccepted && generatedRoute) {
       setShowFeedback(
         Math.random() < parseFloat(process.env.FEEDBACK_PROBABILITY || "0.5"),
       );
       setFeedbackContext("accept");
-      setResetCount(0); // Reset counter after accepting
+      setResetCount(0);
     }
   }, [isRouteAccepted, generatedRoute]);
 
-  // Track reset attempts
   useEffect(() => {
     if (!generatedRoute && isRouteAccepted === false) {
       setResetCount((prev) => {
         const newCount = prev + 1;
-        // Show feedback after 3 consecutive resets
         if (newCount >= 3) {
           setShowFeedback(true);
           setFeedbackContext("no-fit");
-          return 0; // Reset counter after showing feedback
+          return 0;
         }
         return newCount;
       });
