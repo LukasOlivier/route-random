@@ -2,7 +2,7 @@ name: Snyk Security + Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, development]
   pull_request:
     branches: [main]
 
@@ -88,8 +88,9 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: [snyk-dependency-scan, snyk-code-scan]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
     env:
+      VERCEL_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
@@ -109,10 +110,20 @@ jobs:
       - run: pnpm add -g vercel@latest
 
       - name: Pull Vercel environment
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=${VERCEL_ENV} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "$VERCEL_ENV" = "production" ]; then
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          fi
 
       - name: Deploy
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "$VERCEL_ENV" = "production" ]; then
+            vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          fi
