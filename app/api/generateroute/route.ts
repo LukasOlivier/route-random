@@ -4,11 +4,44 @@ import {
   generateWalkingRoute,
   generateRoundTripRoute,
 } from "../../services/orsService";
+import { checkRouteGenerationRateLimit } from "@/app/utils/rateLimit";
 import { notifyDiscord } from "@/app/utils/discordNotifications";
 import type { RouteResponse } from "../../services/orsService";
 
 export async function POST(request: NextRequest) {
   try {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const realIp = request.headers.get("x-real-ip");
+    const clientIp =
+      forwardedFor?.split(",")[0]?.trim() || realIp?.trim() || "unknown";
+
+    const rateLimitDecision = await checkRouteGenerationRateLimit(clientIp);
+    if (!rateLimitDecision.allowed) {
+      const retryAfterSeconds = Math.max(
+        1,
+        Math.ceil((rateLimitDecision.reset - Date.now()) / 1000),
+      );
+
+      return NextResponse.json(
+        {
+          errorCode: "route_generation_rate_limited",
+          error:
+            "Too many route generation attempts. Please wait a bit and try again.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(retryAfterSeconds),
+            "X-RateLimit-Limit": String(rateLimitDecision.limit),
+            "X-RateLimit-Remaining": String(rateLimitDecision.remaining),
+            "X-RateLimit-Reset": String(
+              Math.floor(rateLimitDecision.reset / 1000),
+            ),
+          },
+        },
+      );
+    }
+
     const body = await request.json();
     const { startLocation, distance, waypoints, regenerate } = body;
 

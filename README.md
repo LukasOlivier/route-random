@@ -99,6 +99,17 @@ DATABASE_URL=postgresql://username:password@host/database
 # Get your free key from https://openrouteservice.org/
 ORS_API_KEY=your_ors_api_key_here
 
+# Upstash Redis (used for distributed route generation rate limiting)
+# Create a Redis database at https://upstash.com/
+UPSTASH_REDIS_REST_URL=https://your-upstash-endpoint.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_upstash_rest_token
+
+# Optional: Route generation rate limit tuning
+# Default max requests per window: 10
+# Default window size: 300000 ms (5 minutes)
+ROUTE_GENERATION_RATE_LIMIT_MAX=10
+ROUTE_GENERATION_RATE_LIMIT_WINDOW_MS=300000
+
 # Optional: Umami Analytics
 NEXT_PUBLIC_UMAMI_WEBSITE_ID=your_umami_website_id
 
