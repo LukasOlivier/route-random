@@ -13,7 +13,7 @@ import FloatingButton from "./FloatingButton";
 export default function TrackUserLocationButton() {
   const t = useTranslations("TrackUserLocationButton");
   const showNotification = useNotificationStore((s) => s.showNotification);
-  const { isTrackingLocation, setLocationTracking, setUserLocation } =
+  const { isTrackingLocation, setLocationTracking, setTrackedUserLocation } =
     useLocationStore();
 
   const watchIdRef = useRef<number | null>(null);
@@ -55,7 +55,7 @@ export default function TrackUserLocationButton() {
 
     const success = (position: GeolocationPosition) => {
       const { latitude, longitude } = position.coords;
-      setUserLocation([latitude, longitude]);
+      setTrackedUserLocation([latitude, longitude]);
     };
 
     const error = async (error: GeolocationPositionError) => {

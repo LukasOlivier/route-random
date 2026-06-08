@@ -146,7 +146,7 @@ export default function SidebarForm() {
   return (
     <form
       onSubmit={handleGenerateRoute}
-      className="flex flex-col gap-4 flex-grow mb-4"
+      className="flex flex-col gap-4 grow mb-4"
     >
       <div className="w-full flex gap-2">
         <ToggleModeButton
