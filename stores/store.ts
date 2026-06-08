@@ -29,6 +29,7 @@ type LocationStore = {
   isTrackingLocation: boolean;
   setStartLocation: (location: LatLngExpression | LatLngTuple | null) => void;
   setUserLocation: (location: LatLngTuple | null) => void;
+  setTrackedUserLocation: (location: LatLngTuple | null) => void;
   setGeneratedRoute: (route: GeneratedRoute | null) => void;
   setRouteId: (id: string | null) => void;
   updateWaypoint: (index: number, newPosition: [number, number]) => void;
@@ -78,6 +79,9 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
         localStorage.removeItem("startLocation");
       }
     }
+  },
+  setTrackedUserLocation: (userLocation) => {
+    set({ userLocation });
   },
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
   setRouteId: (routeId) => set({ routeId }),
