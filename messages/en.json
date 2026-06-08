@@ -75,6 +75,7 @@
     "routeServiceUnavailable": "Route service unavailable. Please try again later.",
     "routeRateLimited": "Too many people are generating routes right now. Please try again later or support me through buymeacoffee.com/lukasolivier to increase the limit.",
     "noRouteFound": "Could not generate a route for this location. Try a different starting point.",
+    "routeDistanceTooLong": "That route is too long. Please pick a shorter distance.",
     "failedGenerate": "Failed to generate route. Please try again.",
     "failedRegenerate": "Failed to regenerate route. Please try again."
   },

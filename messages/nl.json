@@ -75,6 +75,7 @@
     "routeServiceUnavailable": "Routeservice niet beschikbaar. Probeer het later opnieuw.",
     "routeRateLimited": "Er worden nu te veel routes gegenereerd. Probeer het later opnieuw of steun mij via buymeacoffee.com/lukasolivier om de limiet te verhogen.",
     "noRouteFound": "Kon geen route genereren voor deze locatie. Probeer een ander startpunt.",
+    "routeDistanceTooLong": "Die route is te lang. Kies een kortere afstand.",
     "failedGenerate": "Route genereren mislukt. Probeer het opnieuw.",
     "failedRegenerate": "Route opnieuw genereren mislukt. Probeer het opnieuw."
   },
