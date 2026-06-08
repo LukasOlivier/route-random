@@ -1,0 +1,142 @@
+{
+  "Sidebar": {
+    "title": "Route Random",
+    "subtitle": "Un proyecto creado por",
+    "authorLink": "Lukas Olivier",
+    "aboutTitle": "Acerca de Route Random",
+    "aboutDescription1": "Route Random es un generador de rutas aleatorias gratuito que crea rutas circulares para corredores, trotadores y caminantes. Genera rutas aleatorias según la distancia deseada y tu punto de partida, en cualquier lugar del mundo.",
+    "aboutDescription2": "Perfecto para descubrir nuevos caminos, explorar tu barrio o encontrar rutas nuevas que mantengan tus entrenamientos emocionantes.",
+    "language": "Idioma",
+    "aboutLink": "Leer más"
+  },
+  "SidebarForm": {
+    "distanceMode": "Distancia",
+    "timeMode": "Tiempo",
+    "desiredDistance": "Distancia deseada (en km):",
+    "distancePlaceholder": "ej. 5 o 7,5",
+    "desiredDuration": "Duración deseada (en minutos):",
+    "timePlaceholder": "ej. 30 o 45",
+    "pace": "Ritmo:",
+    "walkingPace": "Paso a pie (5 km/h)",
+    "runningPace": "Carrera (10 km/h)",
+    "cyclingPace": "Ciclismo (15 km/h)",
+    "startingLocation": "Punto de partida",
+    "searchLocationPlaceholder": "Buscar punto de partida...",
+    "useCurrentLocation": "Usar mi ubicación actual",
+    "geolocationNotSupported": "La geolocalización no es compatible con este navegador.",
+    "locationError": "No se puede obtener tu ubicación actual.",
+    "allowLocationPrompt": "Permite el acceso a la ubicación en la ventana del navegador para continuar.",
+    "locationPermissionDenied": "La ubicación está desactivada para esta aplicación. Actívala en la configuración de tu navegador o dispositivo.",
+    "locationPermissionBlocked": "La solicitud de ubicación fue bloqueada. Permite el acceso e inténtalo de nuevo.",
+    "locationServicesDisabled": "Los servicios de ubicación parecen estar desactivados en tu dispositivo. Actívalos e inténtalo de nuevo.",
+    "locationUnavailable": "La información de ubicación no está disponible en este momento.",
+    "locationTimeout": "La solicitud de ubicación tardó demasiado. Muévete a una zona más despejada e inténtalo de nuevo.",
+    "unableToGetLocation": "No se puede obtener tu ubicación actual."
+  },
+  "Map": {
+    "startLocation": "Punto de partida",
+    "routeGenerated": "¡Ruta generada!",
+    "distance": "Distancia",
+    "elevation": "Elevación"
+  },
+  "MapLoading": {
+    "loadingText": "Cargando tu aventura..."
+  },
+  "DownloadButton": {
+    "downloadRoute": "Descargar ruta como GPX",
+    "ariaLabel": "Descargar ruta como GPX"
+  },
+  "FullScreenButton": {
+    "enterFullscreen": "Entrar en pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
+  },
+  "ShareButton": {
+    "ariaLabel": "Compartir ruta",
+    "shareRoute": "Compartir ruta"
+  },
+  "TrackUserLocationButton": {
+    "stopTracking": "Dejar de rastrear ubicación",
+    "trackLocation": "Rastrear ubicación",
+    "trackYourLocation": "Rastrear ubicación",
+    "geolocationNotSupported": "La geolocalización no es compatible con este navegador.",
+    "allowLocationPrompt": "Permite el acceso a la ubicación en la ventana del navegador para continuar.",
+    "unableToGetLocation": "No se puede obtener tu ubicación.",
+    "locationPermissionDenied": "La ubicación está desactivada para esta aplicación. Actívala en la configuración de tu navegador o dispositivo.",
+    "locationPermissionBlocked": "La solicitud de ubicación fue bloqueada. Permite el acceso e inténtalo de nuevo.",
+    "locationAccessDenied": "Acceso a la ubicación denegado. Activa los permisos de ubicación.",
+    "locationServicesDisabled": "Los servicios de ubicación parecen estar desactivados en tu dispositivo. Actívalos e inténtalo de nuevo.",
+    "locationUnavailable": "Información de ubicación no disponible.",
+    "locationTimeout": "La solicitud de ubicación ha expirado."
+  },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Por favor, introduce una distancia",
+    "enterTimeDuration": "Por favor, introduce una duración",
+    "selectStartLocation": "Por favor, selecciona un punto de partida",
+    "routeServiceUnavailable": "El servicio de rutas no está disponible. Inténtalo de nuevo más tarde.",
+    "routeRateLimited": "Demasiadas personas están generando rutas en este momento. Inténtalo más tarde o apóyame en buymeacoffee.com/lukasolivier para aumentar el límite.",
+    "noRouteFound": "No se pudo generar una ruta para esta ubicación. Prueba con un punto de partida diferente.",
+    "routeDistanceTooLong": "Esa ruta es demasiado larga. Por favor, elige una distancia más corta.",
+    "failedGenerate": "Error al generar la ruta. Por favor, inténtalo de nuevo.",
+    "failedRegenerate": "Error al regenerar la ruta. Por favor, inténtalo de nuevo."
+  },
+  "Notifications": {
+    "close": "Cerrar notificación"
+  },
+  "Page": {
+    "toggleMenu": "Abrir/cerrar menú",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
+  },
+  "GenerateRouteButton": {
+    "generating": "Generando...",
+    "generateRoute": "Generar ruta"
+  },
+  "ResetRouteButton": {
+    "reset": "Restablecer"
+  },
+  "AcceptRouteButton": {
+    "accept": "Aceptar"
+  },
+  "MapLoadingOverlay": {
+    "generatingRoute": "Generando tu ruta...",
+    "pleaseWait": "Por favor, espera..."
+  },
+  "SeoSection": {
+    "heading": "Route Random | Generador gratuito de rutas para correr y caminar",
+    "paragraph1": "Hola, soy Lukas. Corro mucho y me cansé de repetir los mismos circuitos cada semana. Por eso creé Route Random: un sencillo generador de rutas de carrera que crea rutas circulares aleatorias según tu distancia y punto de partida. Puedes buscar una dirección o hacer clic en el mapa, y en unos segundos obtienes un nuevo recorrido que normalmente te devuelve cerca de donde empezaste.",
+    "paragraph2": "Mantuve la aplicación práctica a propósito. Puedes alternar entre distancia y tiempo, elegir entre caminar, correr o ir en bicicleta, y ajustar tu ruta si quieres más control. Cuando la ruta te parezca bien, puedes exportarla como GPX o GeoJSON y usarla en Garmin, Strava o prácticamente cualquier aplicación o reloj de fitness. Sin registro obligatorio, sin configuración interminable y sin rastreo invasivo; solo una forma rápida de encontrar nuevos caminos cuando tu ruta habitual se vuelve aburrida.",
+    "paragraph3": "Originalmente lo hice para mí, pero decidí compartirlo porque otros corredores y caminantes podrían encontrarlo útil también. Bajo el capó utiliza OpenStreetMap, Leaflet y OpenRouteService. Si quieres probarlo o compartirlo con un amigo, todos los enlaces están abajo.",
+    "exploreTitle": "Enlaces útiles",
+    "linkPrivacy": "Política de privacidad",
+    "linkSitemap": "Mapa del sitio XML",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Manifiesto de la aplicación web",
+    "shareTitle": "Compártelo",
+    "shareDescription": "Si Route Random te ayuda a salir de tu rutina, no dudes en compartirlo.",
+    "shareX": "Compartir en X",
+    "shareFacebook": "Compartir en Facebook",
+    "shareLinkedIn": "Compartir en LinkedIn",
+    "shareReddit": "Compartir en Reddit",
+    "shareTweetText": "Echa un vistazo a esta aplicación: Route Random. Crea rutas circulares de carrera, caminata y ciclismo en segundos"
+  },
+  "LegendButton": {
+    "ariaLabel": "Leyenda",
+    "tooltip": "Leyenda",
+    "modalTitle": "Leyenda de la ruta",
+    "normalSegment": "Ruta normal",
+    "normalDescription": "La parte principal de tu ruta generada.",
+    "overlapSegment": "Ruta superpuesta",
+    "overlapDescription": "Una sección donde tu ruta va y vuelve. A veces no es posible crear un bucle perfecto, por lo que puede que necesites recorrer un tramo dos veces."
+  },
+  "Feedback": {
+    "feedbackPrompt": "¿Qué te parece esta ruta?",
+    "feedbackAfterAccept": "¿Qué opinas?",
+    "like": "Me gusta",
+    "neutral": "Podría mejorar",
+    "dislike": "No me gusta",
+    "feedbackPlaceholder": "¿Qué estaba mal con las rutas generadas?",
+    "back": "Volver",
+    "send": "Enviar",
+    "sending": "Enviando..."
+  }
+}

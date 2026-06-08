@@ -1,0 +1,142 @@
+{
+  "Sidebar": {
+    "title": "Route Random",
+    "subtitle": "Un projet créé par",
+    "authorLink": "Lukas Olivier",
+    "aboutTitle": "À propos de Route Random",
+    "aboutDescription1": "Route Random est un générateur d'itinéraires aléatoires gratuit qui crée des parcours circulaires pour les coureurs, joggeurs et marcheurs. Générez des itinéraires aléatoires en fonction de la distance souhaitée et de votre point de départ, partout dans le monde.",
+    "aboutDescription2": "Idéal pour découvrir de nouveaux chemins, explorer votre quartier ou trouver des parcours inédits pour dynamiser vos entraînements.",
+    "language": "Langue",
+    "aboutLink": "En savoir plus"
+  },
+  "SidebarForm": {
+    "distanceMode": "Distance",
+    "timeMode": "Temps",
+    "desiredDistance": "Distance souhaitée (en km) :",
+    "distancePlaceholder": "ex. 5 ou 7,5",
+    "desiredDuration": "Durée souhaitée (en minutes) :",
+    "timePlaceholder": "ex. 30 ou 45",
+    "pace": "Allure :",
+    "walkingPace": "Marche (5 km/h)",
+    "runningPace": "Course (10 km/h)",
+    "cyclingPace": "Vélo (15 km/h)",
+    "startingLocation": "Point de départ",
+    "searchLocationPlaceholder": "Rechercher un point de départ...",
+    "useCurrentLocation": "Utiliser ma position actuelle",
+    "geolocationNotSupported": "La géolocalisation n'est pas prise en charge par ce navigateur.",
+    "locationError": "Impossible d'obtenir votre position actuelle.",
+    "allowLocationPrompt": "Autorisez l'accès à la localisation dans la fenêtre du navigateur pour continuer.",
+    "locationPermissionDenied": "La localisation est désactivée pour cette application. Activez-la dans les paramètres de votre navigateur ou de votre appareil.",
+    "locationPermissionBlocked": "La demande de localisation a été bloquée. Veuillez autoriser l'accès et réessayer.",
+    "locationServicesDisabled": "Les services de localisation semblent être désactivés sur votre appareil. Activez-les et réessayez.",
+    "locationUnavailable": "Les informations de localisation sont actuellement indisponibles.",
+    "locationTimeout": "La demande de localisation a pris trop de temps. Déplacez-vous dans une zone dégagée et réessayez.",
+    "unableToGetLocation": "Impossible d'obtenir votre position actuelle."
+  },
+  "Map": {
+    "startLocation": "Point de départ",
+    "routeGenerated": "Itinéraire généré !",
+    "distance": "Distance",
+    "elevation": "Dénivelé"
+  },
+  "MapLoading": {
+    "loadingText": "Chargement de votre aventure..."
+  },
+  "DownloadButton": {
+    "downloadRoute": "Télécharger l'itinéraire en GPX",
+    "ariaLabel": "Télécharger l'itinéraire en GPX"
+  },
+  "FullScreenButton": {
+    "enterFullscreen": "Passer en plein écran",
+    "exitFullscreen": "Quitter le plein écran"
+  },
+  "ShareButton": {
+    "ariaLabel": "Partager l'itinéraire",
+    "shareRoute": "Partager l'itinéraire"
+  },
+  "TrackUserLocationButton": {
+    "stopTracking": "Arrêter le suivi de position",
+    "trackLocation": "Suivre la position",
+    "trackYourLocation": "Suivre la position",
+    "geolocationNotSupported": "La géolocalisation n'est pas prise en charge par ce navigateur.",
+    "allowLocationPrompt": "Autorisez l'accès à la localisation dans la fenêtre du navigateur pour continuer.",
+    "unableToGetLocation": "Impossible d'obtenir votre position.",
+    "locationPermissionDenied": "La localisation est désactivée pour cette application. Activez-la dans les paramètres de votre navigateur ou de votre appareil.",
+    "locationPermissionBlocked": "La demande de localisation a été bloquée. Veuillez autoriser l'accès et réessayer.",
+    "locationAccessDenied": "Accès à la localisation refusé. Veuillez activer les autorisations de localisation.",
+    "locationServicesDisabled": "Les services de localisation semblent être désactivés sur votre appareil. Activez-les et réessayez.",
+    "locationUnavailable": "Informations de localisation indisponibles.",
+    "locationTimeout": "La demande de localisation a expiré."
+  },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Veuillez saisir une distance",
+    "enterTimeDuration": "Veuillez saisir une durée",
+    "selectStartLocation": "Veuillez sélectionner un point de départ",
+    "routeServiceUnavailable": "Le service d'itinéraires est indisponible. Veuillez réessayer plus tard.",
+    "routeRateLimited": "Trop de personnes génèrent des itinéraires en ce moment. Réessayez plus tard ou soutenez-moi sur buymeacoffee.com/lukasolivier pour augmenter la limite.",
+    "noRouteFound": "Impossible de générer un itinéraire pour cet emplacement. Essayez un autre point de départ.",
+    "routeDistanceTooLong": "Cet itinéraire est trop long. Veuillez choisir une distance plus courte.",
+    "failedGenerate": "Échec de la génération de l'itinéraire. Veuillez réessayer.",
+    "failedRegenerate": "Échec de la régénération de l'itinéraire. Veuillez réessayer."
+  },
+  "Notifications": {
+    "close": "Fermer la notification"
+  },
+  "Page": {
+    "toggleMenu": "Ouvrir/fermer le menu",
+    "fullscreen": "Plein écran",
+    "exitFullscreen": "Quitter le plein écran"
+  },
+  "GenerateRouteButton": {
+    "generating": "Génération en cours...",
+    "generateRoute": "Générer un itinéraire"
+  },
+  "ResetRouteButton": {
+    "reset": "Réinitialiser"
+  },
+  "AcceptRouteButton": {
+    "accept": "Accepter"
+  },
+  "MapLoadingOverlay": {
+    "generatingRoute": "Génération de votre itinéraire...",
+    "pleaseWait": "Veuillez patienter..."
+  },
+  "SeoSection": {
+    "heading": "Route Random | Générateur d'itinéraires de course et de marche gratuit",
+    "paragraph1": "Bonjour, je m'appelle Lukas. Je cours beaucoup et j'en avais assez de répéter les mêmes boucles chaque semaine. C'est pourquoi j'ai créé Route Random : un générateur d'itinéraires de course simple qui crée des parcours circulaires aléatoires en fonction de votre distance et de votre point de départ. Vous pouvez rechercher une adresse ou cliquer sur la carte, et en quelques secondes vous obtenez une nouvelle boucle qui vous ramène généralement près de votre point de départ.",
+    "paragraph2": "J'ai voulu garder l'application pratique. Vous pouvez alterner entre distance et temps, choisir marche, course ou vélo, et ajuster votre itinéraire si vous souhaitez plus de contrôle. Quand le parcours vous convient, vous pouvez l'exporter en GPX ou GeoJSON et l'utiliser dans Garmin, Strava ou presque n'importe quelle application ou montre de fitness. Pas d'inscription obligatoire, pas de configuration interminable, pas de suivi intrusif — juste un moyen rapide de trouver de nouveaux chemins quand votre parcours habituel vous ennuie.",
+    "paragraph3": "J'ai d'abord créé cette application pour moi-même, mais j'ai décidé de la partager car d'autres coureurs et marcheurs pourraient la trouver utile. En coulisses, elle utilise OpenStreetMap, Leaflet et OpenRouteService. Si vous souhaitez l'essayer ou la partager avec un ami, tous les liens sont ci-dessous.",
+    "exploreTitle": "Liens utiles",
+    "linkPrivacy": "Politique de confidentialité",
+    "linkSitemap": "Plan du site XML",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Manifeste de l'application web",
+    "shareTitle": "Partagez-la",
+    "shareDescription": "Si Route Random vous aide à sortir de votre routine, n'hésitez pas à la partager.",
+    "shareX": "Partager sur X",
+    "shareFacebook": "Partager sur Facebook",
+    "shareLinkedIn": "Partager sur LinkedIn",
+    "shareReddit": "Partager sur Reddit",
+    "shareTweetText": "Découvrez cette application : Route Random. Elle génère en quelques secondes des parcours circulaires de course, marche et vélo"
+  },
+  "LegendButton": {
+    "ariaLabel": "Légende",
+    "tooltip": "Légende",
+    "modalTitle": "Légende de l'itinéraire",
+    "normalSegment": "Itinéraire normal",
+    "normalDescription": "La partie principale de votre itinéraire généré.",
+    "overlapSegment": "Itinéraire en chevauchement",
+    "overlapDescription": "Une section où votre itinéraire fait un aller-retour. Une boucle parfaite n'est pas toujours possible, il peut donc arriver que vous deviez parcourir un tronçon deux fois."
+  },
+  "Feedback": {
+    "feedbackPrompt": "Que pensez-vous de cet itinéraire ?",
+    "feedbackAfterAccept": "Quel est votre avis ?",
+    "like": "Je l'aime bien",
+    "neutral": "Peut mieux faire",
+    "dislike": "Je ne l'aime pas",
+    "feedbackPlaceholder": "Qu'est-ce qui n'allait pas avec les itinéraires générés ?",
+    "back": "Retour",
+    "send": "Envoyer",
+    "sending": "Envoi en cours..."
+  }
+}
