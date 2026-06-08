@@ -29,7 +29,7 @@ export default function ClientPageWrapper({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [resetCount, setResetCount] = useState(0);
+  const [, setResetCount] = useState(0);
   const [feedbackContext, setFeedbackContext] = useState<"accept" | "no-fit">(
     "accept",
   );
@@ -41,6 +41,7 @@ export default function ClientPageWrapper({
   );
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
   const routeId = useLocationStore((s) => s.routeId);
+  const startLocation = useLocationStore((s) => s.startLocation);
   const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
   const distance = useRouteFormStore((s) => s.distance);
 
@@ -57,27 +58,24 @@ export default function ClientPageWrapper({
     }
   }, []);
 
-  // Show feedback widget when route is accepted
   useEffect(() => {
     if (isRouteAccepted && generatedRoute) {
       setShowFeedback(
         Math.random() < parseFloat(process.env.FEEDBACK_PROBABILITY || "0.5"),
       );
       setFeedbackContext("accept");
-      setResetCount(0); // Reset counter after accepting
+      setResetCount(0);
     }
   }, [isRouteAccepted, generatedRoute]);
 
-  // Track reset attempts
   useEffect(() => {
     if (!generatedRoute && isRouteAccepted === false) {
       setResetCount((prev) => {
         const newCount = prev + 1;
-        // Show feedback after 3 consecutive resets
         if (newCount >= 3) {
           setShowFeedback(true);
           setFeedbackContext("no-fit");
-          return 0; // Reset counter after showing feedback
+          return 0;
         }
         return newCount;
       });
@@ -164,10 +162,23 @@ export default function ClientPageWrapper({
       {showFeedback && (
         <FeedbackWidget
           routeId={routeId || undefined}
-          generatedDistance={generatedRoute?.distance}
-          routeCoordinates={generatedRoute?.coordinates}
+          generatedDistance={
+            feedbackContext === "no-fit"
+              ? distance
+                ? parseFloat(distance) * 1000
+                : undefined
+              : generatedRoute?.distance
+          }
+          routeCoordinates={
+            feedbackContext === "no-fit"
+              ? startLocation
+                ? [startLocation as [number, number]]
+                : undefined
+              : generatedRoute?.coordinates
+          }
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}
+          isNoFitFlow={feedbackContext === "no-fit"}
           customTitle={
             feedbackContext === "no-fit"
               ? "It seems like you can't find a fitting route... can we help?"
