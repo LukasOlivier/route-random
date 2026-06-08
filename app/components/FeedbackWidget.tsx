@@ -14,7 +14,9 @@ interface FeedbackWidgetProps {
   requestedDistance?: number;
   isAcceptFlow?: boolean;
   isNoFitFlow?: boolean;
+  isGeneralFeedback?: boolean;
   customTitle?: string;
+  skipReactionPicker?: boolean;
   onClose: () => void;
 }
 
@@ -25,12 +27,16 @@ export default function FeedbackWidget({
   requestedDistance,
   isAcceptFlow = false,
   isNoFitFlow = false,
+  isGeneralFeedback = false,
   customTitle,
+  skipReactionPicker = false,
   onClose,
 }: FeedbackWidgetProps) {
   const t = useTranslations("Feedback");
   const [selectedReaction, setSelectedReaction] =
-    useState<FeedbackReaction | null>(customTitle ? "like" : null);
+    useState<FeedbackReaction | null>(
+      skipReactionPicker || customTitle || isGeneralFeedback ? "neutral" : null,
+    );
   const [additionalFeedback, setAdditionalFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,7 +63,8 @@ export default function FeedbackWidget({
         : undefined,
       requestedDistance,
       additionalFeedback,
-      isNoFitFlow: isNoFitFlow || (isAcceptFlow === false && !!customTitle),
+      isNoFitFlow,
+      isGeneralFeedback,
     });
     setIsSubmitting(false);
     setTimeout(onClose, 500);
@@ -75,13 +82,22 @@ export default function FeedbackWidget({
 
   const displayTitle =
     customTitle ||
-    (isAcceptFlow ? t("feedbackAfterAccept") : t("feedbackPrompt"));
+    (isGeneralFeedback
+      ? t("generalFeedbackPrompt")
+      : isAcceptFlow
+        ? t("feedbackAfterAccept")
+        : t("feedbackPrompt"));
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 lg:bottom-6 lg:right-6 lg:left-auto bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg z-9999 max-w-sm">
+    <div className="fixed bottom-24 left-4 right-4 lg:bottom-6 lg:right-6 lg:left-auto bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg z-9999 ">
       <div className="flex justify-between items-start mb-3">
         <div>
           <p className="font-medium text-slate-100 mb-1">{displayTitle}</p>
+          {isGeneralFeedback && (
+            <p className="text-xs text-slate-400">
+              {t("generalFeedbackDescription")}
+            </p>
+          )}
         </div>
         <button
           onClick={onClose}
@@ -92,7 +108,7 @@ export default function FeedbackWidget({
         </button>
       </div>
 
-      {!selectedReaction && !customTitle ? (
+      {!selectedReaction && !customTitle && !skipReactionPicker ? (
         <div className="flex gap-4 justify-center">
           {reactions.map(({ key, emoji, label }) => (
             <button
@@ -111,12 +127,16 @@ export default function FeedbackWidget({
           <textarea
             value={additionalFeedback}
             onChange={(e) => setAdditionalFeedback(e.target.value)}
-            placeholder={t("feedbackPlaceholder")}
+            placeholder={
+              isGeneralFeedback
+                ? t("generalFeedbackPlaceholder")
+                : t("feedbackPlaceholder")
+            }
             className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-500 resize-none"
             rows={2}
           />
           <div className="flex gap-2">
-            {!customTitle && (
+            {!customTitle && !isGeneralFeedback && (
               <button
                 onClick={() => {
                   setSelectedReaction(null);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, MessageCircleMore, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SidebarInteractive from "./SidebarInteractive";
 import MobileBottomBar from "./MobileBottomBar";
@@ -26,13 +26,14 @@ export default function ClientPageWrapper({
   children,
 }: ClientPageWrapperProps) {
   const t = useTranslations("Page");
+  const feedbackT = useTranslations("Feedback");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [, setResetCount] = useState(0);
-  const [feedbackContext, setFeedbackContext] = useState<"accept" | "no-fit">(
-    "accept",
-  );
+  const [feedbackContext, setFeedbackContext] = useState<
+    "accept" | "no-fit" | "general"
+  >("accept");
   const initializeFromStorage = useLocationStore(
     (s) => s.initializeFromStorage,
   );
@@ -88,6 +89,11 @@ export default function ClientPageWrapper({
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const openGeneralFeedback = () => {
+    setFeedbackContext("general");
+    setShowFeedback(true);
+  };
+
   const handleFullscreenToggle = (nextIsFullscreen: boolean) => {
     setIsFullscreen(nextIsFullscreen);
     setShowFeedback(false);
@@ -116,7 +122,28 @@ export default function ClientPageWrapper({
             <TrackUserLocationButton />
             <DownloadButton />
             <ShareButton />
+            <FloatingButton
+              onClick={openGeneralFeedback}
+              ariaLabel={feedbackT("generalFeedbackButton")}
+              title={feedbackT("generalFeedbackButton")}
+              className="hidden lg:flex"
+              showTextOnDesktop
+              umamiEvent="Open general feedback"
+            >
+              <MessageCircleMore size={16} />
+              {feedbackT("generalFeedbackButton")}
+            </FloatingButton>
           </>
+        )}
+        {!isSidebarOpen && (
+          <FloatingButton
+            onClick={openGeneralFeedback}
+            ariaLabel={feedbackT("generalFeedbackButton")}
+            hideOnDesktop={true}
+            umamiEvent="Open general feedback"
+          >
+            <MessageCircleMore size={20} />
+          </FloatingButton>
         )}
         {!isSidebarOpen && (
           <FullscreenButton
@@ -179,6 +206,7 @@ export default function ClientPageWrapper({
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}
           isNoFitFlow={feedbackContext === "no-fit"}
+          isGeneralFeedback={feedbackContext === "general"}
           customTitle={
             feedbackContext === "no-fit"
               ? "It seems like you can't find a fitting route... can we help?"

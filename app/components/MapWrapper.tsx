@@ -10,7 +10,7 @@ const Map = dynamic(() => import("@/app/components/Map"), {
 
 export default function MapWrapper() {
   return (
-    <div className="w-full lg:w-3/4 h-[100vh]">
+    <div className="w-full lg:w-9/12 h-screen">
       <Map />
     </div>
   );

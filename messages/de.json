@@ -1,0 +1,146 @@
+{
+  "Sidebar": {
+    "title": "Route Random",
+    "subtitle": "Ein Projekt von",
+    "authorLink": "Lukas Olivier",
+    "aboutTitle": "Über Route Random",
+    "aboutDescription1": "Route Random ist ein kostenloser Zufallsrouten-Generator, der kreisförmige Routen für Läufer, Jogger und Spaziergänger erstellt. Generiere zufällige Routen basierend auf deiner gewünschten Distanz und deinem Startpunkt – überall auf der Welt.",
+    "aboutDescription2": "Perfekt zum Entdecken neuer Wege, zum Erkunden deiner Nachbarschaft oder zum Finden neuer Routen, die dein Training abwechslungsreicher machen.",
+    "language": "Sprache",
+    "aboutLink": "Mehr erfahren"
+  },
+  "SidebarForm": {
+    "distanceMode": "Distanz",
+    "timeMode": "Zeit",
+    "desiredDistance": "Gewünschte Distanz (in km):",
+    "distancePlaceholder": "z. B. 5 oder 7,5",
+    "desiredDuration": "Gewünschte Dauer (in Minuten):",
+    "timePlaceholder": "z. B. 30 oder 45",
+    "pace": "Tempo:",
+    "walkingPace": "Gehtempo (5 km/h)",
+    "runningPace": "Lauftempo (10 km/h)",
+    "cyclingPace": "Radfahrtempo (15 km/h)",
+    "startingLocation": "Startpunkt",
+    "searchLocationPlaceholder": "Startpunkt suchen...",
+    "useCurrentLocation": "Aktuellen Standort verwenden",
+    "geolocationNotSupported": "Geolokalisierung wird von diesem Browser nicht unterstützt.",
+    "locationError": "Dein aktueller Standort konnte nicht ermittelt werden.",
+    "allowLocationPrompt": "Erlaube den Standortzugriff im Browser-Fenster, um fortzufahren.",
+    "locationPermissionDenied": "Der Standortzugriff ist für diese App deaktiviert. Aktiviere ihn in den Einstellungen deines Browsers oder Geräts.",
+    "locationPermissionBlocked": "Die Standortanfrage wurde blockiert. Bitte erlaube den Zugriff und versuche es erneut.",
+    "locationServicesDisabled": "Die Standortdienste scheinen auf deinem Gerät deaktiviert zu sein. Aktiviere sie und versuche es erneut.",
+    "locationUnavailable": "Standortinformationen sind derzeit nicht verfügbar.",
+    "locationTimeout": "Die Standortanfrage hat zu lange gedauert. Wechsle in einen freieren Bereich und versuche es erneut.",
+    "unableToGetLocation": "Dein aktueller Standort konnte nicht ermittelt werden."
+  },
+  "Map": {
+    "startLocation": "Startpunkt",
+    "routeGenerated": "Route generiert!",
+    "distance": "Distanz",
+    "elevation": "Höhenprofil"
+  },
+  "MapLoading": {
+    "loadingText": "Dein Abenteuer wird geladen..."
+  },
+  "DownloadButton": {
+    "downloadRoute": "Route als GPX herunterladen",
+    "ariaLabel": "Route als GPX herunterladen"
+  },
+  "FullScreenButton": {
+    "enterFullscreen": "Vollbildmodus aktivieren",
+    "exitFullscreen": "Vollbildmodus beenden"
+  },
+  "ShareButton": {
+    "ariaLabel": "Route teilen",
+    "shareRoute": "Route teilen"
+  },
+  "TrackUserLocationButton": {
+    "stopTracking": "Standortverfolgung beenden",
+    "trackLocation": "Standort verfolgen",
+    "trackYourLocation": "Standort verfolgen",
+    "geolocationNotSupported": "Geolokalisierung wird von diesem Browser nicht unterstützt.",
+    "allowLocationPrompt": "Erlaube den Standortzugriff im Browser-Fenster, um fortzufahren.",
+    "unableToGetLocation": "Dein Standort konnte nicht ermittelt werden.",
+    "locationPermissionDenied": "Der Standortzugriff ist für diese App deaktiviert. Aktiviere ihn in den Einstellungen deines Browsers oder Geräts.",
+    "locationPermissionBlocked": "Die Standortanfrage wurde blockiert. Bitte erlaube den Zugriff und versuche es erneut.",
+    "locationAccessDenied": "Standortzugriff verweigert. Bitte aktiviere die Standortberechtigungen.",
+    "locationServicesDisabled": "Die Standortdienste scheinen auf deinem Gerät deaktiviert zu sein. Aktiviere sie und versuche es erneut.",
+    "locationUnavailable": "Standortinformationen nicht verfügbar.",
+    "locationTimeout": "Die Standortanfrage ist abgelaufen."
+  },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Bitte gib eine Distanz ein",
+    "enterTimeDuration": "Bitte gib eine Dauer ein",
+    "selectStartLocation": "Bitte wähle einen Startpunkt aus",
+    "routeServiceUnavailable": "Der Routendienst ist nicht verfügbar. Bitte versuche es später erneut.",
+    "routeRateLimited": "Gerade generieren zu viele Personen Routen. Versuche es später erneut oder unterstütze mich auf buymeacoffee.com/lukasolivier, um das Limit zu erhöhen.",
+    "noRouteFound": "Für diesen Standort konnte keine Route generiert werden. Versuche einen anderen Startpunkt.",
+    "routeDistanceTooLong": "Diese Route ist zu lang. Bitte wähle eine kürzere Distanz.",
+    "failedGenerate": "Route konnte nicht generiert werden. Bitte versuche es erneut.",
+    "failedRegenerate": "Route konnte nicht neu generiert werden. Bitte versuche es erneut."
+  },
+  "Notifications": {
+    "close": "Benachrichtigung schließen"
+  },
+  "Page": {
+    "toggleMenu": "Menü ein-/ausblenden",
+    "fullscreen": "Vollbild",
+    "exitFullscreen": "Vollbildmodus beenden"
+  },
+  "GenerateRouteButton": {
+    "generating": "Wird generiert...",
+    "generateRoute": "Route generieren"
+  },
+  "ResetRouteButton": {
+    "reset": "Zurücksetzen"
+  },
+  "AcceptRouteButton": {
+    "accept": "Akzeptieren"
+  },
+  "MapLoadingOverlay": {
+    "generatingRoute": "Deine Route wird generiert...",
+    "pleaseWait": "Bitte warten..."
+  },
+  "SeoSection": {
+    "heading": "Route Random | Kostenloser Routen-Generator zum Laufen und Spazierengehen",
+    "paragraph1": "Hallo, ich bin Lukas. Ich laufe viel und hatte es satt, jede Woche dieselben Runden zu drehen. Deshalb habe ich Route Random entwickelt: einen einfachen Laufrouten-Generator, der zufällige Rundstrecken basierend auf deiner Distanz und deinem Startpunkt erstellt. Du kannst eine Adresse suchen oder auf die Karte klicken, und in wenigen Sekunden erhältst du eine neue Runde, die dich meist wieder in die Nähe deines Ausgangspunkts bringt.",
+    "paragraph2": "Ich habe die App bewusst praktisch gehalten. Du kannst zwischen Distanz und Zeit wechseln, Gehen, Laufen oder Radfahren auswählen und deine Route anpassen, wenn du mehr Kontrolle möchtest. Wenn die Route gut aussieht, kannst du sie als GPX oder GeoJSON exportieren und in Garmin, Strava oder praktisch jeder Fitness-App oder -Uhr verwenden. Keine Pflichtregistrierung, kein endloses Einrichten und kein nerviges Tracking – nur ein schneller Weg, neue Strecken zu finden, wenn deine übliche Route langweilig wird.",
+    "paragraph3": "Ursprünglich habe ich das für mich selbst entwickelt, aber ich habe mich entschieden, es zu teilen, weil andere Läufer und Spaziergänger es vielleicht auch nützlich finden. Im Hintergrund verwendet es OpenStreetMap, Leaflet und OpenRouteService. Wenn du es ausprobieren oder mit einem Freund teilen möchtest, findest du alle Links unten.",
+    "exploreTitle": "Nützliche Links",
+    "linkPrivacy": "Datenschutzrichtlinie",
+    "linkSitemap": "XML-Sitemap",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Web-App-Manifest",
+    "shareTitle": "Teile es",
+    "shareDescription": "Wenn Route Random dir hilft, aus deiner Routine auszubrechen, teile es gerne.",
+    "shareX": "Auf X teilen",
+    "shareFacebook": "Auf Facebook teilen",
+    "shareLinkedIn": "Auf LinkedIn teilen",
+    "shareReddit": "Auf Reddit teilen",
+    "shareTweetText": "Schau dir diese App an: Route Random. Sie erstellt in Sekunden kreisförmige Lauf-, Geh- und Radrouten"
+  },
+  "LegendButton": {
+    "ariaLabel": "Legende",
+    "tooltip": "Legende",
+    "modalTitle": "Routen-Legende",
+    "normalSegment": "Normale Route",
+    "normalDescription": "Der Hauptteil deiner generierten Route.",
+    "overlapSegment": "Überlappende Route",
+    "overlapDescription": "Ein Abschnitt, in dem deine Route hin und zurück führt. Eine perfekte Runde ist nicht immer möglich, daher musst du möglicherweise einen Abschnitt zweimal zurücklegen."
+  },
+  "Feedback": {
+    "feedbackPrompt": "Wie gefällt dir diese Route?",
+    "feedbackAfterAccept": "Was denkst du?",
+    "like": "Gefällt mir",
+    "neutral": "Könnte besser sein",
+    "dislike": "Gefällt mir nicht",
+    "feedbackPlaceholder": "Was war falsch an den generierten Routen?",
+    "generalFeedbackPrompt": "Allgemeines Feedback teilen",
+    "generalFeedbackDescription": "Sag uns, was wir an der App insgesamt verbessern sollen.",
+    "generalFeedbackPlaceholder": "Sag uns, was wir in der App verbessern sollen.",
+    "generalFeedbackButton": "Feedback",
+    "back": "Zurück",
+    "send": "Senden",
+    "sending": "Wird gesendet..."
+  }
+}

@@ -1,17 +1,81 @@
+"use client";
+
 import { Footprints } from "lucide-react";
 import SidebarForm from "./SidebarForm";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Select from "react-select";
+import type {
+  FormatOptionLabelMeta,
+  OnChangeValue,
+  StylesConfig,
+} from "react-select";
+import ReactCountryFlag from "react-country-flag";
 
 interface SidebarProps {
   isMobile: boolean;
+}
+
+interface LanguageOption {
+  value: string;
+  label: string;
+  countryCode: string;
 }
 
 export default function Sidebar({ isMobile }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const router = useRouter();
+
+  const languageOptions: LanguageOption[] = [
+    { value: "en", label: "EN", countryCode: "GB" },
+    { value: "nl", label: "NL", countryCode: "NL" },
+    { value: "fr", label: "FR", countryCode: "FR" },
+    { value: "de", label: "DE", countryCode: "DE" },
+    { value: "es", label: "ES", countryCode: "ES" },
+    { value: "pl", label: "PL", countryCode: "PL" },
+  ];
+
+  const customStyles: StylesConfig<LanguageOption, false> = {
+    control: (provided, state) => ({
+      ...provided,
+      background: "#1f2937", // gray-800
+      borderColor: state.isFocused ? "#4b5563" : "#374151", // gray-600 / gray-700
+      boxShadow: state.isFocused ? "0 0 0 1px #374151" : "none",
+      minHeight: 34,
+      paddingLeft: 8,
+      paddingRight: 6,
+      color: "#fff",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#fff",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      background: "#111827", // gray-900
+      color: "#fff",
+      borderRadius: 6,
+      overflow: "hidden",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      background: state.isFocused ? "#374151" : "transparent",
+      color: "#fff",
+      cursor: "pointer",
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: "#9ca3af", // gray-400
+    }),
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      color: "#cbd5e1",
+    }),
+    indicatorSeparator: () => ({ display: "none" }),
+    menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+  };
 
   const handleLanguageChange = (newLocale: string) => {
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`;
@@ -30,15 +94,39 @@ export default function Sidebar({ isMobile }: SidebarProps) {
             {t("title")}
           </h2>
 
-          <select
-            value={locale}
-            onChange={(e) => handleLanguageChange(e.target.value)}
-            className="text-xs w-full xl:w-fit px-2 py-1 dark:bg-gray-800 rounded border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white text-gray-800"
-            title={t("language")}
-          >
-            <option value="en">EN</option>
-            <option value="nl">NL</option>
-          </select>
+          <div className="w-full xl:w-fit">
+            <Select
+              value={languageOptions.find((option) => option.value === locale)}
+              onChange={(option: OnChangeValue<LanguageOption, false>) => {
+                if (option) {
+                  handleLanguageChange(option.value);
+                }
+              }}
+              options={languageOptions}
+              styles={customStyles}
+              menuPortalTarget={
+                typeof document !== "undefined" ? document.body : undefined
+              }
+              menuPlacement="auto"
+              formatOptionLabel={(
+                option: LanguageOption,
+                _meta: FormatOptionLabelMeta<LanguageOption>,
+              ) => (
+                <div className="flex items-center gap-2">
+                  <ReactCountryFlag
+                    svg
+                    countryCode={option.countryCode}
+                    style={{ width: 20, height: 14 }}
+                  />
+                  <span>{option.label}</span>
+                </div>
+              )}
+              className="react-select-container"
+              classNamePrefix="react-select"
+              isSearchable={false}
+              aria-label={t("language")}
+            />
+          </div>
         </div>
 
         <h2 className="text-sm text-extra my-2">

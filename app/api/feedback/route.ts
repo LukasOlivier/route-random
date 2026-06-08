@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
       requestedDistance,
       additionalFeedback,
       isNoFitFlow,
+      isGeneralFeedback,
     } = body;
 
     if (!reaction || !["like", "neutral", "dislike"].includes(reaction)) {
@@ -59,7 +60,9 @@ export async function POST(request: NextRequest) {
     const reactionEmoji_ = reactionEmoji[reaction as FeedbackReaction];
     const reactionDesc = reactionDescriptions[reaction as FeedbackReaction];
 
-    let description = `**User Feedback: ${reactionDesc}** ${reactionEmoji_}`;
+    let description = isGeneralFeedback
+      ? `**General App Feedback** ${reactionEmoji_}`
+      : `**User Feedback: ${reactionDesc}** ${reactionEmoji_}`;
 
     if (generatedDistance && requestedDistance) {
       description += `\nRequested: ${Math.round(requestedDistance)} km | Generated: ${Math.round(generatedDistance)} km`;
@@ -75,13 +78,21 @@ export async function POST(request: NextRequest) {
       description += `\n\nRoute: ${routeUrl}`;
     }
 
-    const title = isNoFitFlow
-      ? "No-fit Feedback — Could not find a fitting route"
-      : "Route Feedback Received";
+    const title = isGeneralFeedback
+      ? "General App Feedback Received"
+      : isNoFitFlow
+        ? "No-fit Feedback — Could not find a fitting route"
+        : "Route Feedback Received";
 
     if (isNoFitFlow) {
       description =
         `**Context: no-fit** — the user couldn't find a fitting route.` +
+        (description ? `\n\n${description}` : "");
+    }
+
+    if (isGeneralFeedback) {
+      description =
+        `**Context: general app feedback** — the user shared feedback about the app overall.` +
         (description ? `\n\n${description}` : "");
     }
 

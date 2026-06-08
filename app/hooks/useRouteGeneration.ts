@@ -7,12 +7,17 @@ import {
   useNotificationStore,
 } from "../../stores";
 import { useTranslations } from "next-intl";
-import { calculateDistanceFromTime } from "../utils/routeCalculations";
+import {
+  calculateDistanceFromTime,
+  isRequestedRoundTripDistanceTooLong,
+  MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM,
+} from "../utils/routeCalculations";
 
 type RouteErrorKind =
   | "serviceUnavailable"
   | "rateLimited"
   | "noRouteFound"
+  | "distanceTooLong"
   | "generic";
 
 function sanitizeRouteErrorKind(error: unknown): RouteErrorKind {
@@ -33,6 +38,10 @@ function sanitizeRouteErrorKind(error: unknown): RouteErrorKind {
     return "noRouteFound";
   }
 
+  if (message === "distanceTooLong") {
+    return "distanceTooLong";
+  }
+
   if (
     message.includes("ORS API error: 429") ||
     message.includes("HTTP error! status: 429")
@@ -49,6 +58,10 @@ function sanitizeRouteErrorKind(error: unknown): RouteErrorKind {
 
   if (message.includes("No route found")) {
     return "noRouteFound";
+  }
+
+  if (message.includes("route_distance_too_long")) {
+    return "distanceTooLong";
   }
 
   return "generic";
@@ -146,6 +159,16 @@ export function useRouteGeneration() {
       return;
     }
 
+    if (isRequestedRoundTripDistanceTooLong(finalDistance)) {
+      showNotification(
+        t("routeDistanceTooLong", {
+          maxDistanceKm: MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(0),
+        }),
+        { variant: "error" },
+      );
+      return;
+    }
+
     try {
       setIsGeneratingRoute(true);
 
@@ -183,7 +206,12 @@ export function useRouteGeneration() {
             ? t("routeRateLimited")
             : errorKind === "noRouteFound"
               ? t("noRouteFound")
-              : t("failedGenerate");
+              : errorKind === "distanceTooLong"
+                ? t("routeDistanceTooLong", {
+                    maxDistanceKm:
+                      MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(0),
+                  })
+                : t("failedGenerate");
 
       showNotification(errorMessage, { variant: "error" });
     } finally {
@@ -237,7 +265,9 @@ export function useRouteGeneration() {
             ? t("routeRateLimited")
             : errorKind === "noRouteFound"
               ? t("noRouteFound")
-              : t("failedRegenerate");
+              : errorKind === "distanceTooLong"
+                ? t("routeDistanceTooLong")
+                : t("failedRegenerate");
 
       showNotification(errorMessage, { variant: "error" });
     } finally {

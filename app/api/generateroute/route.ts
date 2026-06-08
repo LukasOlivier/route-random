@@ -6,6 +6,10 @@ import {
 } from "../../services/orsService";
 import { checkRouteGenerationRateLimit } from "@/app/utils/rateLimit";
 import { notifyDiscord } from "@/app/utils/discordNotifications";
+import {
+  MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM,
+  isRequestedRoundTripDistanceTooLong,
+} from "@/app/utils/routeCalculations";
 import type { RouteResponse } from "../../services/orsService";
 
 export async function POST(request: NextRequest) {
@@ -70,6 +74,18 @@ export async function POST(request: NextRequest) {
       if (!distance || distance <= 0) {
         return NextResponse.json(
           { error: "Valid distance is required" },
+          { status: 400 },
+        );
+      }
+
+      if (isRequestedRoundTripDistanceTooLong(distance)) {
+        return NextResponse.json(
+          {
+            errorCode: "route_distance_too_long",
+            error: `Requested route distance exceeds the maximum supported round-trip distance of ${MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(
+              0,
+            )} km. Please choose a shorter distance.`,
+          },
           { status: 400 },
         );
       }
@@ -151,6 +167,17 @@ export async function POST(request: NextRequest) {
             errorCode: "route_not_found",
             error:
               "Could not generate a route for this location. Try a different starting point.",
+          },
+          { status: 400 },
+        );
+      }
+      if (error.message.includes("route_distance_too_long")) {
+        return NextResponse.json(
+          {
+            errorCode: "route_distance_too_long",
+            error: `Requested route distance exceeds the maximum supported round-trip distance of ${MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(
+              0,
+            )} km. Please choose a shorter distance.`,
           },
           { status: 400 },
         );

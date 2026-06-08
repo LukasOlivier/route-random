@@ -1,0 +1,146 @@
+{
+  "Sidebar": {
+    "title": "Route Random",
+    "subtitle": "Projekt stworzony przez",
+    "authorLink": "Lukas Olivier",
+    "aboutTitle": "O Route Random",
+    "aboutDescription1": "Route Random to darmowy generator losowych tras, który tworzy losowe trasy pętelkowe dla biegaczy, truchtaczy i spacerowiczów. Generuj losowe trasy na podstawie żądanej odległości i miejsca startu, gdziekolwiek na świecie.",
+    "aboutDescription2": "Idealne do odkrywania nowych ścieżek, eksplorowania okolicy lub znalezienia nowych tras, które urozmaicą trening.",
+    "language": "Język",
+    "aboutLink": "Czytaj więcej"
+  },
+  "SidebarForm": {
+    "distanceMode": "Dystans",
+    "timeMode": "Czas",
+    "desiredDistance": "Żądana odległość (w km):",
+    "distancePlaceholder": "np. 5 lub 7,5",
+    "desiredDuration": "Pożądany czas trwania (w minutach):",
+    "timePlaceholder": "np. 30 lub 45",
+    "pace": "Tempo:",
+    "walkingPace": "Tempo spacerowe (5 km/h)",
+    "runningPace": "Tempo biegowe (10 km/h)",
+    "cyclingPace": "Tempo rowerowe (15 km/h)",
+    "startingLocation": "Miejsce startu",
+    "searchLocationPlaceholder": "Wyszukaj miejsce startu...",
+    "useCurrentLocation": "Użyj bieżącej lokalizacji",
+    "geolocationNotSupported": "Geolokalizacja nie jest obsługiwana przez tę przeglądarkę.",
+    "locationError": "Nie można pobrać Twojej bieżącej lokalizacji.",
+    "allowLocationPrompt": "Zezwól na dostęp do lokalizacji w oknie przeglądarki, aby kontynuować.",
+    "locationPermissionDenied": "Uprawnienia do lokalizacji są wyłączone dla tej aplikacji. Włącz je w ustawieniach przeglądarki lub urządzenia.",
+    "locationPermissionBlocked": "Żądanie lokalizacji zostało zablokowane. Zezwól na dostęp do lokalizacji i spróbuj ponownie.",
+    "locationServicesDisabled": "Wygląda na to, że usługi lokalizacyjne są wyłączone na Twoim urządzeniu. Włącz je i spróbuj ponownie.",
+    "locationUnavailable": "Informacje o lokalizacji są obecnie niedostępne.",
+    "locationTimeout": "Żądanie lokalizacji trwało za długo. Przejdź w miejsce o lepszym zasięgu i spróbuj ponownie.",
+    "unableToGetLocation": "Nie można uzyskać Twojej bieżącej lokalizacji."
+  },
+  "Map": {
+    "startLocation": "Miejsce startu",
+    "routeGenerated": "Trasa wygenerowana!",
+    "distance": "Dystans",
+    "elevation": "Wzniesienie"
+  },
+  "MapLoading": {
+    "loadingText": "Ładowanie Twojej przygody..."
+  },
+  "DownloadButton": {
+    "downloadRoute": "Pobierz trasę jako GPX",
+    "ariaLabel": "Pobierz trasę jako GPX"
+  },
+  "FullScreenButton": {
+    "enterFullscreen": "Wejdź w tryb pełnoekranowy",
+    "exitFullscreen": "Wyjdź z trybu pełnoekranowego"
+  },
+  "ShareButton": {
+    "ariaLabel": "Udostępnij trasę",
+    "shareRoute": "Udostępnij trasę"
+  },
+  "TrackUserLocationButton": {
+    "stopTracking": "Zatrzymaj śledzenie lokalizacji",
+    "trackLocation": "Śledź lokalizację",
+    "trackYourLocation": "Śledź lokalizację",
+    "geolocationNotSupported": "Geolokalizacja nie jest obsługiwana przez tę przeglądarkę.",
+    "allowLocationPrompt": "Zezwól na dostęp do lokalizacji w oknie przeglądarki, aby kontynuować.",
+    "unableToGetLocation": "Nie można pobrać Twojej lokalizacji.",
+    "locationPermissionDenied": "Uprawnienia do lokalizacji są wyłączone dla tej aplikacji. Włącz je w ustawieniach przeglądarki lub urządzenia.",
+    "locationPermissionBlocked": "Żądanie lokalizacji zostało zablokowane. Zezwól na dostęp do lokalizacji i spróbuj ponownie.",
+    "locationAccessDenied": "Dostęp do lokalizacji zabroniony. Włącz uprawnienia do lokalizacji.",
+    "locationServicesDisabled": "Wygląda na to, że usługi lokalizacyjne są wyłączone na Twoim urządzeniu. Włącz je i spróbuj ponownie.",
+    "locationUnavailable": "Informacje o lokalizacji niedostępne.",
+    "locationTimeout": "Żądanie lokalizacji przekroczyło limit czasu."
+  },
+  "RouteGenerationNotifications": {
+    "enterDistance": "Wprowadź dystans",
+    "enterTimeDuration": "Wprowadź czas trwania",
+    "selectStartLocation": "Wybierz miejsce startu",
+    "routeServiceUnavailable": "Usługa wyznaczania tras jest niedostępna. Spróbuj ponownie później.",
+    "routeRateLimited": "Obecnie zbyt wiele osób generuje trasy. Spróbuj ponownie później lub wesprzyj mnie na buymeacoffee.com/lukasolivier, aby zwiększyć limit.",
+    "noRouteFound": "Nie udało się wygenerować trasy dla tej lokalizacji. Spróbuj innego punktu startowego.",
+    "routeDistanceTooLong": "Ta trasa jest za długa. Wybierz krótszy dystans.",
+    "failedGenerate": "Nie udało się wygenerować trasy. Spróbuj ponownie.",
+    "failedRegenerate": "Nie udało się ponownie wygenerować trasy. Spróbuj ponownie."
+  },
+  "Notifications": {
+    "close": "Zamknij powiadomienie"
+  },
+  "Page": {
+    "toggleMenu": "Pokaż/ukryj menu",
+    "fullscreen": "Pełny ekran",
+    "exitFullscreen": "Wyjdź z pełnego ekranu"
+  },
+  "GenerateRouteButton": {
+    "generating": "Generowanie...",
+    "generateRoute": "Wygeneruj trasę"
+  },
+  "ResetRouteButton": {
+    "reset": "Resetuj"
+  },
+  "AcceptRouteButton": {
+    "accept": "Akceptuj"
+  },
+  "MapLoadingOverlay": {
+    "generatingRoute": "Generowanie trasy...",
+    "pleaseWait": "Proszę czekać..."
+  },
+  "SeoSection": {
+    "heading": "Route Random | Darmowy generator tras biegowych i spacerowych",
+    "paragraph1": "Cześć, jestem Lukas. Dużo biegam i znudziło mi się powtarzanie tych samych pętli co tydzień. Dlatego stworzyłem Route Random: prosty generator tras, który tworzy losowe trasy pętelkowe na podstawie dystansu i punktu startowego. Możesz wyszukać adres lub kliknąć na mapie, a w kilka sekund otrzymasz nową pętlę, która zwykle prowadzi z powrotem blisko miejsca startu.",
+    "paragraph2": "Aplikacja jest celowo praktyczna. Możesz przełączać tryby między dystansem a czasem, wybrać spacer, bieg lub jazdę na rowerze oraz dostosować trasę, jeśli chcesz większej kontroli. Gdy trasa wygląda dobrze, możesz wyeksportować ją jako GPX lub GeoJSON i użyć w Garmin, Strava lub praktycznie każdej aplikacji treningowej.",
+    "paragraph3": "Początkowo zrobiłem to dla siebie, ale postanowiłem się tym podzielić, bo może się przydać innym biegaczom i spacerowiczom. Pod spodem używam OpenStreetMap, Leaflet i OpenRouteService. Jeśli chcesz spróbować lub udostępnić znajomemu, wszystkie linki są poniżej.",
+    "exploreTitle": "Przydatne linki",
+    "linkPrivacy": "Polityka prywatności",
+    "linkSitemap": "Mapa witryny (XML)",
+    "linkRobots": "Robots.txt",
+    "linkManifest": "Manifest aplikacji",
+    "shareTitle": "Udostępnij",
+    "shareDescription": "Jeśli Route Random pomoże Ci przełamać rutynę, udostępnij aplikację.",
+    "shareX": "Udostępnij na X",
+    "shareFacebook": "Udostępnij na Facebooku",
+    "shareLinkedIn": "Udostępnij na LinkedIn",
+    "shareReddit": "Udostępnij na Reddicie",
+    "shareTweetText": "Sprawdź tę aplikację: Route Random. Tworzy nowe pętle biegowe, spacerowe i rowerowe w kilka sekund"
+  },
+  "LegendButton": {
+    "ariaLabel": "Legenda",
+    "tooltip": "Legenda",
+    "modalTitle": "Legenda trasy",
+    "normalSegment": "Główna część trasy",
+    "normalDescription": "Główna część wygenerowanej trasy.",
+    "overlapSegment": "Nakładająca się część trasy",
+    "overlapDescription": "Część trasy, w której trasa się pokrywa i prowadzi tam i z powrotem. Czasami idealna pętla nie jest możliwa, więc może być konieczne dwukrotne przejście tego odcinka."
+  },
+  "Feedback": {
+    "feedbackPrompt": "Jak oceniasz tę trasę?",
+    "feedbackAfterAccept": "Co o niej myślisz?",
+    "like": "Podoba się",
+    "neutral": "Może być lepiej",
+    "dislike": "Nie podoba się",
+    "feedbackPlaceholder": "Co było nie tak z wygenerowanymi trasami?",
+    "generalFeedbackPrompt": "Podziel się ogólną opinią",
+    "generalFeedbackDescription": "Napisz, co chciałbyś ulepszyć w aplikacji jako całości.",
+    "generalFeedbackPlaceholder": "Napisz, co chciałbyś ulepszyć w aplikacji.",
+    "generalFeedbackButton": "Opinia",
+    "back": "Wstecz",
+    "send": "Wyślij",
+    "sending": "Wysyłanie..."
+  }
+}

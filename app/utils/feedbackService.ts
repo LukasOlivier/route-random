@@ -9,6 +9,7 @@ interface FeedbackData {
   requestedDistance?: number;
   additionalFeedback?: string;
   isNoFitFlow?: boolean;
+  isGeneralFeedback?: boolean;
 }
 
 const reactionEmoji = {
@@ -26,6 +27,7 @@ export async function sendFeedbackToDiscord({
   requestedDistance,
   additionalFeedback,
   isNoFitFlow,
+  isGeneralFeedback,
 }: FeedbackData): Promise<void> {
   try {
     const response = await fetch("/api/feedback", {
@@ -40,6 +42,7 @@ export async function sendFeedbackToDiscord({
         requestedDistance,
         additionalFeedback,
         isNoFitFlow,
+        isGeneralFeedback,
       }),
     });
 
