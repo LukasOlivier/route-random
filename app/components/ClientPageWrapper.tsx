@@ -41,6 +41,7 @@ export default function ClientPageWrapper({
   );
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
   const routeId = useLocationStore((s) => s.routeId);
+  const startLocation = useLocationStore((s) => s.startLocation);
   const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
   const distance = useRouteFormStore((s) => s.distance);
 
@@ -161,10 +162,23 @@ export default function ClientPageWrapper({
       {showFeedback && (
         <FeedbackWidget
           routeId={routeId || undefined}
-          generatedDistance={generatedRoute?.distance}
-          routeCoordinates={generatedRoute?.coordinates}
+          generatedDistance={
+            feedbackContext === "no-fit"
+              ? distance
+                ? parseFloat(distance) * 1000
+                : undefined
+              : generatedRoute?.distance
+          }
+          routeCoordinates={
+            feedbackContext === "no-fit"
+              ? startLocation
+                ? [startLocation as [number, number]]
+                : undefined
+              : generatedRoute?.coordinates
+          }
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}
+          isNoFitFlow={feedbackContext === "no-fit"}
           customTitle={
             feedbackContext === "no-fit"
               ? "It seems like you can't find a fitting route... can we help?"

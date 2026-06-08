@@ -13,6 +13,7 @@ interface FeedbackWidgetProps {
   routeCoordinates?: [number, number][];
   requestedDistance?: number;
   isAcceptFlow?: boolean;
+  isNoFitFlow?: boolean;
   customTitle?: string;
   onClose: () => void;
 }
@@ -23,6 +24,7 @@ export default function FeedbackWidget({
   routeCoordinates,
   requestedDistance,
   isAcceptFlow = false,
+  isNoFitFlow = false,
   customTitle,
   onClose,
 }: FeedbackWidgetProps) {
@@ -55,6 +57,7 @@ export default function FeedbackWidget({
         : undefined,
       requestedDistance,
       additionalFeedback,
+      isNoFitFlow: isNoFitFlow || (isAcceptFlow === false && !!customTitle),
     });
     setIsSubmitting(false);
     setTimeout(onClose, 500);

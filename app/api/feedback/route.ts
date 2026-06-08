@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       generatedDistance,
       requestedDistance,
       additionalFeedback,
+      isNoFitFlow,
     } = body;
 
     if (!reaction || !["like", "neutral", "dislike"].includes(reaction)) {
@@ -74,9 +75,19 @@ export async function POST(request: NextRequest) {
       description += `\n\nRoute: ${routeUrl}`;
     }
 
+    const title = isNoFitFlow
+      ? "No-fit Feedback — Could not find a fitting route"
+      : "Route Feedback Received";
+
+    if (isNoFitFlow) {
+      description =
+        `**Context: no-fit** — the user couldn't find a fitting route.` +
+        (description ? `\n\n${description}` : "");
+    }
+
     const embeds = [
       {
-        title: "Route Feedback Received",
+        title,
         description,
         color:
           reaction === "like"
