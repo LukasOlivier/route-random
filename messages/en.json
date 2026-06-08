@@ -135,6 +135,10 @@
     "neutral": "Could be better",
     "dislike": "Dislike it",
     "feedbackPlaceholder": "What was wrong with the generated routes?",
+    "generalFeedbackPrompt": "Share general feedback",
+    "generalFeedbackDescription": "Tell us about the app overall, what you like, and what you'd like to see improved,.",
+    "generalFeedbackPlaceholder": "Tell us what you'd like improved across the app.",
+    "generalFeedbackButton": "Feedback",
     "back": "Back",
     "send": "Send",
     "sending": "Sending..."

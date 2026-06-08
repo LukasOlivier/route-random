@@ -135,6 +135,10 @@
     "neutral": "Może być lepiej",
     "dislike": "Nie podoba się",
     "feedbackPlaceholder": "Co było nie tak z wygenerowanymi trasami?",
+    "generalFeedbackPrompt": "Podziel się ogólną opinią",
+    "generalFeedbackDescription": "Napisz, co chciałbyś ulepszyć w aplikacji jako całości.",
+    "generalFeedbackPlaceholder": "Napisz, co chciałbyś ulepszyć w aplikacji.",
+    "generalFeedbackButton": "Opinia",
     "back": "Wstecz",
     "send": "Wyślij",
     "sending": "Wysyłanie..."

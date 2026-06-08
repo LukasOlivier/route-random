@@ -135,6 +135,10 @@
     "neutral": "Kan beter",
     "dislike": "Niet leuk",
     "feedbackPlaceholder": "Wat was er mis met de gegenereerde routes?",
+    "generalFeedbackPrompt": "Deel algemene feedback",
+    "generalFeedbackDescription": "Laat ons weten wat je in de app als geheel wilt verbeteren.",
+    "generalFeedbackPlaceholder": "Laat ons weten wat je in de app verbeterd wilt zien.",
+    "generalFeedbackButton": "Feedback",
     "back": "Terug",
     "send": "Verzenden",
     "sending": "Verzenden..."

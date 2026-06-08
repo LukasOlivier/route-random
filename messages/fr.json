@@ -135,6 +135,10 @@
     "neutral": "Peut mieux faire",
     "dislike": "Je ne l'aime pas",
     "feedbackPlaceholder": "Qu'est-ce qui n'allait pas avec les itinéraires générés ?",
+    "generalFeedbackPrompt": "Partagez vos commentaires généraux",
+    "generalFeedbackDescription": "Parlez-nous de l'application dans son ensemble.",
+    "generalFeedbackPlaceholder": "Dites-nous ce que vous aimeriez améliorer dans l'application.",
+    "generalFeedbackButton": "Avis",
     "back": "Retour",
     "send": "Envoyer",
     "sending": "Envoi en cours..."

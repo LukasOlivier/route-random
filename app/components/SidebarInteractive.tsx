@@ -75,7 +75,7 @@ export default function SidebarInteractive({
       className={`primary-bg flex flex-col p-6 ${
         isMobile
           ? `fixed left-0 right-0 bottom-0 z-10000 h-[75vh] overflow-y-auto rounded-t-2xl shadow-2xl ${!isOpen ? "pointer-events-none" : ""}`
-          : "h-screen w-1/5"
+          : "h-screen w-3/12"
       }`}
     >
       <Sidebar isMobile={isMobile} />
