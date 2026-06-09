@@ -34,22 +34,12 @@ export default function ClientPageWrapper({
   const [feedbackContext, setFeedbackContext] = useState<
     "accept" | "no-fit" | "general"
   >("accept");
-  const initializeFromStorage = useLocationStore(
-    (s) => s.initializeFromStorage,
-  );
-  const initializeFormFromStorage = useRouteFormStore(
-    (s) => s.initializeFromStorage,
-  );
+
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
   const routeId = useLocationStore((s) => s.routeId);
   const startLocation = useLocationStore((s) => s.startLocation);
   const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
   const distance = useRouteFormStore((s) => s.distance);
-
-  useEffect(() => {
-    initializeFromStorage();
-    initializeFormFromStorage();
-  }, [initializeFromStorage, initializeFormFromStorage]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -195,13 +185,6 @@ export default function ClientPageWrapper({
                 ? parseFloat(distance) * 1000
                 : undefined
               : generatedRoute?.distance
-          }
-          routeCoordinates={
-            feedbackContext === "no-fit"
-              ? startLocation
-                ? [startLocation as [number, number]]
-                : undefined
-              : generatedRoute?.coordinates
           }
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}

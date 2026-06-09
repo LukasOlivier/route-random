@@ -50,13 +50,13 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setStartLocation: (startLocation) => {
     set({ startLocation, isStartLocationFromStorage: false });
     if (typeof window !== "undefined" && startLocation) {
-      localStorage.setItem(
-        "startLocation",
-        JSON.stringify({
-          lat: (startLocation as LatLngTuple)[0],
-          lng: (startLocation as LatLngTuple)[1],
-        }),
-      );
+      const sp = new URLSearchParams(window.location.search);
+      if (Array.isArray(startLocation)) {
+        sp.set("lat", String(startLocation[0]));
+        sp.set("lon", String(startLocation[1]));
+      }
+      const newUrl = `${window.location.pathname}?${sp.toString()}`;
+      window.history.replaceState(null, "", newUrl);
     }
   },
   setUserLocation: (userLocation) => {
@@ -87,7 +87,10 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setRouteId: (routeId) => set({ routeId }),
   resetRoute: () => {
     if (typeof window !== "undefined") {
-      window.history.pushState({}, "", "/");
+      const sp = new URLSearchParams(window.location.search);
+      sp.delete("route");
+      const newUrl = `${window.location.pathname}?${sp.toString()}`;
+      window.history.replaceState(null, "", newUrl);
     }
     set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
   },
@@ -111,7 +114,12 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       if (response.ok) {
         const data = await response.json();
         set({ routeId: data.id });
-        window.history.pushState({}, "", `/?route=${data.id}`);
+        if (typeof window !== "undefined") {
+          const sp = new URLSearchParams(window.location.search);
+          sp.set("route", data.id);
+          const newUrl = `${window.location.pathname}?${sp.toString()}`;
+          window.history.replaceState(null, "", newUrl);
+        }
       }
     } catch (error) {
       console.error("Failed to save route to database:", error);

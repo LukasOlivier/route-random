@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
 import GenerateRouteButton from "./GenerateRouteButton";
@@ -42,6 +42,8 @@ export default function SidebarForm() {
     setDistance,
     setTime,
     resetSessionCount,
+    initializeFromParams,
+    syncLocationToParams,
   } = useRouteFormStore();
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
@@ -50,9 +52,25 @@ export default function SidebarForm() {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(false);
 
+  useEffect(() => {
+    initializeFromParams();
+
+    const sp = new URLSearchParams(window.location.search);
+    const lat = sp.get("lat");
+    const lon = sp.get("lon");
+    if (lat !== null && lon !== null) {
+      const parsedLat = parseFloat(lat);
+      const parsedLon = parseFloat(lon);
+      if (!isNaN(parsedLat) && !isNaN(parsedLon)) {
+        setUserLocation([parsedLat, parsedLon]);
+      }
+    }
+  }, []);
+
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
     setUserLocation(newLocation);
+    syncLocationToParams(location.lat, location.lon);
   };
 
   const handleGenerateRoute = async (e: React.FormEvent) => {
@@ -100,6 +118,7 @@ export default function SidebarForm() {
         const { latitude, longitude } = position.coords;
         const newLocation: [number, number] = [latitude, longitude];
         setUserLocation(newLocation);
+        syncLocationToParams(latitude, longitude);
         setIsGettingLocation(false);
         setLocationError(false);
       },
