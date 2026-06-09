@@ -74,7 +74,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
       color: "#cbd5e1",
     }),
     indicatorSeparator: () => ({ display: "none" }),
-    menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+    menuPortal: (provided) => ({ ...provided, zIndex: 10001 }),
   };
 
   const handleLanguageChange = (newLocale: string) => {
@@ -107,6 +107,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
               menuPortalTarget={
                 typeof document !== "undefined" ? document.body : undefined
               }
+              menuPosition="fixed"
               menuPlacement="auto"
               formatOptionLabel={(
                 option: LanguageOption,
