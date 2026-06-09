@@ -186,13 +186,6 @@ export default function ClientPageWrapper({
                 : undefined
               : generatedRoute?.distance
           }
-          routeCoordinates={
-            feedbackContext === "no-fit"
-              ? startLocation
-                ? [startLocation as [number, number]]
-                : undefined
-              : generatedRoute?.coordinates
-          }
           requestedDistance={distance ? parseFloat(distance) : undefined}
           isAcceptFlow={feedbackContext === "accept"}
           isNoFitFlow={feedbackContext === "no-fit"}
