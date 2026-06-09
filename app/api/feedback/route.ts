@@ -23,13 +23,12 @@ export async function POST(request: NextRequest) {
     const {
       reaction,
       routeId,
-      routeCoordinates,
-      routeDistanceMeters,
       generatedDistance,
       requestedDistance,
       additionalFeedback,
       isNoFitFlow,
       isGeneralFeedback,
+      currentUrl,
     } = body;
 
     if (!reaction || !["like", "neutral", "dislike"].includes(reaction)) {
@@ -46,16 +45,7 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_BASE_URL ??
       "https://route-random.lukasolivier.be";
 
-    let savedRouteId = routeId;
-
-    if (!savedRouteId && routeCoordinates && routeDistanceMeters) {
-      savedRouteId = await saveRoute({
-        coordinates: routeCoordinates,
-        distance: routeDistanceMeters,
-      });
-    }
-
-    const routeUrl = savedRouteId ? `${baseUrl}/?route=${savedRouteId}` : null;
+    const routeUrl = routeId ? `${baseUrl}/?route=${routeId}` : null;
 
     const reactionEmoji_ = reactionEmoji[reaction as FeedbackReaction];
     const reactionDesc = reactionDescriptions[reaction as FeedbackReaction];
@@ -94,6 +84,10 @@ export async function POST(request: NextRequest) {
       description =
         `**Context: general app feedback** — the user shared feedback about the app overall.` +
         (description ? `\n\n${description}` : "");
+    }
+
+    if (currentUrl) {
+      description += `\n\nPage URL: ${currentUrl}`;
     }
 
     const embeds = [

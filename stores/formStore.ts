@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import { Mode, Pace } from "./store";
 
-const ROUTE_FORM_STORAGE_KEY = "routeFormData";
-
 type PersistedRouteFormData = Pick<
   RouteFormData,
   "mode" | "pace" | "distance" | "time"
@@ -26,7 +24,8 @@ interface RouteFormStore extends RouteFormData {
   setIsGeneratingRoute: (isGenerating: boolean) => void;
   incrementRoutesGenerated: () => void;
   resetSessionCount: () => void;
-  initializeFromStorage: () => void;
+  initializeFromParams: () => void;
+  syncLocationToParams: (lat: number, lon: number) => void;
 }
 
 const defaultFormData: RouteFormData = {
@@ -36,19 +35,6 @@ const defaultFormData: RouteFormData = {
   time: "30",
   correctionFactor: 0.65,
   isGeneratingRoute: false,
-};
-
-const persistFormData = (state: RouteFormData) => {
-  if (typeof window === "undefined") return;
-
-  const dataToPersist: PersistedRouteFormData = {
-    mode: state.mode,
-    pace: state.pace,
-    distance: state.distance,
-    time: state.time,
-  };
-
-  localStorage.setItem(ROUTE_FORM_STORAGE_KEY, JSON.stringify(dataToPersist));
 };
 
 const isValidMode = (value: unknown): value is Mode => {
@@ -61,65 +47,73 @@ const isValidPace = (value: unknown): value is Pace => {
   );
 };
 
+const syncFormDataToParams = (
+  state: PersistedRouteFormData,
+  params?: URLSearchParams,
+) => {
+  if (typeof window === "undefined") return;
+  const sp = params ?? new URLSearchParams(window.location.search);
+  sp.set("mode", state.mode);
+  sp.set("pace", state.pace);
+  sp.set("distance", state.distance);
+  sp.set("time", state.time);
+  const newUrl = `${window.location.pathname}?${sp.toString()}`;
+  window.history.replaceState(null, "", newUrl);
+};
+
 export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
   ...defaultFormData,
   routesGeneratedInSession: 0,
 
   setMode: (mode) => {
     set({ mode });
-    persistFormData(get());
+    syncFormDataToParams(get());
   },
-
   setPace: (pace) => {
     set({ pace });
-    persistFormData(get());
+    syncFormDataToParams(get());
   },
-
   setDistance: (distance) => {
     set({ distance });
-    persistFormData(get());
+    syncFormDataToParams(get());
   },
-
   setTime: (time) => {
     set({ time });
-    persistFormData(get());
+    syncFormDataToParams(get());
   },
-
   setIsGeneratingRoute: (isGeneratingRoute) => {
     set({ isGeneratingRoute });
   },
-
   incrementRoutesGenerated: () => {
     set((state) => ({
       routesGeneratedInSession: state.routesGeneratedInSession + 1,
     }));
   },
-
   resetSessionCount: () => {
     set({ routesGeneratedInSession: 0 });
   },
 
-  initializeFromStorage: () => {
+  initializeFromParams: () => {
     if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const mode = sp.get("mode");
+    const pace = sp.get("pace");
+    const distance = sp.get("distance");
+    const time = sp.get("time");
+    set({
+      mode: isValidMode(mode) ? mode : defaultFormData.mode,
+      pace: isValidPace(pace) ? pace : defaultFormData.pace,
+      distance: distance ?? defaultFormData.distance,
+      time: time ?? defaultFormData.time,
+    });
+  },
 
-    const stored = localStorage.getItem(ROUTE_FORM_STORAGE_KEY);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as Partial<PersistedRouteFormData>;
-
-      set({
-        mode: isValidMode(parsed.mode) ? parsed.mode : defaultFormData.mode,
-        pace: isValidPace(parsed.pace) ? parsed.pace : defaultFormData.pace,
-        distance:
-          typeof parsed.distance === "string"
-            ? parsed.distance
-            : defaultFormData.distance,
-        time:
-          typeof parsed.time === "string" ? parsed.time : defaultFormData.time,
-      });
-    } catch {
-      localStorage.removeItem(ROUTE_FORM_STORAGE_KEY);
-    }
+  syncLocationToParams: (lat: number, lon: number) => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    sp.set("lat", lat.toString());
+    sp.set("lon", lon.toString());
+    const newUrl = `${window.location.pathname}?${sp.toString()}`;
+    window.history.replaceState(null, "", newUrl);
   },
 }));
