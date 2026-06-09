@@ -140,7 +140,7 @@ export default function LocationSearch({
                   : "text-gray-300 hover:bg-gray-700"
               }`}
             >
-              <MapPin size={14} className="text-gray-400 flex-shrink-0" />
+              <MapPin size={14} className="text-gray-400 shrink-0" />
               <span className="text-sm truncate">{location.display_name}</span>
             </div>
           ))}

@@ -50,13 +50,13 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setStartLocation: (startLocation) => {
     set({ startLocation, isStartLocationFromStorage: false });
     if (typeof window !== "undefined" && startLocation) {
-      localStorage.setItem(
-        "startLocation",
-        JSON.stringify({
-          lat: (startLocation as LatLngTuple)[0],
-          lng: (startLocation as LatLngTuple)[1],
-        }),
-      );
+      const sp = new URLSearchParams(window.location.search);
+      if (Array.isArray(startLocation)) {
+        sp.set("lat", String(startLocation[0]));
+        sp.set("lon", String(startLocation[1]));
+      }
+      const newUrl = `${window.location.pathname}?${sp.toString()}`;
+      window.history.replaceState(null, "", newUrl);
     }
   },
   setUserLocation: (userLocation) => {

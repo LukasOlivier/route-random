@@ -96,6 +96,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
 
           <div className="w-full xl:w-fit">
             <Select
+              instanceId="language-select"
               value={languageOptions.find((option) => option.value === locale)}
               onChange={(option: OnChangeValue<LanguageOption, false>) => {
                 if (option) {
