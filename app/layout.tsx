@@ -191,7 +191,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-gray-800 dark:text-gray-200 p-2 bg-gray-300 text-gray-800`}
       >
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

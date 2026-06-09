@@ -117,7 +117,8 @@
     "shareFacebook": "Partager sur Facebook",
     "shareLinkedIn": "Partager sur LinkedIn",
     "shareReddit": "Partager sur Reddit",
-    "shareTweetText": "Découvrez cette application : Route Random. Elle génère en quelques secondes des parcours circulaires de course, marche et vélo"
+    "shareTweetText": "Découvrez cette application : Route Random. Elle génère en quelques secondes des parcours circulaires de course, marche et vélo",
+    "backToApp": "Retour à l'application"
   },
   "LegendButton": {
     "ariaLabel": "Légende",

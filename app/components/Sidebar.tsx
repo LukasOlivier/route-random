@@ -12,6 +12,7 @@ import type {
   StylesConfig,
 } from "react-select";
 import ReactCountryFlag from "react-country-flag";
+import Image from "next/image";
 
 interface SidebarProps {
   isMobile: boolean;
@@ -159,6 +160,38 @@ export default function Sidebar({ isMobile }: SidebarProps) {
             {t("aboutLink")}
           </Link>
         </nav>
+        <div className="flex items-center gap-3 mb-4 justify-end">
+          <Link
+            href="https://discord.gg/nnQGn86K2n"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Join our Discord"
+            className="opacity-60 hover:opacity-100 transition-opacity"
+          >
+            <Image
+              src="/discord.svg"
+              alt="Discord"
+              width={24}
+              height={24}
+              className="invert"
+            />
+          </Link>
+          <Link
+            href="https://github.com/LukasOlivier/route-random"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on GitHub"
+            className="opacity-60 hover:opacity-100 transition-opacit"
+          >
+            <Image
+              src="/github.svg"
+              alt="GitHub"
+              width={24}
+              height={24}
+              className="invert"
+            />
+          </Link>
+        </div>
       </footer>
     </>
   );

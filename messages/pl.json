@@ -117,7 +117,8 @@
     "shareFacebook": "Udostępnij na Facebooku",
     "shareLinkedIn": "Udostępnij na LinkedIn",
     "shareReddit": "Udostępnij na Reddicie",
-    "shareTweetText": "Sprawdź tę aplikację: Route Random. Tworzy nowe pętle biegowe, spacerowe i rowerowe w kilka sekund"
+    "shareTweetText": "Sprawdź tę aplikację: Route Random. Tworzy nowe pętle biegowe, spacerowe i rowerowe w kilka sekund",
+    "backToApp": "Powrót do aplikacji"
   },
   "LegendButton": {
     "ariaLabel": "Legenda",

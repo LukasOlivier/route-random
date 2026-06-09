@@ -117,7 +117,8 @@
     "shareFacebook": "Share on Facebook",
     "shareLinkedIn": "Share on LinkedIn",
     "shareReddit": "Share on Reddit",
-    "shareTweetText": "Check out this app: Route Random. It creates fresh circular running, walking, and cycling routes in seconds"
+    "shareTweetText": "Check out this app: Route Random. It creates fresh circular running, walking, and cycling routes in seconds",
+    "backToApp": "Back to the app"
   },
   "LegendButton": {
     "ariaLabel": "Legend",

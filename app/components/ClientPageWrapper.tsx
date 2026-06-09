@@ -130,7 +130,7 @@ export default function ClientPageWrapper({
               showTextOnDesktop
               umamiEvent="Open general feedback"
             >
-              <MessageCircleMore size={16} />
+              <MessageCircleMore size={20} />
               {feedbackT("generalFeedbackButton")}
             </FloatingButton>
           </>

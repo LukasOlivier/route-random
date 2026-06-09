@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { ChevronLeft } from "lucide-react";
 
 export default async function About() {
   const t = await getTranslations("SeoSection");
@@ -107,6 +108,13 @@ export default async function About() {
               </a>
             </li>
           </ul>
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <ChevronLeft size={16} className="inline-block mr-1" />
+            <Link href="/">{t("backToApp")}</Link>
+          </h2>
         </div>
       </section>
     </main>

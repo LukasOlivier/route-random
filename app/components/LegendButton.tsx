@@ -25,14 +25,13 @@ export default function LegendButton() {
         umamiEvent="Open legend"
         umamiEventData={{ source: "floating-actions" }}
       >
-        <span className="hidden lg:inline">{t("ariaLabel")}</span>
-
         <Info size={20} />
+        <span className="hidden lg:inline">{t("ariaLabel")}</span>
       </FloatingButton>
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-9999999 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
           <div

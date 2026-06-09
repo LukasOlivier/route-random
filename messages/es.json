@@ -117,7 +117,8 @@
     "shareFacebook": "Compartir en Facebook",
     "shareLinkedIn": "Compartir en LinkedIn",
     "shareReddit": "Compartir en Reddit",
-    "shareTweetText": "Echa un vistazo a esta aplicación: Route Random. Crea rutas circulares de carrera, caminata y ciclismo en segundos"
+    "shareTweetText": "Echa un vistazo a esta aplicación: Route Random. Crea rutas circulares de carrera, caminata y ciclismo en segundos",
+    "backToApp": "Volver a la aplicación"
   },
   "LegendButton": {
     "ariaLabel": "Leyenda",
