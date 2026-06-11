@@ -6,11 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Select from "react-select";
-import type {
-  FormatOptionLabelMeta,
-  OnChangeValue,
-  StylesConfig,
-} from "react-select";
+import type { FormatOptionLabelMeta, OnChangeValue } from "react-select";
 import ReactCountryFlag from "react-country-flag";
 import Image from "next/image";
 
@@ -37,46 +33,6 @@ export default function Sidebar({ isMobile }: SidebarProps) {
     { value: "es", label: "ES", countryCode: "ES" },
     { value: "pl", label: "PL", countryCode: "PL" },
   ];
-
-  const customStyles: StylesConfig<LanguageOption, false> = {
-    control: (provided, state) => ({
-      ...provided,
-      background: "#1f2937", // gray-800
-      borderColor: state.isFocused ? "#4b5563" : "#374151", // gray-600 / gray-700
-      boxShadow: state.isFocused ? "0 0 0 1px #374151" : "none",
-      minHeight: 34,
-      paddingLeft: 8,
-      paddingRight: 6,
-      color: "#fff",
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: "#fff",
-    }),
-    menu: (provided) => ({
-      ...provided,
-      background: "#111827", // gray-900
-      color: "#fff",
-      borderRadius: 6,
-      overflow: "hidden",
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      background: state.isFocused ? "#374151" : "transparent",
-      color: "#fff",
-      cursor: "pointer",
-    }),
-    placeholder: (provided) => ({
-      ...provided,
-      color: "#9ca3af", // gray-400
-    }),
-    dropdownIndicator: (provided) => ({
-      ...provided,
-      color: "#cbd5e1",
-    }),
-    indicatorSeparator: () => ({ display: "none" }),
-    menuPortal: (provided) => ({ ...provided, zIndex: 10001 }),
-  };
 
   const handleLanguageChange = (newLocale: string) => {
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`;
@@ -105,7 +61,6 @@ export default function Sidebar({ isMobile }: SidebarProps) {
                 }
               }}
               options={languageOptions}
-              styles={customStyles}
               menuPortalTarget={
                 typeof document !== "undefined" ? document.body : undefined
               }
@@ -124,7 +79,23 @@ export default function Sidebar({ isMobile }: SidebarProps) {
                   <span>{option.label}</span>
                 </div>
               )}
-              className="react-select-container"
+              unstyled
+              classNames={{
+                control: () =>
+                  "bg-gray-200 dark:bg-gray-800 rounded-md shadow-sm px-2 py-1 cursor-pointer border border-gray-700",
+                menu: () =>
+                  "bg-white dark:bg-gray-800 border border-gray-700 dark:border-gray-600 rounded-md shadow-lg mt-1",
+                option: ({ isFocused, isSelected }) =>
+                  `px-3 py-2 cursor-pointer ${
+                    isSelected
+                      ? "bg-blue-500 text-white"
+                      : isFocused
+                        ? "bg-gray-100 dark:bg-gray-700 dark:text-white"
+                        : "dark:text-white"
+                  }`,
+                singleValue: () => "flex items-center gap-2 dark:text-white",
+                dropdownIndicator: () => "dark:text-gray-400 pl-1",
+              }}
               classNamePrefix="react-select"
               isSearchable={false}
               aria-label={t("language")}

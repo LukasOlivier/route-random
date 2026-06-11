@@ -104,6 +104,7 @@ export default function LocationSearch({
           size={16}
         />
         <input
+          id="location-search"
           ref={inputRef}
           type="text"
           value={query}
