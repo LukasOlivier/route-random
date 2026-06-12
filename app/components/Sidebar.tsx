@@ -80,11 +80,18 @@ export default function Sidebar({ isMobile }: SidebarProps) {
                 </div>
               )}
               unstyled
+              styles={{
+                menuPortal: (base) => ({
+                  ...base,
+                  zIndex: 99999,
+                }),
+              }}
               classNames={{
+                menuPortal: () => "z-[99999]",
                 control: () =>
                   "bg-gray-200 dark:bg-gray-800 rounded-md shadow-sm px-2 py-1 cursor-pointer border border-gray-700",
                 menu: () =>
-                  "bg-white dark:bg-gray-800 border border-gray-700 dark:border-gray-600 rounded-md shadow-lg mt-1",
+                  "z-[9999] bg-white dark:bg-gray-800 border border-gray-700 dark:border-gray-600 rounded-md shadow-lg mt-1",
                 option: ({ isFocused, isSelected }) =>
                   `px-3 py-2 cursor-pointer ${
                     isSelected
