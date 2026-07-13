@@ -122,6 +122,7 @@ export function useRouteGeneration() {
     pace,
     distance,
     time,
+    pattern,
     isGeneratingRoute,
     setIsGeneratingRoute,
   } = useRouteFormStore();
@@ -175,6 +176,7 @@ export function useRouteGeneration() {
       const requestBody = {
         startLocation: startLocation,
         distance: finalDistance,
+        pattern,
       };
 
       const response = await fetch("/api/generateroute", {

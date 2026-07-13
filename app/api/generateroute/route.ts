@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import {
   generateWalkingRoute,
+  generateRectangleRoute,
   generateRoundTripRoute,
 } from "../../services/orsService";
 import { checkRouteGenerationRateLimit } from "@/app/utils/rateLimit";
@@ -10,6 +11,10 @@ import {
   MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM,
   isRequestedRoundTripDistanceTooLong,
 } from "@/app/utils/routeCalculations";
+import {
+  isValidRoutePattern,
+  type RoutePattern,
+} from "@/app/utils/routePatterns";
 import type { RouteResponse } from "../../services/orsService";
 
 export async function POST(request: NextRequest) {
@@ -47,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { startLocation, distance, waypoints, regenerate } = body;
+    const { startLocation, distance, waypoints, regenerate, pattern } = body;
 
     const orsApiKey = process.env.ORS_API_KEY;
     if (!orsApiKey) {
@@ -59,6 +64,15 @@ export async function POST(request: NextRequest) {
 
     let finalWaypoints: [number, number][] | undefined;
     let route: RouteResponse;
+    const selectedPattern: RoutePattern = isValidRoutePattern(pattern)
+      ? pattern
+      : "circle";
+    const activePattern: Exclude<RoutePattern, "all"> =
+      selectedPattern === "all"
+        ? Math.random() < 0.5
+          ? "circle"
+          : "rectangle"
+        : selectedPattern;
 
     if (regenerate && waypoints) {
       finalWaypoints = waypoints;
@@ -99,12 +113,21 @@ export async function POST(request: NextRequest) {
       }
 
       const targetDistanceMeters = distance * 1000;
-      route = await generateRoundTripRoute(
-        startLat,
-        startLng,
-        targetDistanceMeters,
-        orsApiKey,
-      );
+      if (activePattern === "rectangle") {
+        route = await generateRectangleRoute(
+          startLat,
+          startLng,
+          targetDistanceMeters,
+          orsApiKey,
+        );
+      } else {
+        route = await generateRoundTripRoute(
+          startLat,
+          startLng,
+          targetDistanceMeters,
+          orsApiKey,
+        );
+      }
     }
 
     return NextResponse.json({

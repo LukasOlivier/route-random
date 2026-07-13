@@ -4,9 +4,13 @@
     "subtitle": "Projekt stworzony przez",
     "authorLink": "Lukas Olivier",
     "aboutTitle": "O Route Random",
-    "aboutDescription1": "Route Random to darmowy generator losowych tras, który tworzy losowe trasy pętelkowe dla biegaczy, truchtaczy i spacerowiczów. Generuj losowe trasy na podstawie żądanej odległości i miejsca startu, gdziekolwiek na świecie.",
+    "aboutDescription1": "Route Random to darmowy generator losowych tras, który tworzy losowe trasy pętelkowe lub prostokątne dla biegaczy, truchtaczy i spacerowiczów. Generuj losowe trasy na podstawie żądanej odległości i miejsca startu, gdziekolwiek na świecie.",
     "aboutDescription2": "Idealne do odkrywania nowych ścieżek, eksplorowania okolicy lub znalezienia nowych tras, które urozmaicą trening.",
     "language": "Język",
+    "routePattern": "Kształt trasy",
+    "allPattern": "Wszystkie",
+    "circlePattern": "Okrąg",
+    "rectanglePattern": "Prostokąt",
     "aboutLink": "Czytaj więcej"
   },
   "SidebarForm": {

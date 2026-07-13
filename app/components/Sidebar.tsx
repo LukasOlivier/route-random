@@ -9,6 +9,7 @@ import Select from "react-select";
 import type { FormatOptionLabelMeta, OnChangeValue } from "react-select";
 import ReactCountryFlag from "react-country-flag";
 import Image from "next/image";
+import { useLocationStore } from "../../stores";
 
 interface SidebarProps {
   isMobile: boolean;
@@ -24,6 +25,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const router = useRouter();
+  const generatedRoute = useLocationStore((state) => state.generatedRoute);
 
   const languageOptions: LanguageOption[] = [
     { value: "en", label: "EN", countryCode: "GB" },
@@ -122,7 +124,6 @@ export default function Sidebar({ isMobile }: SidebarProps) {
         </h2>
       </header>
 
-      <div className="border-t border-gray-700 my-2" />
       <SidebarForm />
 
       <footer className="mt-auto text-xs text-extra leading-relaxed space-y-2">
@@ -160,7 +161,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View on GitHub"
-            className="opacity-60 hover:opacity-100 transition-opacit"
+            className="opacity-60 hover:opacity-100 transition-opacity"
           >
             <Image
               src="/github.svg"

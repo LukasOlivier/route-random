@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import { Mode, Pace } from "./store";
+import {
+  isValidRoutePattern,
+  type RoutePattern,
+} from "../app/utils/routePatterns";
 
 type PersistedRouteFormData = Pick<
   RouteFormData,
-  "mode" | "pace" | "distance" | "time"
+  "mode" | "pace" | "distance" | "time" | "pattern"
 >;
 
 interface RouteFormData {
@@ -11,6 +15,7 @@ interface RouteFormData {
   pace: Pace;
   distance: string;
   time: string;
+  pattern: RoutePattern;
   correctionFactor: number;
   isGeneratingRoute: boolean;
 }
@@ -21,6 +26,7 @@ interface RouteFormStore extends RouteFormData {
   setPace: (pace: Pace) => void;
   setDistance: (distance: string) => void;
   setTime: (time: string) => void;
+  setPattern: (pattern: RoutePattern) => void;
   setIsGeneratingRoute: (isGenerating: boolean) => void;
   incrementRoutesGenerated: () => void;
   resetSessionCount: () => void;
@@ -33,6 +39,7 @@ const defaultFormData: RouteFormData = {
   pace: Pace.WALKING,
   distance: "5",
   time: "30",
+  pattern: "circle",
   correctionFactor: 0.65,
   isGeneratingRoute: false,
 };
@@ -57,6 +64,7 @@ const syncFormDataToParams = (
   sp.set("pace", state.pace);
   sp.set("distance", state.distance);
   sp.set("time", state.time);
+  sp.set("pattern", state.pattern);
   const newUrl = `${window.location.pathname}?${sp.toString()}`;
   window.history.replaceState(null, "", newUrl);
 };
@@ -81,6 +89,10 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
     set({ time });
     syncFormDataToParams(get());
   },
+  setPattern: (pattern) => {
+    set({ pattern });
+    syncFormDataToParams(get());
+  },
   setIsGeneratingRoute: (isGeneratingRoute) => {
     set({ isGeneratingRoute });
   },
@@ -100,11 +112,13 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
     const pace = sp.get("pace");
     const distance = sp.get("distance");
     const time = sp.get("time");
+    const pattern = sp.get("pattern");
     set({
       mode: isValidMode(mode) ? mode : defaultFormData.mode,
       pace: isValidPace(pace) ? pace : defaultFormData.pace,
       distance: distance ?? defaultFormData.distance,
       time: time ?? defaultFormData.time,
+      pattern: isValidRoutePattern(pattern) ? pattern : defaultFormData.pattern,
     });
   },
 

@@ -1,4 +1,5 @@
 import { getLogger } from "@/lib/logger";
+import { buildRectangleWaypoints } from "@/app/utils/routePatterns";
 
 const logger = getLogger("orsService");
 
@@ -37,6 +38,8 @@ export interface RouteResponse {
 const ORS_API_URL =
   "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
 const COMMON_AVOID_FEATURES = ["ferries"];
+const RECTANGLE_CORRECTION_FACTORS = [0.68, 0.63, 0.58, 0.54, 0.5];
+const RECTANGLE_TOLERANCE_METERS = 500;
 
 function wrapLongitude(longitude: number): number {
   if (!Number.isFinite(longitude)) return longitude;
@@ -252,6 +255,88 @@ export async function generateRoundTripRoute(
   logger.error(
     { targetDistance },
     "Failed to generate route after all attempts",
+  );
+  throw new Error("No route found");
+}
+
+export async function generateRectangleRoute(
+  startLat: number,
+  startLng: number,
+  targetDistance: number,
+  apiKey: string,
+): Promise<RouteResponse> {
+  logger.info(
+    { startLat, startLng, targetDistance },
+    "Starting rectangle route generation",
+  );
+
+  let bestRoute: RouteResponse | null = null;
+  let bestDistanceDiff = Infinity;
+
+  for (const factor of RECTANGLE_CORRECTION_FACTORS) {
+    try {
+      const waypoints = buildRectangleWaypoints(
+        startLat,
+        startLng,
+        targetDistance,
+        factor,
+      );
+      const route = await generateWalkingRoute(waypoints, apiKey);
+      const distanceDiff = Math.abs(route.distance - targetDistance);
+
+      if (distanceDiff < bestDistanceDiff) {
+        bestDistanceDiff = distanceDiff;
+        bestRoute = route;
+      }
+
+      if (distanceDiff <= RECTANGLE_TOLERANCE_METERS) {
+        logger.info(
+          {
+            factor,
+            distance: (route.distance / 1000).toFixed(2),
+            target: (targetDistance / 1000).toFixed(2),
+            diff: (distanceDiff / 1000).toFixed(2),
+          },
+          "Rectangle route found within tolerance",
+        );
+        return route;
+      }
+
+      logger.debug(
+        {
+          factor,
+          distance: (route.distance / 1000).toFixed(2),
+          target: (targetDistance / 1000).toFixed(2),
+          diff: (distanceDiff / 1000).toFixed(2),
+        },
+        "Rectangle route attempt",
+      );
+    } catch (error) {
+      logger.warn(
+        {
+          factor,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Rectangle retry attempt failed",
+      );
+    }
+  }
+
+  if (bestRoute) {
+    logger.info(
+      {
+        distance: (bestRoute.distance / 1000).toFixed(2),
+        target: (targetDistance / 1000).toFixed(2),
+        diff: (bestDistanceDiff / 1000).toFixed(2),
+      },
+      "Using best rectangle attempt instead of ideal match",
+    );
+    return bestRoute;
+  }
+
+  logger.error(
+    { targetDistance },
+    "Failed to generate rectangle route after all attempts",
   );
   throw new Error("No route found");
 }

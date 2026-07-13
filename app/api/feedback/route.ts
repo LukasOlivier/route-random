@@ -49,6 +49,11 @@ export async function POST(request: NextRequest) {
 
     const reactionEmoji_ = reactionEmoji[reaction as FeedbackReaction];
     const reactionDesc = reactionDescriptions[reaction as FeedbackReaction];
+    const normalizedAdditionalFeedback = additionalFeedback?.trim() ?? "";
+
+    if (isNoFitFlow && !normalizedAdditionalFeedback) {
+      return NextResponse.json({ success: true });
+    }
 
     let description = isGeneralFeedback
       ? `**General App Feedback** ${reactionEmoji_}`
@@ -60,8 +65,8 @@ export async function POST(request: NextRequest) {
       description += `\nRoute distance: ${Math.round(generatedDistance)} km`;
     }
 
-    if (additionalFeedback && additionalFeedback.trim()) {
-      description += `\n\n> ${additionalFeedback}`;
+    if (normalizedAdditionalFeedback) {
+      description += `\n\n> ${normalizedAdditionalFeedback}`;
     }
 
     if (routeUrl) {

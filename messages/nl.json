@@ -4,9 +4,13 @@
     "subtitle": "Een project gemaakt door",
     "authorLink": "Lukas Olivier",
     "aboutTitle": "Over Route Random",
-    "aboutDescription1": "Route Random is een gratis generator voor willekeurige routes die cirkelvormige routes maakt voor hardlopers, joggers en wandelaars. Genereer willekeurige routes op basis van uw gewenste afstand en startlocatie, waar dan ook ter wereld.",
+    "aboutDescription1": "Route Random is een gratis generator voor willekeurige routes die cirkelvormige of rechthoekige routes maakt voor hardlopers, joggers en wandelaars. Genereer willekeurige routes op basis van uw gewenste afstand en startlocatie, waar dan ook ter wereld.",
     "aboutDescription2": "Perfect om nieuwe paden te ontdekken, uw buurt te verkennen of nieuwe routes te vinden om uw trainingen spannend te houden.",
     "language": "Taal",
+    "routePattern": "Routevorm",
+    "allPattern": "Alles",
+    "circlePattern": "Cirkel",
+    "rectanglePattern": "Rechthoek",
     "aboutLink": "Lees meer"
   },
   "SidebarForm": {

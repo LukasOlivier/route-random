@@ -4,9 +4,13 @@
     "subtitle": "Un proyecto creado por",
     "authorLink": "Lukas Olivier",
     "aboutTitle": "Acerca de Route Random",
-    "aboutDescription1": "Route Random es un generador de rutas aleatorias gratuito que crea rutas circulares para corredores, trotadores y caminantes. Genera rutas aleatorias según la distancia deseada y tu punto de partida, en cualquier lugar del mundo.",
+    "aboutDescription1": "Route Random es un generador de rutas aleatorias gratuito que crea rutas circulares o rectangulares para corredores, trotadores y caminantes. Genera rutas aleatorias según la distancia deseada y tu punto de partida, en cualquier lugar del mundo.",
     "aboutDescription2": "Perfecto para descubrir nuevos caminos, explorar tu barrio o encontrar rutas nuevas que mantengan tus entrenamientos emocionantes.",
     "language": "Idioma",
+    "routePattern": "Forma de la ruta",
+    "allPattern": "Todas",
+    "circlePattern": "Círculo",
+    "rectanglePattern": "Rectángulo",
     "aboutLink": "Leer más"
   },
   "SidebarForm": {
