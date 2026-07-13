@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     let route: RouteResponse;
     const selectedPattern: RoutePattern = isValidRoutePattern(pattern)
       ? pattern
-      : "circle";
+      : "all";
     const activePattern: Exclude<RoutePattern, "all"> =
       selectedPattern === "all"
         ? Math.random() < 0.5

@@ -177,34 +177,6 @@ export default function SidebarForm() {
       onSubmit={handleGenerateRoute}
       className="flex flex-col gap-4 grow mb-4"
     >
-      <div className="space-y-2">
-        <label
-          htmlFor="route-pattern"
-          className="block text-sm font-medium text-gray-300"
-        >
-          {tSidebar("routePattern")}
-        </label>
-        <select
-          id="route-pattern"
-          name="route-pattern"
-          value={pattern}
-          disabled={!!generatedRoute}
-          onChange={(e) => {
-            setPattern(e.target.value as RoutePattern);
-          }}
-          className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
-        >
-          {routePatternOptions.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="dark:bg-gray-800 dark:text-gray-200 bg-gray-300 text-gray-800"
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
       <div className="w-full flex gap-2">
         <ToggleModeButton
           text={t("distanceMode")}
@@ -293,6 +265,34 @@ export default function SidebarForm() {
             </div>
           </div>
         )}
+        <div className="space-y-2">
+          <label
+            htmlFor="route-pattern"
+            className="block text-sm font-medium text-gray-300"
+          >
+            {tSidebar("routePattern")}
+          </label>
+          <select
+            id="route-pattern"
+            name="route-pattern"
+            value={pattern}
+            disabled={!!generatedRoute}
+            onChange={(e) => {
+              setPattern(e.target.value as RoutePattern);
+            }}
+            className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
+          >
+            {routePatternOptions.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                className="dark:bg-gray-800 dark:text-gray-200 bg-gray-300 text-gray-800"
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <div>
           <label
             className="block text-sm font-medium text-gray-300 mb-2"

@@ -39,7 +39,7 @@ const defaultFormData: RouteFormData = {
   pace: Pace.WALKING,
   distance: "5",
   time: "30",
-  pattern: "circle",
+  pattern: "all",
   correctionFactor: 0.65,
   isGeneratingRoute: false,
 };
