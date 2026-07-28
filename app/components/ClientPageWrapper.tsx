@@ -178,7 +178,7 @@ export default function ClientPageWrapper({
       </div>
 
       {!isFullscreen && (
-        <div className="fixed top-3 left-1/2 lg:left-[62.5%] -translate-x-1/2 z-1000 flex items-center gap-2">
+        <div className="w-full flex justify-center fixed top-4 left-1/2 lg:left-[62.5%] -translate-x-1/2 z-1000 items-center gap-2">
           {children}
         </div>
       )}

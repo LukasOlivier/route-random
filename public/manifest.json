@@ -4,6 +4,7 @@
   "description": "Route Random is a free random route generator that creates random circular routes for runners and walkers. Generate random routes based on your desired distance and starting location anywhere in the world.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "orientation": "portrait",
@@ -44,11 +45,10 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "route-random",
+      "protocol": "web+routerandom",
       "url": "/?route-random=%s"
     }
   ],
-  "display_override": "standalone",
   "shortcuts": [
     {
       "name": "Generate Random Route",

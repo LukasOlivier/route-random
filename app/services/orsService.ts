@@ -70,6 +70,10 @@ export class RouteGenerationError extends Error {
 const ORS_API_URL =
   "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
 const COMMON_AVOID_FEATURES = ["ferries"];
+const ROUND_TRIP_INITIAL_FACTOR = 0.82;
+const ROUND_TRIP_MIN_FACTOR = 0.5;
+const ROUND_TRIP_MAX_FACTOR = 0.9;
+const ROUND_TRIP_MAX_ATTEMPTS = 3;
 const RECTANGLE_INITIAL_FACTOR = 0.68;
 const RECTANGLE_MIN_FACTOR = 0.5;
 const RECTANGLE_MAX_FACTOR = 0.9;
@@ -161,15 +165,18 @@ export async function generateRoundTripRoute(
     "Starting round trip route generation",
   );
 
-  const correctionFactors = [0.82, 0.75, 0.68];
   const toleranceMeters = Math.max(500, targetDistance * 0.1);
 
   let bestRoute: RouteResponse | null = null;
   let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
+  let selectedAttempt: RouteGenerationAttempt | undefined;
+  let currentFactor = ROUND_TRIP_INITIAL_FACTOR;
   const attempts: RouteGenerationAttempt[] = [];
 
-  for (const factor of correctionFactors) {
+  for (let attempt = 0; attempt < ROUND_TRIP_MAX_ATTEMPTS; attempt += 1) {
+    const factor = currentFactor;
+
     try {
       const correctedDistance = Math.round(targetDistance * factor);
       const normalizedStart = normalizeOrsCoordinate([startLng, startLat]);
@@ -258,6 +265,7 @@ export async function generateRoundTripRoute(
       }
 
       if (distanceDiff <= toleranceMeters) {
+        selectedAttempt = attempt;
         logger.info(
           {
             factor,
@@ -275,14 +283,31 @@ export async function generateRoundTripRoute(
             toleranceMeters,
             attempts,
             bestAttempt,
-            selectedAttempt: attempt,
+            selectedAttempt,
           },
         };
       }
 
+      const adjustmentBase = Math.max(targetDistance, 1);
+      const adjustment = clamp(
+        (distanceDiff / adjustmentBase) * 0.5,
+        0.02,
+        0.08,
+      );
+      const routeWasTooShort = totalDistance < targetDistance;
+
+      currentFactor = clamp(
+        factor * (routeWasTooShort ? 1 + adjustment : 1 - adjustment),
+        ROUND_TRIP_MIN_FACTOR,
+        ROUND_TRIP_MAX_FACTOR,
+      );
+
+      attempt.nextFactor = currentFactor;
+
       logger.debug(
         {
           factor,
+          nextFactor: currentFactor,
           distance: (totalDistance / 1000).toFixed(2),
           target: (targetDistance / 1000).toFixed(2),
           diff: (distanceDiff / 1000).toFixed(2),
@@ -292,10 +317,22 @@ export async function generateRoundTripRoute(
     } catch (error) {
       attempts.push({
         factor,
+        nextFactor: clamp(
+          currentFactor * 0.95,
+          ROUND_TRIP_MIN_FACTOR,
+          ROUND_TRIP_MAX_FACTOR,
+        ),
         toleranceMeters,
         outcome: "error",
         errorMessage: error instanceof Error ? error.message : String(error),
       });
+
+      currentFactor = clamp(
+        currentFactor * 0.95,
+        ROUND_TRIP_MIN_FACTOR,
+        ROUND_TRIP_MAX_FACTOR,
+      );
+
       logger.warn(
         {
           factor,
@@ -303,14 +340,11 @@ export async function generateRoundTripRoute(
         },
         "Retry attempt failed",
       );
-      if (factor === correctionFactors[correctionFactors.length - 1]) {
-        throw error;
-      }
     }
   }
 
   if (bestRoute) {
-    const selectedAttempt = bestAttempt;
+    selectedAttempt = selectedAttempt ?? bestAttempt;
 
     logger.info(
       {
