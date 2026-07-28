@@ -28,6 +28,7 @@ export default function SidebarForm() {
 
   const {
     setUserLocation,
+    initializeFromStorage,
     generatedRoute,
     resetRoute,
     acceptRoute,
@@ -58,6 +59,7 @@ export default function SidebarForm() {
 
   useEffect(() => {
     initializeFromParams();
+    initializeFromStorage();
 
     const sp = new URLSearchParams(window.location.search);
     const lat = sp.get("lat");

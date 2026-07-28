@@ -34,5 +34,34 @@
       "form_factor": "narrow",
       "label": "Mobile route generation"
     }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://route-random.lukasolivier.be",
+      "id": "route-random"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "route-random",
+      "url": "/?route-random=%s"
+    }
+  ],
+  "display_override": "standalone",
+  "shortcuts": [
+    {
+      "name": "Generate Random Route",
+      "short_name": "Random Route",
+      "description": "Generate a random route based on your desired distance and starting location.",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

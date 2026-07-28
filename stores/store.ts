@@ -39,6 +39,63 @@ type LocationStore = {
   initializeFromStorage: () => void;
 };
 
+const START_LOCATION_STORAGE_KEY = "startLocation";
+
+function persistStartLocationToStorage(
+  startLocation: LatLngExpression | LatLngTuple | null,
+) {
+  if (typeof window === "undefined") return;
+
+  try {
+    if (startLocation && Array.isArray(startLocation)) {
+      localStorage.setItem(
+        START_LOCATION_STORAGE_KEY,
+        JSON.stringify({
+          lat: startLocation[0],
+          lng: startLocation[1],
+        }),
+      );
+      return;
+    }
+
+    localStorage.removeItem(START_LOCATION_STORAGE_KEY);
+  } catch {
+    // Ignore storage failures and keep the app usable.
+  }
+}
+
+function readStartLocationFromStorage(): LatLngTuple | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = localStorage.getItem(START_LOCATION_STORAGE_KEY);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as { lat?: unknown; lng?: unknown };
+    const lat = Number(parsed.lat);
+    const lng = Number(parsed.lng);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      localStorage.removeItem(START_LOCATION_STORAGE_KEY);
+      return null;
+    }
+
+    return [lat, lng] as LatLngTuple;
+  } catch {
+    return null;
+  }
+}
+
+function syncStartLocationToParams(location: LatLngTuple) {
+  if (typeof window === "undefined") return;
+
+  const sp = new URLSearchParams(window.location.search);
+  sp.set("lat", String(location[0]));
+  sp.set("lon", String(location[1]));
+  const newUrl = `${window.location.pathname}?${sp.toString()}`;
+  window.history.replaceState(null, "", newUrl);
+}
+
 export const useLocationStore = create<LocationStore>((set, get) => ({
   startLocation: null,
   isStartLocationFromStorage: false,
@@ -49,15 +106,10 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   isTrackingLocation: false,
   setStartLocation: (startLocation) => {
     set({ startLocation, isStartLocationFromStorage: false });
-    if (typeof window !== "undefined" && startLocation) {
-      const sp = new URLSearchParams(window.location.search);
-      if (Array.isArray(startLocation)) {
-        sp.set("lat", String(startLocation[0]));
-        sp.set("lon", String(startLocation[1]));
-      }
-      const newUrl = `${window.location.pathname}?${sp.toString()}`;
-      window.history.replaceState(null, "", newUrl);
+    if (Array.isArray(startLocation)) {
+      syncStartLocationToParams(startLocation);
     }
+    persistStartLocationToStorage(startLocation);
   },
   setUserLocation: (userLocation) => {
     set({
@@ -128,13 +180,13 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   setLocationTracking: (isTrackingLocation) => set({ isTrackingLocation }),
   initializeFromStorage: () => {
     if (typeof window === "undefined") return;
-    const stored = localStorage.getItem("startLocation");
-    if (stored) {
-      const { lat, lng } = JSON.parse(stored);
+    const storedLocation = readStartLocationFromStorage();
+    if (storedLocation) {
       set({
-        startLocation: [lat, lng] as LatLngTuple,
+        startLocation: storedLocation,
         isStartLocationFromStorage: true,
       });
+      syncStartLocationToParams(storedLocation);
     }
   },
   updateWaypoint: (index, newPosition) => {

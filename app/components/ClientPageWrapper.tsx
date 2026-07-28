@@ -42,6 +42,15 @@ export default function ClientPageWrapper({
   const distance = useRouteFormStore((s) => s.distance);
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== "production") return;
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.error("Service worker registration failed:", error);
+    });
+  }, []);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
 
     if (mediaQuery.matches) {
