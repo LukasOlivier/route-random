@@ -17,8 +17,63 @@ import {
 } from "@/app/utils/routePatterns";
 import type { RouteResponse } from "../../services/orsService";
 
+type RouteStartLocation = [number, number] | { lat: number; lng: number };
+
+interface RouteGenerationRequestBody {
+  startLocation?: RouteStartLocation;
+  distance?: number;
+  waypoints?: [number, number][];
+  regenerate?: boolean;
+  pattern?: RoutePattern;
+}
+
+function isRouteGenerationRequestBody(
+  value: unknown,
+): value is RouteGenerationRequestBody {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function reportRouteGenerationFailure(params: {
+  requestBody: unknown;
+  statusCode: number;
+  errorMessage: string;
+}) {
+  after(() =>
+    notifyDiscord({
+      event: "route_generation_failed",
+      errorMessage: params.errorMessage,
+      statusCode: params.statusCode,
+      requestBody: params.requestBody,
+    }),
+  );
+}
+
+function respondWithRouteGenerationFailure(
+  requestBody: unknown,
+  statusCode: number,
+  responseBody: Record<string, unknown>,
+  errorMessage: string,
+  headers?: HeadersInit,
+) {
+  reportRouteGenerationFailure({
+    requestBody,
+    statusCode,
+    errorMessage,
+  });
+
+  return NextResponse.json(responseBody, {
+    status: statusCode,
+    ...(headers ? { headers } : {}),
+  });
+}
+
 export async function POST(request: NextRequest) {
+  let rawBody = "";
+  let requestBody: RouteGenerationRequestBody | undefined;
+
   try {
+    rawBody = await request.text();
+
     const forwardedFor = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
     const clientIp =
@@ -31,34 +86,58 @@ export async function POST(request: NextRequest) {
         Math.ceil((rateLimitDecision.reset - Date.now()) / 1000),
       );
 
-      return NextResponse.json(
+      return respondWithRouteGenerationFailure(
+        rawBody || undefined,
+        429,
         {
           errorCode: "route_generation_rate_limited",
           error:
             "Too many route generation attempts. Please wait a bit and try again.",
         },
+        "Rate limit reached before route generation request body was read",
         {
-          status: 429,
-          headers: {
-            "Retry-After": String(retryAfterSeconds),
-            "X-RateLimit-Limit": String(rateLimitDecision.limit),
-            "X-RateLimit-Remaining": String(rateLimitDecision.remaining),
-            "X-RateLimit-Reset": String(
-              Math.floor(rateLimitDecision.reset / 1000),
-            ),
-          },
+          "Retry-After": String(retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimitDecision.limit),
+          "X-RateLimit-Remaining": String(rateLimitDecision.remaining),
+          "X-RateLimit-Reset": String(
+            Math.floor(rateLimitDecision.reset / 1000),
+          ),
         },
       );
     }
 
-    const body = await request.json();
-    const { startLocation, distance, waypoints, regenerate, pattern } = body;
+    try {
+      const parsedBody: unknown = rawBody ? JSON.parse(rawBody) : {};
+
+      if (!isRouteGenerationRequestBody(parsedBody)) {
+        return respondWithRouteGenerationFailure(
+          rawBody || undefined,
+          400,
+          { error: "Invalid JSON body" },
+          "Invalid route generation request body",
+        );
+      }
+
+      requestBody = parsedBody;
+    } catch {
+      return respondWithRouteGenerationFailure(
+        rawBody || undefined,
+        400,
+        { error: "Invalid JSON body" },
+        "Invalid route generation request body",
+      );
+    }
+
+    const { startLocation, distance, waypoints, regenerate, pattern } =
+      requestBody;
 
     const orsApiKey = process.env.ORS_API_KEY;
     if (!orsApiKey) {
-      return NextResponse.json(
+      return respondWithRouteGenerationFailure(
+        requestBody,
+        500,
         { error: "ORS API key not configured" },
-        { status: 500 },
+        "ORS API key not configured",
       );
     }
 
@@ -79,28 +158,34 @@ export async function POST(request: NextRequest) {
       route = await generateWalkingRoute(waypoints, orsApiKey);
     } else {
       if (!startLocation) {
-        return NextResponse.json(
+        return respondWithRouteGenerationFailure(
+          requestBody,
+          400,
           { error: "Starting location is required" },
-          { status: 400 },
+          "Starting location is required",
         );
       }
 
       if (!distance || distance <= 0) {
-        return NextResponse.json(
+        return respondWithRouteGenerationFailure(
+          requestBody,
+          400,
           { error: "Valid distance is required" },
-          { status: 400 },
+          "Valid distance is required",
         );
       }
 
       if (isRequestedRoundTripDistanceTooLong(distance)) {
-        return NextResponse.json(
+        return respondWithRouteGenerationFailure(
+          requestBody,
+          400,
           {
             errorCode: "route_distance_too_long",
             error: `Requested route distance exceeds the maximum supported round-trip distance of ${MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(
               0,
             )} km. Please choose a shorter distance.`,
           },
-          { status: 400 },
+          "Requested route distance exceeds the maximum supported round-trip distance",
         );
       }
 
@@ -153,13 +238,24 @@ export async function POST(request: NextRequest) {
 
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    const statusCode =
+      error instanceof Error
+        ? error.message.includes("429") || error.message.includes("Rate Limit")
+          ? 429
+          : error.message.includes("ORS API error")
+            ? 503
+            : error.message.includes("No route found")
+              ? 400
+              : error.message.includes("route_distance_too_long")
+                ? 400
+                : 500
+        : 500;
 
-    after(() =>
-      notifyDiscord({
-        event: "route_generation_failed",
-        errorMessage,
-      }),
-    );
+    reportRouteGenerationFailure({
+      requestBody: (requestBody ?? rawBody) || undefined,
+      statusCode,
+      errorMessage,
+    });
 
     if (error instanceof Error) {
       if (

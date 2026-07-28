@@ -8,6 +8,8 @@ interface DiscordNotificationParams {
   distance?: number;
   routeId?: string;
   errorMessage?: string;
+  statusCode?: number;
+  requestBody?: unknown;
 }
 
 const eventConfig: Record<NotificationEvent, { title: string; color: number }> =
@@ -31,6 +33,8 @@ export async function notifyDiscord({
   distance,
   routeId,
   errorMessage,
+  statusCode,
+  requestBody,
 }: DiscordNotificationParams): Promise<void> {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
   if (!webhookUrl) return;
@@ -56,6 +60,23 @@ export async function notifyDiscord({
   }
 
   try {
+    const fields: Array<{ name: string; value: string; inline?: boolean }> = [];
+
+    if (typeof statusCode === "number") {
+      fields.push({
+        name: "Status code",
+        value: String(statusCode),
+        inline: true,
+      });
+    }
+
+    if (requestBody !== undefined) {
+      fields.push({
+        name: "Request body",
+        value: formatDiscordValue(requestBody),
+      });
+    }
+
     await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -66,6 +87,7 @@ export async function notifyDiscord({
             description,
             ...(url && { url }),
             color: config.color,
+            ...(fields.length > 0 && { fields }),
           },
         ],
       }),
@@ -73,4 +95,18 @@ export async function notifyDiscord({
   } catch (error) {
     console.error(`Failed to send Discord notification for ${event}:`, error);
   }
+}
+
+function formatDiscordValue(value: unknown): string {
+  const normalized =
+    typeof value === "string" ? value : JSON.stringify(value, null, 2);
+
+  const text = normalized ?? String(value);
+  const maxLength = 900;
+
+  if (text.length <= maxLength) {
+    return `\`\`\`json\n${text}\n\`\`\``;
+  }
+
+  return `\`\`\`json\n${text.slice(0, maxLength)}…\n\`\`\``;
 }
