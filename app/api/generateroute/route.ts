@@ -4,6 +4,7 @@ import {
   generateWalkingRoute,
   generateRectangleRoute,
   generateRoundTripRoute,
+  RouteGenerationError,
 } from "../../services/orsService";
 import { checkRouteGenerationRateLimit } from "@/app/utils/rateLimit";
 import { notifyDiscord } from "@/app/utils/discordNotifications";
@@ -16,6 +17,7 @@ import {
   type RoutePattern,
 } from "@/app/utils/routePatterns";
 import type { RouteResponse } from "../../services/orsService";
+import { initializeDatabase, saveRouteGenerationRun } from "@/lib/db";
 
 type RouteStartLocation = [number, number] | { lat: number; lng: number };
 
@@ -48,6 +50,34 @@ function reportRouteGenerationFailure(params: {
   );
 }
 
+function persistRouteGenerationRun(params: {
+  routeType: string;
+  requestBody: unknown;
+  status: "success" | "failed";
+  errorMessage?: string;
+  route?: {
+    distance: number;
+    elevationGain?: number;
+    waypointCount?: number;
+  };
+  generationSummary?: unknown;
+}) {
+  after(() =>
+    saveRouteGenerationRun({
+      routeType: params.routeType,
+      payload: {
+        status: params.status,
+        requestBody: params.requestBody,
+        errorMessage: params.errorMessage,
+        route: params.route,
+        generationSummary: params.generationSummary,
+      },
+    }).catch((error) => {
+      console.warn("Failed to persist route generation run", error);
+    }),
+  );
+}
+
 function respondWithRouteGenerationFailure(
   requestBody: unknown,
   statusCode: number,
@@ -72,6 +102,8 @@ export async function POST(request: NextRequest) {
   let requestBody: RouteGenerationRequestBody | undefined;
 
   try {
+    await initializeDatabase();
+
     rawBody = await request.text();
 
     const forwardedFor = request.headers.get("x-forwarded-for");
@@ -143,6 +175,7 @@ export async function POST(request: NextRequest) {
 
     let finalWaypoints: [number, number][] | undefined;
     let route: RouteResponse;
+    let routeType: "rectangle" | "roundTrip" = "roundTrip";
     const selectedPattern: RoutePattern = isValidRoutePattern(pattern)
       ? pattern
       : "all";
@@ -199,6 +232,7 @@ export async function POST(request: NextRequest) {
 
       const targetDistanceMeters = distance * 1000;
       if (activePattern === "rectangle") {
+        routeType = "rectangle";
         route = await generateRectangleRoute(
           startLat,
           startLng,
@@ -206,6 +240,7 @@ export async function POST(request: NextRequest) {
           orsApiKey,
         );
       } else {
+        routeType = "roundTrip";
         route = await generateRoundTripRoute(
           startLat,
           startLng,
@@ -214,6 +249,18 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+
+    persistRouteGenerationRun({
+      routeType,
+      requestBody,
+      status: "success",
+      route: {
+        distance: route.distance,
+        elevationGain: route.elevation?.gain,
+        waypointCount: route.waypoints?.length ?? finalWaypoints?.length,
+      },
+      generationSummary: route.generationSummary,
+    });
 
     return NextResponse.json({
       success: true,
@@ -255,6 +302,17 @@ export async function POST(request: NextRequest) {
       requestBody: (requestBody ?? rawBody) || undefined,
       statusCode,
       errorMessage,
+    });
+
+    const generationSummary =
+      error instanceof RouteGenerationError ? error.summary : undefined;
+
+    persistRouteGenerationRun({
+      routeType: generationSummary?.routeType ?? "roundTrip",
+      requestBody: (requestBody ?? rawBody) || undefined,
+      status: "failed",
+      errorMessage,
+      generationSummary,
     });
 
     if (error instanceof Error) {

@@ -9,12 +9,28 @@ interface SavedRoute {
   created_at: Date;
 }
 
+interface SavedRouteGenerationRun {
+  id: string;
+  route_type: string;
+  payload: unknown;
+  created_at: Date;
+}
+
 export async function initializeDatabase() {
   await sql`
     CREATE TABLE IF NOT EXISTS routes (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       coordinates JSONB NOT NULL,
       distance INTEGER NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS route_generation_runs (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      route_type TEXT NOT NULL,
+      payload JSONB NOT NULL,
       created_at TIMESTAMP DEFAULT NOW()
     )
   `;
@@ -50,4 +66,20 @@ export async function getRoute(id: string): Promise<SavedRoute | null> {
     distance: result[0].distance,
     created_at: result[0].created_at,
   };
+}
+
+export async function saveRouteGenerationRun(params: {
+  routeType: string;
+  payload: unknown;
+}): Promise<string> {
+  const result = await sql`
+    INSERT INTO route_generation_runs (route_type, payload)
+    VALUES (
+      ${params.routeType},
+      ${JSON.stringify(params.payload)}::jsonb
+    )
+    RETURNING id
+  `;
+
+  return result[0].id;
 }
