@@ -1,6 +1,11 @@
 packages:
   - "."
 
+allowBuilds:
+  "@parcel/watcher": true
+  "@swc/core": true
+  unrs-resolver: true
+
 overrides:
   brace-expansion: "^1.1.11"
   postcss: "^8.5.18"

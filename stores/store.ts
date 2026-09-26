@@ -40,6 +40,7 @@ type LocationStore = {
 };
 
 const START_LOCATION_STORAGE_KEY = "startLocation";
+const LAST_ROUTE_ID_STORAGE_KEY = "lastRouteId";
 
 function persistStartLocationToStorage(
   startLocation: LatLngExpression | LatLngTuple | null,
@@ -81,6 +82,30 @@ function readStartLocationFromStorage(): LatLngTuple | null {
     }
 
     return [lat, lng] as LatLngTuple;
+  } catch {
+    return null;
+  }
+}
+
+function persistRouteIdToStorage(routeId: string | null) {
+  if (typeof window === "undefined") return;
+
+  try {
+    if (routeId) {
+      localStorage.setItem(LAST_ROUTE_ID_STORAGE_KEY, routeId);
+    } else {
+      localStorage.removeItem(LAST_ROUTE_ID_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage failures and keep the app usable.
+  }
+}
+
+export function getLastRouteIdFromStorage() {
+  if (typeof window === "undefined") return null;
+
+  try {
+    return localStorage.getItem(LAST_ROUTE_ID_STORAGE_KEY);
   } catch {
     return null;
   }
@@ -136,7 +161,10 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     set({ userLocation });
   },
   setGeneratedRoute: (generatedRoute) => set({ generatedRoute }),
-  setRouteId: (routeId) => set({ routeId }),
+  setRouteId: (routeId) => {
+    set({ routeId });
+    persistRouteIdToStorage(routeId);
+  },
   resetRoute: () => {
     if (typeof window !== "undefined") {
       const sp = new URLSearchParams(window.location.search);
@@ -145,6 +173,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       window.history.replaceState(null, "", newUrl);
     }
     set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
+    persistRouteIdToStorage(null);
   },
   acceptRoute: async () => {
     const { generatedRoute } = get();
@@ -166,6 +195,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       if (response.ok) {
         const data = await response.json();
         set({ routeId: data.id });
+        persistRouteIdToStorage(data.id);
         if (typeof window !== "undefined") {
           const sp = new URLSearchParams(window.location.search);
           sp.set("route", data.id);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocationStore } from "../../stores";
+import { getLastRouteIdFromStorage, useLocationStore } from "../../stores";
 
 export function useRouteFromUrl() {
   const { setGeneratedRoute, setRouteId, generatedRoute } = useLocationStore();
@@ -12,7 +12,16 @@ export function useRouteFromUrl() {
       if (generatedRoute) return;
 
       const params = new URLSearchParams(window.location.search);
-      const routeId = params.get("route");
+      let routeId = params.get("route");
+
+      if (!routeId) {
+        routeId = getLastRouteIdFromStorage();
+        if (routeId) {
+          params.set("route", routeId);
+          const newUrl = `${window.location.pathname}?${params.toString()}`;
+          window.history.replaceState(null, "", newUrl);
+        }
+      }
 
       if (!routeId) return;
 
@@ -39,11 +48,6 @@ export function useRouteFromUrl() {
         const data = await response.json();
 
         if (data.success && data.route) {
-          console.log("Loaded route from URL:", {
-            id: data.route.id,
-            distance: data.route.distance,
-            waypoints: data.route.waypoints,
-          });
           setGeneratedRoute({
             coordinates: data.route.coordinates,
             distance: data.route.distance,

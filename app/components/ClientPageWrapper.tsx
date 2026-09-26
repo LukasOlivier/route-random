@@ -15,7 +15,7 @@ import LegendButton from "./LegendButton";
 import MapWrapper from "./MapWrapper";
 import FeedbackWidget from "./FeedbackWidget";
 import { useRouteFromUrl } from "@/app/hooks/useRouteFromUrl";
-import { useLocationStore } from "@/stores/store";
+import { getLastRouteIdFromStorage, useLocationStore } from "@/stores/store";
 import { useRouteFormStore } from "@/stores";
 
 interface ClientPageWrapperProps {
@@ -53,10 +53,17 @@ export default function ClientPageWrapper({
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
 
-    if (mediaQuery.matches) {
+    const hasRouteId =
+      Boolean(new URLSearchParams(window.location.search).get("route")) ||
+      Boolean(getLastRouteIdFromStorage()) ||
+      Boolean(routeId);
+
+    if (mediaQuery.matches && !hasRouteId) {
       setIsSidebarOpen(true);
+    } else if (hasRouteId) {
+      setIsSidebarOpen(false);
     }
-  }, []);
+  }, [routeId]);
 
   useEffect(() => {
     if (isRouteAccepted && generatedRoute) {
