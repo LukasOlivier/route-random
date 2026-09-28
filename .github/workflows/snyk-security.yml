@@ -37,10 +37,15 @@ jobs:
         run: snyk code test --severity-threshold=high --sarif-file-output=snyk-code.sarif
 
       - name: Upload Code results to GitHub Code Scanning
+        if: ${{ hashFiles('snyk-code.sarif') != '' }}
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-code.sarif
           category: snyk-code
+
+      - name: Warn when Snyk SARIF report is missing
+        if: ${{ hashFiles('snyk-code.sarif') == '' }}
+        run: echo "::warning::Snyk did not produce snyk-code.sarif. Check the previous Snyk scan output for authentication or runtime errors."
 
       - name: Snyk Code scan (fail gate)
         env:
