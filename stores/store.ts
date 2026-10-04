@@ -177,7 +177,6 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
   },
   acceptRoute: async () => {
     const { generatedRoute } = get();
-    set({ isRouteAccepted: true });
 
     if (!generatedRoute) return;
 
@@ -192,16 +191,22 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(routeToSave),
       });
-      if (response.ok) {
-        const data = await response.json();
-        set({ routeId: data.id });
-        persistRouteIdToStorage(data.id);
-        if (typeof window !== "undefined") {
-          const sp = new URLSearchParams(window.location.search);
-          sp.set("route", data.id);
-          const newUrl = `${window.location.pathname}?${sp.toString()}`;
-          window.history.replaceState(null, "", newUrl);
-        }
+      if (!response.ok) {
+        throw new Error(`Failed to save route: ${response.status}`);
+      }
+
+      const data = (await response.json()) as { id?: unknown };
+      if (typeof data.id !== "string" || data.id.length === 0) {
+        throw new Error("Route save response did not include an ID");
+      }
+
+      set({ routeId: data.id, isRouteAccepted: true });
+      persistRouteIdToStorage(data.id);
+      if (typeof window !== "undefined") {
+        const sp = new URLSearchParams(window.location.search);
+        sp.set("route", data.id);
+        const newUrl = `${window.location.pathname}?${sp.toString()}`;
+        window.history.replaceState(null, "", newUrl);
       }
     } catch (error) {
       console.error("Failed to save route to database:", error);

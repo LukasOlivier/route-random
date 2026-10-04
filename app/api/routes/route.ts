@@ -8,6 +8,42 @@ const logger = getLogger("api.routes");
 
 let initialized = false;
 
+const MAX_SAVED_ROUTE_COORDINATES = 10_000;
+
+function isValidRoutePayload(
+  value: unknown,
+): value is { coordinates: [number, number][]; distance: number } {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const { coordinates, distance } = value as {
+    coordinates?: unknown;
+    distance?: unknown;
+  };
+
+  return (
+    typeof distance === "number" &&
+    Number.isFinite(distance) &&
+    distance > 0 &&
+    Array.isArray(coordinates) &&
+    coordinates.length > 0 &&
+    coordinates.length <= MAX_SAVED_ROUTE_COORDINATES &&
+    coordinates.every(
+      (coordinate) =>
+        Array.isArray(coordinate) &&
+        coordinate.length === 2 &&
+        coordinate.every(
+          (value) => typeof value === "number" && Number.isFinite(value),
+        ) &&
+        coordinate[0] >= -180 &&
+        coordinate[0] <= 180 &&
+        coordinate[1] >= -90 &&
+        coordinate[1] <= 90,
+    )
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!initialized) {
@@ -16,19 +52,17 @@ export async function POST(request: NextRequest) {
       initialized = true;
     }
 
-    const body = await request.json();
-    const { coordinates, distance } = body;
+    const body: unknown = await request.json();
 
-    if (!coordinates || !distance) {
-      logger.warn(
-        { hasCoordinates: !!coordinates, hasDistance: !!distance },
-        "Missing required fields",
-      );
+    if (!isValidRoutePayload(body)) {
+      logger.warn({ hasBody: !!body }, "Missing required fields");
       return NextResponse.json(
         { error: "coordinates and distance are required" },
         { status: 400 },
       );
     }
+
+    const { coordinates, distance } = body;
 
     logger.info(
       { distance, coordinatesLength: coordinates.length },

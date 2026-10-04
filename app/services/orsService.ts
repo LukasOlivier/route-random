@@ -171,6 +171,7 @@ export async function generateRoundTripRoute(
   let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
+  let lastOperationalError: Error | undefined;
   let currentFactor = ROUND_TRIP_INITIAL_FACTOR;
   const attempts: RouteGenerationAttempt[] = [];
 
@@ -315,6 +316,10 @@ export async function generateRoundTripRoute(
         "Route attempt",
       );
     } catch (error) {
+      if (error instanceof Error && error.message !== "No route found") {
+        lastOperationalError = error;
+      }
+
       attempts.push({
         factor,
         nextFactor: clamp(
@@ -371,6 +376,10 @@ export async function generateRoundTripRoute(
     { targetDistance },
     "Failed to generate route after all attempts",
   );
+  if (lastOperationalError) {
+    throw lastOperationalError;
+  }
+
   throw new RouteGenerationError("No route found", {
     routeType: "roundTrip",
     targetDistance,
@@ -396,6 +405,7 @@ export async function generateRectangleRoute(
   let currentFactor = RECTANGLE_INITIAL_FACTOR;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
+  let lastOperationalError: Error | undefined;
   const attempts: RouteGenerationAttempt[] = [];
 
   for (let attempt = 0; attempt < RECTANGLE_MAX_ATTEMPTS; attempt += 1) {
@@ -478,6 +488,10 @@ export async function generateRectangleRoute(
         "Rectangle route attempt",
       );
     } catch (error) {
+      if (error instanceof Error && error.message !== "No route found") {
+        lastOperationalError = error;
+      }
+
       logger.warn(
         {
           factor,
@@ -529,6 +543,10 @@ export async function generateRectangleRoute(
     { targetDistance },
     "Failed to generate rectangle route after all attempts",
   );
+  if (lastOperationalError) {
+    throw lastOperationalError;
+  }
+
   throw new RouteGenerationError("No route found", {
     routeType: "rectangle",
     targetDistance,

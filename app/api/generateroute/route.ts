@@ -63,18 +63,22 @@ function persistRouteGenerationRun(params: {
   generationSummary?: unknown;
 }) {
   after(() =>
-    saveRouteGenerationRun({
-      routeType: params.routeType,
-      payload: {
-        status: params.status,
-        requestBody: params.requestBody,
-        errorMessage: params.errorMessage,
-        route: params.route,
-        generationSummary: params.generationSummary,
-      },
-    }).catch((error) => {
-      console.warn("Failed to persist route generation run", error);
-    }),
+    initializeDatabase()
+      .then(() =>
+        saveRouteGenerationRun({
+          routeType: params.routeType,
+          payload: {
+            status: params.status,
+            requestBody: params.requestBody,
+            errorMessage: params.errorMessage,
+            route: params.route,
+            generationSummary: params.generationSummary,
+          },
+        }),
+      )
+      .catch((error) => {
+        console.warn("Failed to persist route generation run", error);
+      }),
   );
 }
 
@@ -102,8 +106,6 @@ export async function POST(request: NextRequest) {
   let requestBody: RouteGenerationRequestBody | undefined;
 
   try {
-    await initializeDatabase();
-
     rawBody = await request.text();
 
     const forwardedFor = request.headers.get("x-forwarded-for");
