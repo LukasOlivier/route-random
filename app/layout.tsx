@@ -167,7 +167,7 @@ export default function RootLayout({
           hrefLang="x-default"
         />
         <link rel="icon" href="/icon.png" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#D1D5DB" />
 
         <script
           type="application/ld+json"
