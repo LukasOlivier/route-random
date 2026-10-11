@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "be.lukasolivier.route_random.twa",
+      "sha256_cert_fingerprints": [
+        "EC:30:06:FA:F1:73:6D:4F:08:BE:9C:D1:91:34:06:02:AD:43:4C:8C:24:8C:51:FC:DB:63:06:2D:42:F0:01:8D"
+      ]
+    }
+  }
+]

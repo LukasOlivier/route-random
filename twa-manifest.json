@@ -16,7 +16,7 @@
   "iconUrl": "https://route-random.lukasolivier.be/icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "/home/lukas/Documents/nextcloud/projects/route-random/android.keystore",
+    "path": "android.keystore",
     "alias": "route-random-key"
   },
   "appVersionName": "1",
