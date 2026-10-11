@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "be.lukasolivier.route_random.twa",
       "sha256_cert_fingerprints": [
-        "EC:30:06:FA:F1:73:6D:4F:08:BE:9C:D1:91:34:06:02:AD:43:4C:8C:24:8C:51:FC:DB:63:06:2D:42:F0:01:8D"
+        "EC:30:06:FA:F1:73:6D:4F:08:BE:9C:D1:91:34:06:02:AD:43:4C:8C:24:8C:51:FC:DB:63:06:2D:42:F0:01:8D",
+        "C2:62:B0:BD:3D:89:2D:E8:AE:0C:3D:63:06:0F:88:73:1A:AA:76:C4:F2:3A:94:50:76:D9:A1:BF:F7:3E:A7:1B"
       ]
     }
   }
