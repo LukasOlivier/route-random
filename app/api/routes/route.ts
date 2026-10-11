@@ -8,11 +8,12 @@ const logger = getLogger("api.routes");
 
 let initialized = false;
 
-const MAX_SAVED_ROUTE_COORDINATES = 10_000;
+const MAX_SAVED_ROUTE_COORDINATES = 100_000;
 
-function isValidRoutePayload(
-  value: unknown,
-): value is { coordinates: [number, number][]; distance: number } {
+function isValidRoutePayload(value: unknown): value is {
+  coordinates: [number, number, ...number[]][];
+  distance: number;
+} {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;
   }
@@ -32,16 +33,23 @@ function isValidRoutePayload(
     coordinates.every(
       (coordinate) =>
         Array.isArray(coordinate) &&
-        coordinate.length === 2 &&
-        coordinate.every(
-          (value) => typeof value === "number" && Number.isFinite(value),
-        ) &&
+        coordinate.length >= 2 &&
+        typeof coordinate[0] === "number" &&
+        Number.isFinite(coordinate[0]) &&
+        typeof coordinate[1] === "number" &&
+        Number.isFinite(coordinate[1]) &&
         coordinate[0] >= -180 &&
         coordinate[0] <= 180 &&
         coordinate[1] >= -90 &&
         coordinate[1] <= 90,
     )
   );
+}
+
+function toTwoDimensionalCoordinates(
+  coordinates: [number, number, ...number[]][],
+): [number, number][] {
+  return coordinates.map(([longitude, latitude]) => [longitude, latitude]);
 }
 
 export async function POST(request: NextRequest) {
@@ -63,14 +71,15 @@ export async function POST(request: NextRequest) {
     }
 
     const { coordinates, distance } = body;
+    const savedCoordinates = toTwoDimensionalCoordinates(coordinates);
 
     logger.info(
-      { distance, coordinatesLength: coordinates.length },
+      { distance, coordinatesLength: savedCoordinates.length },
       "Saving route",
     );
 
     const id = await saveRoute({
-      coordinates: coordinates,
+      coordinates: savedCoordinates,
       distance,
     });
 

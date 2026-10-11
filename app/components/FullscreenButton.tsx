@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import FloatingButton from "./FloatingButton";
-import { Minimize, Maximize } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface FullscreenButtonProps {
   isFullscreen: boolean;
@@ -12,16 +12,16 @@ export default function FullscreenButton({
   isFullscreen,
   onToggle,
 }: FullscreenButtonProps) {
-  const t = useTranslations("FullScreenButton");
+  const t = useTranslations("MapFocusButton");
 
   if (isFullscreen) {
     return (
       <FloatingButton
         onClick={() => onToggle(false)}
-        ariaLabel={t("exitFullscreen")}
+        ariaLabel={t("exitMapFocus")}
         hideOnDesktop={true}
       >
-        <Minimize size={24} />
+        <Eye size={24} />
       </FloatingButton>
     );
   }
@@ -29,10 +29,10 @@ export default function FullscreenButton({
   return (
     <FloatingButton
       onClick={() => onToggle(true)}
-      ariaLabel={t("enterFullscreen")}
+      ariaLabel={t("enterMapFocus")}
       hideOnDesktop={true}
     >
-      <Maximize size={24} />
+      <EyeOff size={24} />
     </FloatingButton>
   );
 }

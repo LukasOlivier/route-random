@@ -46,9 +46,9 @@
   "MapLoading": {
     "loadingText": "Uw avontuur wordt geladen..."
   },
-  "FullScreenButton": {
-    "enterFullscreen": "Volledig scherm",
-    "exitFullscreen": "Volledig scherm verlaten"
+  "MapFocusButton": {
+    "enterMapFocus": "Focus op de kaart",
+    "exitMapFocus": "Kaartbediening tonen"
   },
   "DownloadButton": {
     "downloadRoute": "Route downloaden als GPX",

@@ -50,9 +50,9 @@
     "downloadRoute": "Route als GPX herunterladen",
     "ariaLabel": "Route als GPX herunterladen"
   },
-  "FullScreenButton": {
-    "enterFullscreen": "Vollbildmodus aktivieren",
-    "exitFullscreen": "Vollbildmodus beenden"
+  "MapFocusButton": {
+    "enterMapFocus": "Kartenfokus aktivieren",
+    "exitMapFocus": "Steuerung anzeigen"
   },
   "ShareButton": {
     "ariaLabel": "Route teilen",

@@ -50,9 +50,9 @@
     "downloadRoute": "Pobierz trasę jako GPX",
     "ariaLabel": "Pobierz trasę jako GPX"
   },
-  "FullScreenButton": {
-    "enterFullscreen": "Wejdź w tryb pełnoekranowy",
-    "exitFullscreen": "Wyjdź z trybu pełnoekranowego"
+  "MapFocusButton": {
+    "enterMapFocus": "Skup się na mapie",
+    "exitMapFocus": "Pokaż elementy sterujące mapy"
   },
   "ShareButton": {
     "ariaLabel": "Udostępnij trasę",

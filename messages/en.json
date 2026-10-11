@@ -50,9 +50,9 @@
     "downloadRoute": "Download route as GPX",
     "ariaLabel": "Download route as GPX"
   },
-  "FullScreenButton": {
-    "enterFullscreen": "Enter fullscreen",
-    "exitFullscreen": "Exit fullscreen"
+  "MapFocusButton": {
+    "enterMapFocus": "Focus on map",
+    "exitMapFocus": "Show map controls"
   },
   "ShareButton": {
     "ariaLabel": "Share route",
