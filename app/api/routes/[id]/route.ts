@@ -1,29 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRoute, initializeDatabase } from "@/lib/db";
+import { getRoute } from "@/lib/db";
 import { getLogger } from "@/lib/logger";
 
-const logger = getLogger("api.routes.id");
+import { isValidRouteId } from "@/app/utils/urlParams";
 
-let initialized = false;
+const logger = getLogger("api.routes.id");
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    if (!initialized) {
-      logger.debug("Initializing database");
-      await initializeDatabase();
-      initialized = true;
-    }
-
     const { id } = await params;
 
     logger.debug({ id }, "Fetching route");
 
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(id)) {
+    if (!isValidRouteId(id)) {
       logger.warn({ id }, "Invalid route ID format");
       return NextResponse.json({ error: "Invalid route ID" }, { status: 400 });
     }

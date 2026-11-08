@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useRef } from "react";
 import { Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,7 +11,9 @@ import { withRouteGuard } from "./withRouteGuard";
 
 function ShareButtonContent() {
   const t = useTranslations("ShareButton");
-  const { routeId } = useLocationStore();
+  const { routeId } = useLocationStore(
+    useShallow((state) => ({ routeId: state.routeId })),
+  );
   const isSharingRef = useRef(false);
 
   const shareRoute = async () => {

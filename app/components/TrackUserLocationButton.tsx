@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useEffect, useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -14,7 +16,13 @@ export default function TrackUserLocationButton() {
   const t = useTranslations("TrackUserLocationButton");
   const showNotification = useNotificationStore((s) => s.showNotification);
   const { isTrackingLocation, setLocationTracking, setTrackedUserLocation } =
-    useLocationStore();
+    useLocationStore(
+      useShallow((state) => ({
+        isTrackingLocation: state.isTrackingLocation,
+        setLocationTracking: state.setLocationTracking,
+        setTrackedUserLocation: state.setTrackedUserLocation,
+      })),
+    );
 
   const watchIdRef = useRef<number | null>(null);
 

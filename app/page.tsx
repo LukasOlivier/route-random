@@ -1,7 +1,7 @@
 import ClientPageWrapper from "./components/ClientPageWrapper";
 import RouteStats from "./components/RouteStats";
 
-export default async function Home() {
+export default function Home() {
   return (
     <main>
       <ClientPageWrapper>

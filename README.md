@@ -44,7 +44,7 @@ Route Random is a modern, full-stack web application for generating unique, circ
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) for lightweight client state
 - **Mapping**: [Leaflet.js](https://leafletjs.com/) with [React-Leaflet](https://react-leaflet.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/) for consistent icon library
-- **Geosearch**: [Leaflet-Geosearch](https://smoogipoo.github.io/leaflet-geosearch/) for address lookup
+- **Address search**: [Nominatim](https://nominatim.org/) for address lookup
 
 ### Backend & APIs
 
@@ -230,3 +230,16 @@ For major changes, please open an issue first to discuss what you would like to 
 ## 👤 Author
 
 Made by [Lukas Olivier](https://www.lukasolivier.be)
+
+## Development checks
+
+Run `pnpm check` for ESLint, TypeScript, and the test suite, then `pnpm build`
+to verify the production bundle. Next.js 16 uses Turbopack by default; linting
+runs separately from the build.
+
+Shared route types live in `types/route.ts`. Browser requests go through
+`app/services/routeClient.ts`; upstream ORS transport (timeouts, retries, and
+circuit breaking) lives in `app/services/orsClient.ts`, independently of route
+generation algorithms. URL changes use `app/utils/urlParams.ts`, and supported
+languages are defined in `i18n/locales.ts`. Database query functions own lazy,
+shared initialization and retry initialization after failure.

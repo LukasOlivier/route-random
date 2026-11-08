@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type {
   WebSite,
   BreadcrumbList,
@@ -6,6 +6,8 @@ import type {
   SoftwareApplication,
   WebPage,
 } from "schema-dts";
+import Script from "next/script";
+import { getLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getValidatedEnv } from "@/lib/env";
@@ -62,6 +64,8 @@ export const metadata: Metadata = {
     images: [image],
   },
   manifest: "/manifest.json",
+  robots: { index: true, follow: true },
+  icons: { icon: "/icon.png" },
 };
 
 const websiteSchema: WithContext<WebSite> = {
@@ -126,49 +130,17 @@ const softwareApplicationSchema: WithContext<SoftwareApplication> = {
   image: image,
 };
 
-export default function RootLayout({
+export const viewport: Viewport = { themeColor: "#D1D5DB" };
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
-        <script
-          defer
-          src="https://umami.lukasolivier.be/script.js"
-          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
-        ></script>
-
-        <script
-          defer
-          src="https://umami.lukasolivier.be/recorder.js"
-          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
-          data-sample-rate="0.15"
-          data-mask-level="moderate"
-          data-max-duration="300000"
-        ></script>
-
-        <meta name="robots" content="index, follow" />
-
-        <link
-          rel="alternate"
-          href="https://route-random.lukasolivier.be/"
-          hrefLang="en"
-        />
-        <link
-          rel="alternate"
-          href="https://route-random.lukasolivier.be/nl"
-          hrefLang="nl"
-        />
-        <link
-          rel="alternate"
-          href="https://route-random.lukasolivier.be/"
-          hrefLang="x-default"
-        />
-        <link rel="icon" href="/icon.png" />
-        <meta name="theme-color" content="#D1D5DB" />
-
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
@@ -193,6 +165,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-gray-800 dark:text-gray-200 bg-gray-300 text-gray-800`}
       >
+        <Script
+          src="https://umami.lukasolivier.be/script.js"
+          strategy="afterInteractive"
+          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
+        />
+        <Script
+          src="https://umami.lukasolivier.be/recorder.js"
+          strategy="afterInteractive"
+          data-website-id="a0e3a80f-8804-4070-a7b5-46b223dfa8dc"
+          data-sample-rate="0.15"
+          data-mask-level="moderate"
+          data-max-duration="300000"
+        />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useState, useEffect } from "react";
 import { Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
@@ -33,7 +35,16 @@ export default function SidebarForm() {
     resetRoute,
     acceptRoute,
     isRouteAccepted,
-  } = useLocationStore();
+  } = useLocationStore(
+    useShallow((state) => ({
+      setUserLocation: state.setUserLocation,
+      initializeFromStorage: state.initializeFromStorage,
+      generatedRoute: state.generatedRoute,
+      resetRoute: state.resetRoute,
+      acceptRoute: state.acceptRoute,
+      isRouteAccepted: state.isRouteAccepted,
+    })),
+  );
 
   const {
     mode,
@@ -46,10 +57,24 @@ export default function SidebarForm() {
     setPace,
     setDistance,
     setTime,
-    resetSessionCount,
     initializeFromParams,
     syncLocationToParams,
-  } = useRouteFormStore();
+  } = useRouteFormStore(
+    useShallow((state) => ({
+      mode: state.mode,
+      pattern: state.pattern,
+      pace: state.pace,
+      distance: state.distance,
+      time: state.time,
+      setMode: state.setMode,
+      setPattern: state.setPattern,
+      setPace: state.setPace,
+      setDistance: state.setDistance,
+      setTime: state.setTime,
+      initializeFromParams: state.initializeFromParams,
+      syncLocationToParams: state.syncLocationToParams,
+    })),
+  );
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
   const showNotification = useNotificationStore((s) => s.showNotification);
@@ -71,7 +96,7 @@ export default function SidebarForm() {
         setUserLocation([parsedLat, parsedLon]);
       }
     }
-  }, []);
+  }, [initializeFromParams, initializeFromStorage, setUserLocation]);
 
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
@@ -167,7 +192,6 @@ export default function SidebarForm() {
 
   const handleAcceptRoute = () => {
     acceptRoute();
-    resetSessionCount();
   };
 
   const handleResetRoute = () => {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useState } from "react";
 import { Info, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -8,7 +10,9 @@ import FloatingButton from "./FloatingButton";
 
 export default function LegendButton() {
   const t = useTranslations("LegendButton");
-  const { generatedRoute } = useLocationStore();
+  const { generatedRoute } = useLocationStore(
+    useShallow((state) => ({ generatedRoute: state.generatedRoute })),
+  );
   const [isOpen, setIsOpen] = useState(false);
 
   if (!generatedRoute) {

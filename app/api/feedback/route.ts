@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeDatabase, saveRoute } from "@/lib/db";
 
 type FeedbackReaction = "like" | "neutral" | "dislike";
 
@@ -17,8 +16,6 @@ const reactionDescriptions = {
 
 export async function POST(request: NextRequest) {
   try {
-    await initializeDatabase();
-
     const body = await request.json();
     const {
       reaction,

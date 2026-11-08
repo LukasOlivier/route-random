@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { after } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createHash } from "node:crypto";
 import {
   generateWalkingRoute,
@@ -26,7 +25,7 @@ import {
   type RouteGenerationRequestBody,
 } from "@/app/utils/routeRequestValidation";
 import { RequestDeduplicator } from "@/app/utils/requestDeduplicator";
-import { initializeDatabase, saveRouteGenerationRun } from "@/lib/db";
+import { saveRouteGenerationRun } from "@/lib/db";
 
 interface RouteGenerationResult {
   route: RouteResponse;
@@ -112,23 +111,19 @@ function persistRouteGenerationRun(params: {
   generationSummary?: unknown;
 }) {
   after(() =>
-    initializeDatabase()
-      .then(() =>
-        saveRouteGenerationRun({
-          routeType: params.routeType,
-          payload: {
-            status: params.status,
-            failureCategory: params.failureCategory,
-            requestBody: params.requestBody,
-            errorMessage: params.errorMessage,
-            route: params.route,
-            generationSummary: params.generationSummary,
-          },
-        }),
-      )
-      .catch((error) => {
-        console.warn("Failed to persist route generation run", error);
-      }),
+    saveRouteGenerationRun({
+      routeType: params.routeType,
+      payload: {
+        status: params.status,
+        failureCategory: params.failureCategory,
+        requestBody: params.requestBody,
+        errorMessage: params.errorMessage,
+        route: params.route,
+        generationSummary: params.generationSummary,
+      },
+    }).catch((error) => {
+      console.warn("Failed to persist route generation run", error);
+    }),
   );
 }
 

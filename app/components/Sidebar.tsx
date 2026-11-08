@@ -6,35 +6,20 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Select from "react-select";
-import type { FormatOptionLabelMeta, OnChangeValue } from "react-select";
+import type { OnChangeValue } from "react-select";
 import ReactCountryFlag from "react-country-flag";
 import Image from "next/image";
-import { useLocationStore } from "../../stores";
 
 interface SidebarProps {
   isMobile: boolean;
 }
 
-interface LanguageOption {
-  value: string;
-  label: string;
-  countryCode: string;
-}
+import { languageOptions, type LanguageOption } from "@/i18n/locales";
 
 export default function Sidebar({ isMobile }: SidebarProps) {
   const t = useTranslations("Sidebar");
   const locale = useLocale();
   const router = useRouter();
-  const generatedRoute = useLocationStore((state) => state.generatedRoute);
-
-  const languageOptions: LanguageOption[] = [
-    { value: "en", label: "EN", countryCode: "GB" },
-    { value: "nl", label: "NL", countryCode: "NL" },
-    { value: "fr", label: "FR", countryCode: "FR" },
-    { value: "de", label: "DE", countryCode: "DE" },
-    { value: "es", label: "ES", countryCode: "ES" },
-    { value: "pl", label: "PL", countryCode: "PL" },
-  ];
 
   const handleLanguageChange = (newLocale: string) => {
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`;
@@ -68,10 +53,7 @@ export default function Sidebar({ isMobile }: SidebarProps) {
               }
               menuPosition="fixed"
               menuPlacement="auto"
-              formatOptionLabel={(
-                option: LanguageOption,
-                _meta: FormatOptionLabelMeta<LanguageOption>,
-              ) => (
+              formatOptionLabel={(option: LanguageOption) => (
                 <div className="flex items-center gap-2">
                   <ReactCountryFlag
                     svg

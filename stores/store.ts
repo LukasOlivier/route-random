@@ -1,23 +1,11 @@
 import { create } from "zustand";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 
-enum Mode {
-  TIME = "time",
-  DISTANCE = "distance",
-}
-
-enum Pace {
-  WALKING = "walking",
-  RUNNING = "running",
-  CYCLING = "cycling",
-}
-
-type GeneratedRoute = {
-  coordinates: [number, number][];
-  distance: number;
-  elevationGain?: number;
-  waypoints?: [number, number][];
-};
+import { Mode, Pace, type GeneratedRoute } from "@/types/route";
+import {
+  updateSearchParams,
+  syncStartLocationToParams,
+} from "@/app/utils/urlParams";
 
 type LocationStore = {
   startLocation: LatLngExpression | LatLngTuple | null;
@@ -111,16 +99,6 @@ export function getLastRouteIdFromStorage() {
   }
 }
 
-function syncStartLocationToParams(location: LatLngTuple) {
-  if (typeof window === "undefined") return;
-
-  const sp = new URLSearchParams(window.location.search);
-  sp.set("lat", String(location[0]));
-  sp.set("lon", String(location[1]));
-  const newUrl = `${window.location.pathname}?${sp.toString()}`;
-  window.history.replaceState(null, "", newUrl);
-}
-
 export const useLocationStore = create<LocationStore>((set, get) => ({
   startLocation: null,
   isStartLocationFromStorage: false,
@@ -143,19 +121,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
       isStartLocationFromStorage: false,
     });
 
-    if (typeof window !== "undefined") {
-      if (userLocation) {
-        localStorage.setItem(
-          "startLocation",
-          JSON.stringify({
-            lat: userLocation[0],
-            lng: userLocation[1],
-          }),
-        );
-      } else {
-        localStorage.removeItem("startLocation");
-      }
-    }
+    persistStartLocationToStorage(userLocation);
   },
   setTrackedUserLocation: (userLocation) => {
     set({ userLocation });
@@ -166,12 +132,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
     persistRouteIdToStorage(routeId);
   },
   resetRoute: () => {
-    if (typeof window !== "undefined") {
-      const sp = new URLSearchParams(window.location.search);
-      sp.delete("route");
-      const newUrl = `${window.location.pathname}?${sp.toString()}`;
-      window.history.replaceState(null, "", newUrl);
-    }
+    updateSearchParams((params) => params.delete("route"));
     set({ generatedRoute: null, routeId: null, isRouteAccepted: false });
     persistRouteIdToStorage(null);
   },
@@ -202,12 +163,7 @@ export const useLocationStore = create<LocationStore>((set, get) => ({
 
       set({ routeId: data.id, isRouteAccepted: true });
       persistRouteIdToStorage(data.id);
-      if (typeof window !== "undefined") {
-        const sp = new URLSearchParams(window.location.search);
-        sp.set("route", data.id);
-        const newUrl = `${window.location.pathname}?${sp.toString()}`;
-        window.history.replaceState(null, "", newUrl);
-      }
+      updateSearchParams((params) => params.set("route", data.id as string));
     } catch (error) {
       console.error("Failed to save route to database:", error);
     }

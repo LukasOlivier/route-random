@@ -1,4 +1,4 @@
-import { Pace } from "../../stores/store";
+import { Pace } from "@/types/route";
 
 const PACE_SPEEDS: Record<Pace, number> = {
   [Pace.WALKING]: 5,

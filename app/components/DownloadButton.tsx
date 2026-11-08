@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
@@ -9,7 +11,9 @@ import { withRouteGuard } from "./withRouteGuard";
 
 function DownloadButtonContent() {
   const t = useTranslations("DownloadButton");
-  const { generatedRoute } = useLocationStore();
+  const { generatedRoute } = useLocationStore(
+    useShallow((state) => ({ generatedRoute: state.generatedRoute })),
+  );
 
   const handleDownload = () => {
     if (generatedRoute) {
