@@ -101,7 +101,8 @@ function reportRouteGenerationFailure(params: {
 function persistRouteGenerationRun(params: {
   routeType: string;
   requestBody: unknown;
-  status: "success" | "failed";
+  status: "success" | "failed" | "expected-failure";
+  failureCategory?: string;
   errorMessage?: string;
   route?: {
     distance: number;
@@ -117,6 +118,7 @@ function persistRouteGenerationRun(params: {
           routeType: params.routeType,
           payload: {
             status: params.status,
+            failureCategory: params.failureCategory,
             requestBody: params.requestBody,
             errorMessage: params.errorMessage,
             route: params.route,
@@ -306,6 +308,9 @@ export async function POST(request: NextRequest) {
               )
             : undefined,
         startLocation: snappedStartLocation,
+        distanceFallback:
+          result.route.generationSummary?.selectedAttempt?.outcome ===
+          "fallback",
         startLocationAdjustmentMeters:
           startAdjustmentMeters && startAdjustmentMeters > 25
             ? Math.round(startAdjustmentMeters)
@@ -313,10 +318,18 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error generating route:", error);
-
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    const invalidStartLocation =
+      error instanceof RouteServiceError &&
+      error.kind === "invalid-start-location";
+
+    if (invalidStartLocation) {
+      console.info("Route generation skipped: invalid start location");
+    } else {
+      console.error("Error generating route:", error);
+    }
+
     const statusCode =
       error instanceof RouteGenerationRateLimitError ||
       (error instanceof RouteServiceError && error.kind === "rate-limited")
@@ -327,15 +340,21 @@ export async function POST(request: NextRequest) {
           ? 503
           : error instanceof RouteGenerationError ||
               (error instanceof RouteServiceError &&
-                ["no-route", "invalid-request"].includes(error.kind))
+                [
+                  "no-route",
+                  "invalid-start-location",
+                  "invalid-request",
+                ].includes(error.kind))
             ? 400
             : 500;
 
-    reportRouteGenerationFailure({
-      requestBody: (requestBody ?? rawBody) || undefined,
-      statusCode,
-      errorMessage,
-    });
+    if (!invalidStartLocation) {
+      reportRouteGenerationFailure({
+        requestBody: (requestBody ?? rawBody) || undefined,
+        statusCode,
+        errorMessage,
+      });
+    }
 
     const generationSummary =
       error instanceof RouteGenerationError ? error.summary : undefined;
@@ -343,7 +362,10 @@ export async function POST(request: NextRequest) {
     persistRouteGenerationRun({
       routeType: generationSummary?.routeType ?? "roundTrip",
       requestBody: (requestBody ?? rawBody) || undefined,
-      status: "failed",
+      status: invalidStartLocation ? "expected-failure" : "failed",
+      ...(invalidStartLocation
+        ? { failureCategory: "invalid-start-location" }
+        : {}),
       errorMessage,
       generationSummary,
     });
@@ -370,6 +392,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (error instanceof RouteServiceError) {
+      if (error.kind === "invalid-start-location") {
+        return NextResponse.json(
+          {
+            errorCode: "invalid_start_location",
+            error:
+              "The selected starting location is not near a walkable route. Please choose a different starting point.",
+          },
+          { status: 400 },
+        );
+      }
+
       if (error.kind === "rate-limited") {
         return NextResponse.json(
           {

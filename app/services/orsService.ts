@@ -58,7 +58,7 @@ export interface RouteGenerationAttempt {
   distanceDiff?: number;
   toleranceMeters: number;
   nextFactor?: number;
-  outcome: "success" | "retry" | "error";
+  outcome: "success" | "retry" | "error" | "fallback";
   errorMessage?: string;
   seed?: number;
   quality?: RouteQualityMetrics;
@@ -89,11 +89,11 @@ const COMMON_AVOID_FEATURES = ["ferries"];
 const ROUND_TRIP_INITIAL_FACTOR = 0.82;
 const ROUND_TRIP_MIN_FACTOR = 0.4;
 const ROUND_TRIP_MAX_FACTOR = 1;
-const ROUND_TRIP_MAX_ATTEMPTS = 3;
+const ROUND_TRIP_MAX_ATTEMPTS = 5;
 const RECTANGLE_INITIAL_FACTOR = 0.68;
 const RECTANGLE_MIN_FACTOR = 0.4;
 const RECTANGLE_MAX_FACTOR = 1;
-const RECTANGLE_MAX_ATTEMPTS = 4;
+const RECTANGLE_MAX_ATTEMPTS = 6;
 const MAX_START_SNAP_DISTANCE_METERS = 150;
 const MAX_ORS_ROUND_TRIP_LENGTH_METERS = 100_000;
 const ORS_REQUEST_TIMEOUT_MS = 15_000;
@@ -324,7 +324,7 @@ function validateOrsRouteQuality(
 }
 
 function isUnroutableStartFailure(error: RouteServiceError): boolean {
-  return /routable point within a radius|route start is too far/i.test(
+  return /routable point within a radius|cannot find point|route start is too far/i.test(
     error.message,
   );
 }
@@ -344,6 +344,8 @@ export async function generateRoundTripRoute(
   let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
+  let bestDistanceCandidate:
+    { route: RouteResponse; attempt: RouteGenerationAttempt } | undefined;
   let currentFactor = ROUND_TRIP_INITIAL_FACTOR;
   const attempts: RouteGenerationAttempt[] = [];
 
@@ -418,6 +420,10 @@ export async function generateRoundTripRoute(
         targetDistance,
         toleranceMeters,
       );
+      const nonDistanceQuality = validateOrsRouteQuality(
+        route.coordinates,
+        route.distance,
+      );
       const attempt: RouteGenerationAttempt = {
         factor,
         correctedDistance,
@@ -433,6 +439,13 @@ export async function generateRoundTripRoute(
       if (distanceDiff < bestDistanceDiff) {
         bestDistanceDiff = distanceDiff;
         bestAttempt = attempt;
+      }
+      if (
+        !nonDistanceQuality.reason &&
+        (!bestDistanceCandidate ||
+          distanceDiff < bestDistanceCandidate.attempt.distanceDiff!)
+      ) {
+        bestDistanceCandidate = { route, attempt };
       }
 
       if (!quality.reason) {
@@ -508,8 +521,39 @@ export async function generateRoundTripRoute(
     }
   }
 
+  if (bestDistanceCandidate) {
+    const { route, attempt } = bestDistanceCandidate;
+    attempt.outcome = "fallback";
+    selectedAttempt = attempt;
+    logger.warn(
+      {
+        targetDistance,
+        routeDistance: route.distance,
+        distanceDiff: attempt.distanceDiff,
+        toleranceMeters,
+      },
+      "Returning closest valid round-trip route outside requested distance tolerance",
+    );
+    return {
+      ...route,
+      generationSummary: {
+        routeType: "roundTrip",
+        targetDistance,
+        toleranceMeters,
+        attempts,
+        bestAttempt,
+        selectedAttempt,
+      },
+    };
+  }
+
   logger.error(
-    { targetDistance },
+    {
+      targetDistance,
+      routeType: "roundTrip",
+      attempts,
+      bestAttempt,
+    },
     "Failed to generate route after all attempts",
   );
   throw new RouteGenerationError("No route found", {
@@ -536,6 +580,8 @@ export async function generateRectangleRoute(
   let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
+  let bestDistanceCandidate:
+    { route: RouteResponse; attempt: RouteGenerationAttempt } | undefined;
   const toleranceMeters = getRouteDistanceTolerance(targetDistance);
   const attempts: RouteGenerationAttempt[] = [];
 
@@ -570,6 +616,12 @@ export async function generateRectangleRoute(
       if (distanceDiff < bestDistanceDiff) {
         bestDistanceDiff = distanceDiff;
         bestAttempt = routeAttempt;
+      }
+      if (
+        !bestDistanceCandidate ||
+        distanceDiff < bestDistanceCandidate.attempt.distanceDiff!
+      ) {
+        bestDistanceCandidate = { route, attempt: routeAttempt };
       }
 
       if (!quality.reason) {
@@ -641,8 +693,39 @@ export async function generateRectangleRoute(
     }
   }
 
+  if (bestDistanceCandidate) {
+    const { route, attempt } = bestDistanceCandidate;
+    attempt.outcome = "fallback";
+    selectedAttempt = attempt;
+    logger.warn(
+      {
+        targetDistance,
+        routeDistance: route.distance,
+        distanceDiff: attempt.distanceDiff,
+        toleranceMeters,
+      },
+      "Returning closest valid rectangle route outside requested distance tolerance",
+    );
+    return {
+      ...route,
+      generationSummary: {
+        routeType: "rectangle",
+        targetDistance,
+        toleranceMeters,
+        attempts,
+        bestAttempt,
+        selectedAttempt,
+      },
+    };
+  }
+
   logger.error(
-    { targetDistance },
+    {
+      targetDistance,
+      routeType: "rectangle",
+      attempts,
+      bestAttempt,
+    },
     "Failed to generate rectangle route after all attempts",
   );
   throw new RouteGenerationError("No route found", {

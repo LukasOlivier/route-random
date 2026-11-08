@@ -1,5 +1,10 @@
 export type RouteServiceErrorKind =
-  "quota" | "rate-limited" | "no-route" | "invalid-request" | "unavailable";
+  | "quota"
+  | "rate-limited"
+  | "no-route"
+  | "invalid-start-location"
+  | "invalid-request"
+  | "unavailable";
 
 export class RouteServiceError extends Error {
   readonly kind: RouteServiceErrorKind;
@@ -43,8 +48,20 @@ export function classifyOrsError(
   }
 
   if (
-    status === 400 &&
-    /no route|routable point|valid point|could not find a route/i.test(
+    status === 404 &&
+    (/"code"\s*:\s*2010/i.test(errorText) ||
+      /cannot find point/i.test(errorText))
+  ) {
+    return new RouteServiceError(
+      `Invalid start location: ORS cannot route the selected starting point: ${errorText}`,
+      "invalid-start-location",
+      status,
+    );
+  }
+
+  if (
+    (status === 400 || status === 404) &&
+    /no route|routable point|valid point|could not find (?:a route|point)|"code"\s*:\s*2010/i.test(
       errorText,
     )
   ) {

@@ -139,7 +139,7 @@ export function measureRouteQuality(
 export function getRouteDistanceTolerance(
   targetDistanceMeters: number,
 ): number {
-  return Math.max(100, targetDistanceMeters * 0.05);
+  return Math.max(100, targetDistanceMeters * 0.075);
 }
 
 export function assessRouteQuality(

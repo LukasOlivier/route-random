@@ -77,6 +77,7 @@
     "enterTimeDuration": "Voer een tijdsduur in",
     "selectStartLocation": "Selecteer een startlocatie",
     "startLocationAdjusted": "Het startpunt van de route is {distanceMeters} m verplaatst naar een nabijgelegen routeerbaar punt.",
+    "routeDistanceFallback": "Geen route voldeed aan de gevraagde afstand. De dichtstbijzijnde beschikbare route wordt getoond: {distance} km.",
     "routeServiceUnavailable": "Routeservice niet beschikbaar. Probeer het later opnieuw.",
     "routeRateLimited": "Er worden nu te veel routes gegenereerd. Probeer het later opnieuw of steun mij via buymeacoffee.com/lukasolivier om de limiet te verhogen.",
     "noRouteFound": "Kon geen route genereren voor deze locatie. Probeer een ander startpunt.",

@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  generateRectangleRoute,
   generateRoundTripRoute,
+  RouteGenerationError,
   RouteServiceError,
 } from "../app/services/orsService.ts";
 
@@ -64,6 +66,76 @@ test("retries a successful ORS 500 response only once", async () => {
   assert.deepEqual(route.coordinates[0], [0, 0]);
 });
 
+test("returns the closest valid round-trip candidate after exhausting attempts", async () => {
+  const distances = [6_400, 5_500, 4_400, 5_800, 5_400];
+  let calls = 0;
+  const route = await withMockedFetch(
+    async () => routeResponse(distances[calls++]),
+    () => generateRoundTripRoute(0, 0, 5_000, "test-key"),
+  );
+
+  assert.equal(calls, 5);
+  assert.equal(route.distance, 5_400);
+  assert.equal(route.generationSummary.selectedAttempt.outcome, "fallback");
+});
+
+test("returns the closest valid rectangle candidate after exhausting attempts", async () => {
+  const distances = [7_000, 6_000, 5_500, 4_500, 6_000, 5_400];
+  let calls = 0;
+  const route = await withMockedFetch(
+    async () => routeResponse(distances[calls++]),
+    () => generateRectangleRoute(0, 0, 5_000, "test-key"),
+  );
+
+  assert.equal(calls, 6);
+  assert.equal(route.distance, 5_400);
+  assert.equal(route.generationSummary.selectedAttempt.outcome, "fallback");
+});
+
+test("does not return an out-of-tolerance candidate that fails route-quality checks", async () => {
+  const invalidQualityResponse = () =>
+    new Response(
+      JSON.stringify({
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {
+              segments: [{ distance: 1_000 }],
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [0, 0, 12],
+                [0.002, 0, 13],
+                [0, 0, 12],
+                [0.002, 0, 13],
+                [0, 0, 12],
+              ],
+            },
+          },
+        ],
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+
+  let calls = 0;
+  await withMockedFetch(
+    async () => {
+      calls += 1;
+      return invalidQualityResponse();
+    },
+    async () => {
+      await assert.rejects(
+        generateRoundTripRoute(0, 0, 5_000, "test-key"),
+        RouteGenerationError,
+      );
+    },
+  );
+
+  assert.equal(calls, 5);
+});
+
 test("does not retry quota or rate-limit responses", async () => {
   for (const [status, kind] of [
     [403, "quota"],
@@ -108,6 +180,29 @@ test("does not repeat requests for an unroutable fixed start point", async () =>
       await assert.rejects(
         generateRoundTripRoute(0, 0, 1_000, "test-key"),
         /No route found/,
+      );
+    },
+  );
+
+  assert.equal(calls, 1);
+});
+
+test("treats an ORS point-not-found 404 as an invalid start without retrying", async () => {
+  let calls = 0;
+  await withMockedFetch(
+    async () => {
+      calls += 1;
+      return new Response(
+        '{"error":{"code":2010,"message":"Cannot find point 0: 53.956,2.911"}}',
+        { status: 404 },
+      );
+    },
+    async () => {
+      await assert.rejects(
+        generateRoundTripRoute(53.956, 2.911, 1_000, "test-key"),
+        (error) =>
+          error instanceof RouteServiceError &&
+          error.kind === "invalid-start-location",
       );
     },
   );

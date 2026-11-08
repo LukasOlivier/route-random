@@ -56,9 +56,9 @@ test("rejects malformed route geometry", () => {
   );
 });
 
-test("uses a bounded five-percent distance tolerance", () => {
+test("uses a bounded seven-and-a-half-percent distance tolerance", () => {
   assert.equal(getRouteDistanceTolerance(1_000), 100);
-  assert.equal(getRouteDistanceTolerance(20_000), 1_000);
+  assert.equal(getRouteDistanceTolerance(20_000), 1_500);
 });
 
 test("rejects open and out-and-back routes", () => {

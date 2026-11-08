@@ -16,6 +16,17 @@ test("classifies unroutable-point errors as non-retryable no-route failures", ()
   assert.equal(isTransientOrsStatus(error.status), false);
 });
 
+test("classifies ORS 404 code 2010 as an invalid start location", () => {
+  const error = classifyOrsError(
+    404,
+    '{"error":{"code":2010,"message":"Cannot find point 0: 53.956,2.911"}}',
+  );
+
+  assert.equal(error.kind, "invalid-start-location");
+  assert.equal(error.status, 404);
+  assert.equal(isTransientOrsStatus(error.status), false);
+});
+
 test("classifies quota exhaustion without marking it retryable", () => {
   const error = classifyOrsError(403, "Quota exceeded");
 

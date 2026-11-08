@@ -92,6 +92,10 @@ async function getResponseErrorKind(
       return "noRouteFound";
     }
 
+    if (errorData?.errorCode === "invalid_start_location") {
+      return "noRouteFound";
+    }
+
     const errorMessage =
       typeof errorData?.error === "string" ? errorData.error : "";
 
@@ -211,6 +215,7 @@ export function useRouteGeneration() {
         const {
           startLocation: snappedStart,
           startLocationAdjustmentMeters,
+          distanceFallback,
           ...routeData
         } = result.route;
         setGeneratedRoute(routeData);
@@ -230,6 +235,15 @@ export function useRouteGeneration() {
           showNotification(
             t("startLocationAdjusted", {
               distanceMeters: Math.round(startLocationAdjustmentMeters),
+            }),
+            { variant: "info" },
+          );
+        }
+
+        if (distanceFallback) {
+          showNotification(
+            t("routeDistanceFallback", {
+              distance: (routeData.distance / 1000).toFixed(1),
             }),
             { variant: "info" },
           );
