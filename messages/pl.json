@@ -76,6 +76,7 @@
     "enterDistance": "Wprowadź dystans",
     "enterTimeDuration": "Wprowadź czas trwania",
     "selectStartLocation": "Wybierz miejsce startu",
+    "startLocationAdjusted": "Początek trasy przesunięto o {distanceMeters} m do pobliskiego punktu dostępnego dla tras.",
     "routeServiceUnavailable": "Usługa wyznaczania tras jest niedostępna. Spróbuj ponownie później.",
     "routeRateLimited": "Obecnie zbyt wiele osób generuje trasy. Spróbuj ponownie później lub wesprzyj mnie na buymeacoffee.com/lukasolivier, aby zwiększyć limit.",
     "noRouteFound": "Nie udało się wygenerować trasy dla tej lokalizacji. Spróbuj innego punktu startowego.",

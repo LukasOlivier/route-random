@@ -16,7 +16,6 @@ import { useLocationStore } from "../../stores/store";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import {
   mapDefaults,
-  blueIcon,
   userLocationIcon,
   createNumberedWaypointIcon,
   normalizeToLatLngTuple,
@@ -218,7 +217,7 @@ const Map = () => {
         {startLocation && !isStartLocationFromStorage && (
           <Marker
             position={startLocation}
-            icon={blueIcon}
+            icon={createNumberedWaypointIcon(1)}
             ref={markerRef}
           ></Marker>
         )}
@@ -256,8 +255,8 @@ const Map = () => {
             <Marker
               key={`waypoint-${index}`}
               position={waypoint}
-              icon={createNumberedWaypointIcon(index + 1)}
-              draggable={!isRouteAccepted}
+              icon={createNumberedWaypointIcon(index + 2)}
+              draggable={!isRouteAccepted && !isGeneratingRoute}
               eventHandlers={{
                 dragend: (e) => {
                   const marker = e.target;

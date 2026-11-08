@@ -112,9 +112,17 @@ async function getResponseErrorKind(
   return "generic";
 }
 
+function tryStartRouteGeneration(): boolean {
+  const store = useRouteFormStore.getState();
+  if (store.isGeneratingRoute) return false;
+  store.setIsGeneratingRoute(true);
+  return true;
+}
+
 export function useRouteGeneration() {
   const t = useTranslations("RouteGenerationNotifications");
-  const { startLocation, setGeneratedRoute } = useLocationStore();
+  const { startLocation, setGeneratedRoute, setStartLocation } =
+    useLocationStore();
   const showNotification = useNotificationStore((s) => s.showNotification);
 
   const {
@@ -160,6 +168,11 @@ export function useRouteGeneration() {
       return;
     }
 
+    if (!Number.isFinite(finalDistance) || finalDistance <= 0) {
+      showNotification(t("enterDistance"), { variant: "error" });
+      return;
+    }
+
     if (isRequestedRoundTripDistanceTooLong(finalDistance)) {
       showNotification(
         t("routeDistanceTooLong", {
@@ -170,9 +183,9 @@ export function useRouteGeneration() {
       return;
     }
 
-    try {
-      setIsGeneratingRoute(true);
+    if (!tryStartRouteGeneration()) return;
 
+    try {
       const requestBody = {
         startLocation: startLocation,
         distance: finalDistance,
@@ -195,7 +208,32 @@ export function useRouteGeneration() {
       const result = await response.json();
 
       if (result.success && result.route) {
-        setGeneratedRoute(result.route);
+        const {
+          startLocation: snappedStart,
+          startLocationAdjustmentMeters,
+          ...routeData
+        } = result.route;
+        setGeneratedRoute(routeData);
+        if (
+          Array.isArray(snappedStart) &&
+          snappedStart.length === 2 &&
+          Number.isFinite(snappedStart[0]) &&
+          Number.isFinite(snappedStart[1])
+        ) {
+          setStartLocation([snappedStart[0], snappedStart[1]]);
+        }
+
+        if (
+          typeof startLocationAdjustmentMeters === "number" &&
+          startLocationAdjustmentMeters > 0
+        ) {
+          showNotification(
+            t("startLocationAdjusted", {
+              distanceMeters: Math.round(startLocationAdjustmentMeters),
+            }),
+            { variant: "info" },
+          );
+        }
       }
     } catch (error) {
       console.error("Error generating route:", error);
@@ -224,11 +262,11 @@ export function useRouteGeneration() {
   const regenerateRouteFromWaypoints = async (
     waypoints: [number, number][],
   ) => {
-    if (!waypoints || waypoints.length === 0) return;
+    if (!waypoints || waypoints.length < 2 || !tryStartRouteGeneration()) {
+      return;
+    }
 
     try {
-      setIsGeneratingRoute(true);
-
       const waypointsForApi = waypoints.map(([lat, lng]) => [lng, lat]);
 
       const requestBody = {
@@ -252,7 +290,19 @@ export function useRouteGeneration() {
       const result = await response.json();
 
       if (result.success && result.route) {
-        setGeneratedRoute(result.route);
+        const snappedStart = result.route.startLocation;
+        const routeData = { ...result.route };
+        delete routeData.startLocation;
+        delete routeData.startLocationAdjustmentMeters;
+        setGeneratedRoute(routeData);
+        if (
+          Array.isArray(snappedStart) &&
+          snappedStart.length === 2 &&
+          Number.isFinite(snappedStart[0]) &&
+          Number.isFinite(snappedStart[1])
+        ) {
+          setStartLocation([snappedStart[0], snappedStart[1]]);
+        }
       } else {
         throw new Error("generic");
       }

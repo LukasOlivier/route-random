@@ -44,36 +44,39 @@ export type RateLimitDecision = {
   reset: number;
 };
 
+export class RateLimitUnavailableError extends Error {
+  constructor() {
+    super("Route generation rate limit is temporarily unavailable");
+    this.name = "RateLimitUnavailableError";
+  }
+}
+
 export async function checkRouteGenerationRateLimit(
   clientKey: string,
 ): Promise<RateLimitDecision> {
   const now = Date.now();
   const windowId = Math.floor(now / windowMs);
+  const reset = (windowId + 1) * windowMs;
   const key = `rate_limit:route_generation:${clientKey}:${windowId}`;
 
   try {
+    await redis.set(key, "0", {
+      nx: true,
+      px: Math.max(1, reset - now),
+    });
     const currentCount = await redis.incr(key);
-    if (currentCount === 1) {
-      await redis.pexpire(key, windowMs);
-    }
 
     return {
       allowed: currentCount <= maxRequests,
       limit: maxRequests,
       remaining: Math.max(0, maxRequests - currentCount),
-      reset: (windowId + 1) * windowMs,
+      reset,
     };
   } catch (error) {
     logger.error(
       { error, clientKey },
-      "Rate limit check failed; allowing request",
+      "Rate limit check failed; rejecting route generation",
     );
-
-    return {
-      allowed: true,
-      limit: maxRequests,
-      remaining: maxRequests,
-      reset: now + windowMs,
-    };
+    throw new RateLimitUnavailableError();
   }
 }

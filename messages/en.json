@@ -76,6 +76,7 @@
     "enterDistance": "Please enter a distance",
     "enterTimeDuration": "Please enter a time duration",
     "selectStartLocation": "Please select a starting location",
+    "startLocationAdjusted": "The route start was adjusted by {distanceMeters} m to a nearby routable point.",
     "routeServiceUnavailable": "Route service unavailable. Please try again later.",
     "routeRateLimited": "Too many people are generating routes right now. Please try again later or support me through buymeacoffee.com/lukasolivier to increase the limit.",
     "noRouteFound": "Could not generate a route for this location. Try a different starting point.",
