@@ -77,7 +77,6 @@
     "enterTimeDuration": "Bitte gib eine Dauer ein",
     "selectStartLocation": "Bitte wähle einen Startpunkt aus",
     "startLocationAdjusted": "Der Routenstart wurde um {distanceMeters} m zu einem nahegelegenen erreichbaren Punkt verschoben.",
-    "routeDistanceFallback": "Keine Route entsprach der gewünschten Distanz. Die nächstgelegene verfügbare Route wird angezeigt: {distance} km.",
     "routeServiceUnavailable": "Der Routendienst ist nicht verfügbar. Bitte versuche es später erneut.",
     "routeRateLimited": "Gerade generieren zu viele Personen Routen. Versuche es später erneut oder unterstütze mich auf buymeacoffee.com/lukasolivier, um das Limit zu erhöhen.",
     "noRouteFound": "Für diesen Standort konnte keine Route generiert werden. Versuche einen anderen Startpunkt.",

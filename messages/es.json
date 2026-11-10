@@ -77,7 +77,6 @@
     "enterTimeDuration": "Por favor, introduce una duración",
     "selectStartLocation": "Por favor, selecciona un punto de partida",
     "startLocationAdjusted": "El inicio de la ruta se ajustó {distanceMeters} m hasta un punto cercano con acceso a rutas.",
-    "routeDistanceFallback": "Ninguna ruta coincidió con la distancia solicitada. Se muestra la ruta disponible más cercana: {distance} km.",
     "routeServiceUnavailable": "El servicio de rutas no está disponible. Inténtalo de nuevo más tarde.",
     "routeRateLimited": "Demasiadas personas están generando rutas en este momento. Inténtalo más tarde o apóyame en buymeacoffee.com/lukasolivier para aumentar el límite.",
     "noRouteFound": "No se pudo generar una ruta para esta ubicación. Prueba con un punto de partida diferente.",

@@ -77,7 +77,6 @@
     "enterTimeDuration": "Veuillez saisir une durée",
     "selectStartLocation": "Veuillez sélectionner un point de départ",
     "startLocationAdjusted": "Le départ de l'itinéraire a été déplacé de {distanceMeters} m vers un point routable à proximité.",
-    "routeDistanceFallback": "Aucun itinéraire ne correspondait à la distance demandée. Voici l'itinéraire disponible le plus proche : {distance} km.",
     "routeServiceUnavailable": "Le service d'itinéraires est indisponible. Veuillez réessayer plus tard.",
     "routeRateLimited": "Trop de personnes génèrent des itinéraires en ce moment. Réessayez plus tard ou soutenez-moi sur buymeacoffee.com/lukasolivier pour augmenter la limite.",
     "noRouteFound": "Impossible de générer un itinéraire pour cet emplacement. Essayez un autre point de départ.",

@@ -177,15 +177,6 @@ export function useRouteGeneration() {
             { variant: "info" },
           );
         }
-
-        if (distanceFallback) {
-          showNotification(
-            t("routeDistanceFallback", {
-              distance: (routeData.distance / 1000).toFixed(1),
-            }),
-            { variant: "info" },
-          );
-        }
       }
     } catch (error) {
       console.error("Error generating route:", error);
