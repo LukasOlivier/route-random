@@ -77,14 +77,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm add -g vercel@latest
-
       - name: Deploy to Vercel (build handled by Vercel)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ "$GITHUB_REF" = "refs/heads/main" ]; then
-            vercel deploy --prod --token=$VERCEL_TOKEN
+            pnpm dlx vercel@latest deploy --prod --token="$VERCEL_TOKEN"
           else
-            vercel deploy --token=$VERCEL_TOKEN
+            pnpm dlx vercel@latest deploy --token="$VERCEL_TOKEN"
           fi
