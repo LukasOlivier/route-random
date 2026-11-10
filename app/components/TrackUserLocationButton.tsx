@@ -1,20 +1,14 @@
 "use client";
 
 import { useShallow } from "zustand/react/shallow";
-
-import { useEffect, useRef } from "react";
 import { Navigation, NavigationOff } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useLocationStore, useNotificationStore } from "../../stores";
-import {
-  getLocationErrorMessageKey,
-  getLocationPermissionState,
-} from "../utils/geolocationDiagnostics";
+import { useLocationStore } from "../../stores";
+import { useGeolocation } from "../hooks/useGeolocation";
 import FloatingButton from "./FloatingButton";
 
 export default function TrackUserLocationButton() {
   const t = useTranslations("TrackUserLocationButton");
-  const showNotification = useNotificationStore((s) => s.showNotification);
   const { isTrackingLocation, setLocationTracking, setTrackedUserLocation } =
     useLocationStore(
       useShallow((state) => ({
@@ -23,73 +17,21 @@ export default function TrackUserLocationButton() {
         setTrackedUserLocation: state.setTrackedUserLocation,
       })),
     );
+  const { startWatching, stopWatching } = useGeolocation();
 
-  const watchIdRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (watchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-    };
-  }, []);
-
-  const startTracking = async () => {
-    if (!navigator.geolocation) {
-      showNotification(t("geolocationNotSupported"), { variant: "error" });
-      return;
-    }
-
-    const permissionState = await getLocationPermissionState();
-    if (permissionState === "denied") {
-      showNotification(t("locationPermissionDenied"), {
-        variant: "error",
-        durationMs: 6500,
-      });
-      return;
-    }
-
-    if (permissionState === "prompt") {
-      showNotification(t("allowLocationPrompt"), {
-        durationMs: 5000,
-      });
-    }
-
-    const options = {
-      enableHighAccuracy: true,
-      timeout: 12000,
-      maximumAge: 5000,
-    };
-
-    const success = (position: GeolocationPosition) => {
-      const { latitude, longitude } = position.coords;
-      setTrackedUserLocation([latitude, longitude]);
-    };
-
-    const error = async (error: GeolocationPositionError) => {
-      console.error("Error getting location:", error);
-      setLocationTracking(false);
-
-      const messageKey = await getLocationErrorMessageKey(error);
-      const message = t(messageKey);
-      showNotification(message, { variant: "error" });
-    };
-
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      success,
-      error,
-      options,
+  const startTracking = () => {
+    const started = startWatching(
+      (location) => setTrackedUserLocation(location),
+      () => setLocationTracking(false),
     );
 
-    setLocationTracking(true);
+    if (started) {
+      setLocationTracking(true);
+    }
   };
 
   const stopTracking = () => {
-    if (watchIdRef.current !== null) {
-      navigator.geolocation.clearWatch(watchIdRef.current);
-      watchIdRef.current = null;
-    }
-
+    stopWatching();
     setLocationTracking(false);
   };
 
@@ -97,7 +39,7 @@ export default function TrackUserLocationButton() {
     if (isTrackingLocation) {
       stopTracking();
     } else {
-      void startTracking();
+      startTracking();
     }
   };
 
