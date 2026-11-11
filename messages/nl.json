@@ -87,6 +87,13 @@
   "Notifications": {
     "close": "Melding sluiten"
   },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Prompt voor installatie van de Android-app",
+    "title": "Route Random voor Android",
+    "description": "Installeer de Android-app voor een snellere ervaring als app.",
+    "install": "App installeren",
+    "dismiss": "Installatieprompt sluiten"
+  },
   "Page": {
     "toggleMenu": "Optiemenu tonen/verbergen",
     "fullscreen": "Volledig scherm",

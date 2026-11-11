@@ -87,6 +87,13 @@
   "Notifications": {
     "close": "Zamknij powiadomienie"
   },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Monit instalacji aplikacji na Androida",
+    "title": "Route Random na Androida",
+    "description": "Zainstaluj aplikację na Androida, aby korzystać z niej szybciej i wygodniej.",
+    "install": "Zainstaluj aplikację",
+    "dismiss": "Zamknij monit instalacji"
+  },
   "Page": {
     "toggleMenu": "Pokaż/ukryj menu",
     "fullscreen": "Pełny ekran",

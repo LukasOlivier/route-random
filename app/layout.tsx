@@ -11,6 +11,7 @@ import { getLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getValidatedEnv } from "@/lib/env";
+import AndroidAppInstallPrompt from "./components/AndroidAppInstallPrompt";
 import "./globals.css";
 
 getValidatedEnv();
@@ -178,7 +179,10 @@ export default async function RootLayout({
           data-mask-level="moderate"
           data-max-duration="300000"
         />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <AndroidAppInstallPrompt />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

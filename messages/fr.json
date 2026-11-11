@@ -87,6 +87,13 @@
   "Notifications": {
     "close": "Fermer la notification"
   },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Invitation à installer l’application Android",
+    "title": "Route Random sur Android",
+    "description": "Installez l’application Android pour une expérience plus rapide et proche d’une application native.",
+    "install": "Installer l’application",
+    "dismiss": "Fermer l’invitation d’installation"
+  },
   "Page": {
     "toggleMenu": "Ouvrir/fermer le menu",
     "fullscreen": "Plein écran",

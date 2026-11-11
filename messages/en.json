@@ -87,6 +87,13 @@
   "Notifications": {
     "close": "Close notification"
   },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Android app installation prompt",
+    "title": "Get Route Random on Android",
+    "description": "Install the Android app for a faster, app-like experience.",
+    "install": "Install app",
+    "dismiss": "Dismiss installation prompt"
+  },
   "Page": {
     "toggleMenu": "Toggle menu",
     "fullscreen": "Fullscreen",
