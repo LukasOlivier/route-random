@@ -1,5 +1,9 @@
 import { create } from "zustand";
-import { Mode, Pace } from "./store";
+import { Mode, Pace } from "@/types/route";
+import {
+  updateSearchParams,
+  syncStartLocationToParams,
+} from "@/app/utils/urlParams";
 import {
   isValidRoutePattern,
   type RoutePattern,
@@ -16,20 +20,16 @@ interface RouteFormData {
   distance: string;
   time: string;
   pattern: RoutePattern;
-  correctionFactor: number;
   isGeneratingRoute: boolean;
 }
 
 interface RouteFormStore extends RouteFormData {
-  routesGeneratedInSession: number;
   setMode: (mode: Mode) => void;
   setPace: (pace: Pace) => void;
   setDistance: (distance: string) => void;
   setTime: (time: string) => void;
   setPattern: (pattern: RoutePattern) => void;
   setIsGeneratingRoute: (isGenerating: boolean) => void;
-  incrementRoutesGenerated: () => void;
-  resetSessionCount: () => void;
   initializeFromParams: () => void;
   syncLocationToParams: (lat: number, lon: number) => void;
 }
@@ -40,7 +40,6 @@ const defaultFormData: RouteFormData = {
   distance: "5",
   time: "30",
   pattern: "all",
-  correctionFactor: 0.65,
   isGeneratingRoute: false,
 };
 
@@ -54,24 +53,18 @@ const isValidPace = (value: unknown): value is Pace => {
   );
 };
 
-const syncFormDataToParams = (
-  state: PersistedRouteFormData,
-  params?: URLSearchParams,
-) => {
-  if (typeof window === "undefined") return;
-  const sp = params ?? new URLSearchParams(window.location.search);
-  sp.set("mode", state.mode);
-  sp.set("pace", state.pace);
-  sp.set("distance", state.distance);
-  sp.set("time", state.time);
-  sp.set("pattern", state.pattern);
-  const newUrl = `${window.location.pathname}?${sp.toString()}`;
-  window.history.replaceState(null, "", newUrl);
+const syncFormDataToParams = (state: PersistedRouteFormData) => {
+  updateSearchParams((params) => {
+    params.set("mode", state.mode);
+    params.set("pace", state.pace);
+    params.set("distance", state.distance);
+    params.set("time", state.time);
+    params.set("pattern", state.pattern);
+  });
 };
 
 export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
   ...defaultFormData,
-  routesGeneratedInSession: 0,
 
   setMode: (mode) => {
     set({ mode });
@@ -96,15 +89,6 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
   setIsGeneratingRoute: (isGeneratingRoute) => {
     set({ isGeneratingRoute });
   },
-  incrementRoutesGenerated: () => {
-    set((state) => ({
-      routesGeneratedInSession: state.routesGeneratedInSession + 1,
-    }));
-  },
-  resetSessionCount: () => {
-    set({ routesGeneratedInSession: 0 });
-  },
-
   initializeFromParams: () => {
     if (typeof window === "undefined") return;
     const sp = new URLSearchParams(window.location.search);
@@ -122,12 +106,7 @@ export const useRouteFormStore = create<RouteFormStore>((set, get) => ({
     });
   },
 
-  syncLocationToParams: (lat: number, lon: number) => {
-    if (typeof window === "undefined") return;
-    const sp = new URLSearchParams(window.location.search);
-    sp.set("lat", lat.toString());
-    sp.set("lon", lon.toString());
-    const newUrl = `${window.location.pathname}?${sp.toString()}`;
-    window.history.replaceState(null, "", newUrl);
+  syncLocationToParams: (lat, lon) => {
+    syncStartLocationToParams([lat, lon]);
   },
 }));

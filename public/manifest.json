@@ -45,6 +45,11 @@
   ],
   "related_applications": [
     {
+      "platform": "play",
+      "id": "be.lukasolivier.route_random.twa",
+      "url": "https://play.google.com/store/apps/details?id=be.lukasolivier.route_random.twa"
+    },
+    {
       "platform": "webapp",
       "url": "https://route-random.lukasolivier.be",
       "id": "route-random"

@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { buildUmamiAttributes } from "../utils/umamiUtils";
 
-export type ButtonVariant = "primary" | "success" | "danger" | "secondary";
+export type ButtonVariant = "primary" | "success" | "secondary";
 
 interface ActionButtonProps {
   onClick?: () => void;
@@ -21,7 +21,6 @@ interface ActionButtonProps {
 const variantStyles: Record<ButtonVariant, string> = {
   primary: "bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white",
   success: "bg-green-600 hover:bg-green-800 disabled:bg-green-400 text-white",
-  danger: "bg-gray-500 hover:bg-gray-700 disabled:bg-gray-400 text-white",
   secondary: "bg-gray-500 hover:bg-gray-700 disabled:bg-gray-400 text-white",
 };
 

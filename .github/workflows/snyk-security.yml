@@ -19,7 +19,7 @@ jobs:
 
       - uses: pnpm/action-setup@v5
         with:
-          version: 10.32.1
+          version: 12.18.0
 
       - uses: actions/setup-node@v4.4.0
         with:
@@ -68,7 +68,7 @@ jobs:
 
       - uses: pnpm/action-setup@v5
         with:
-          version: 9
+          version: 12.18.0
 
       - uses: actions/setup-node@v4.4.0
         with:
@@ -77,14 +77,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm add -g vercel@latest
-
       - name: Deploy to Vercel (build handled by Vercel)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ "$GITHUB_REF" = "refs/heads/main" ]; then
-            vercel deploy --prod --token=$VERCEL_TOKEN
+            pnpm dlx vercel@latest deploy --prod --token="$VERCEL_TOKEN"
           else
-            vercel deploy --token=$VERCEL_TOKEN
+            pnpm dlx vercel@latest deploy --token="$VERCEL_TOKEN"
           fi

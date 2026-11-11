@@ -37,7 +37,6 @@ export default function ClientPageWrapper({
 
   const generatedRoute = useLocationStore((s) => s.generatedRoute);
   const routeId = useLocationStore((s) => s.routeId);
-  const startLocation = useLocationStore((s) => s.startLocation);
   const isRouteAccepted = useLocationStore((s) => s.isRouteAccepted);
   const distance = useRouteFormStore((s) => s.distance);
 

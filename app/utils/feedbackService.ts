@@ -1,10 +1,8 @@
-type FeedbackReaction = "like" | "neutral" | "dislike";
+export type FeedbackReaction = "like" | "neutral" | "dislike";
 
 interface FeedbackData {
   reaction: FeedbackReaction;
   routeId?: string;
-  routeCoordinates?: [number, number][];
-  routeDistanceMeters?: number;
   generatedDistance?: number;
   requestedDistance?: number;
   additionalFeedback?: string;
@@ -13,17 +11,9 @@ interface FeedbackData {
   currentUrl?: string;
 }
 
-const reactionEmoji = {
-  like: "👍",
-  neutral: "😐",
-  dislike: "👎",
-};
-
 export async function sendFeedbackToDiscord({
   reaction,
   routeId,
-  routeCoordinates,
-  routeDistanceMeters,
   generatedDistance,
   requestedDistance,
   additionalFeedback,
@@ -38,8 +28,6 @@ export async function sendFeedbackToDiscord({
       body: JSON.stringify({
         reaction,
         routeId,
-        routeCoordinates,
-        routeDistanceMeters,
         generatedDistance,
         requestedDistance,
         additionalFeedback,
@@ -55,8 +43,4 @@ export async function sendFeedbackToDiscord({
   } catch (error) {
     console.error("Error sending feedback:", error);
   }
-}
-
-export function getReactionEmoji(reaction: FeedbackReaction): string {
-  return reactionEmoji[reaction];
 }

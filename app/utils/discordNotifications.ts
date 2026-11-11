@@ -1,7 +1,5 @@
 type NotificationEvent =
-  | "route_generated"
-  | "route_generation_failed"
-  | "address_completion_failed";
+  "route_generated" | "route_generation_failed" | "address_completion_failed";
 
 interface DiscordNotificationParams {
   event: NotificationEvent;

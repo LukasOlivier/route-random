@@ -88,7 +88,6 @@ export function buildRectangleWaypoints(
   const startCoordinate: [number, number] = [startLng, startLat];
   const rightDirection = turnRight(startingDirection);
   const oppositeDirection = turnRight(rightDirection);
-  const leftDirection = turnRight(oppositeDirection);
 
   const sideOneMidpoint = moveCardinalCoordinate(
     startCoordinate,

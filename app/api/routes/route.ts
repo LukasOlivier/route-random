@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
-import { saveRoute, initializeDatabase } from "@/lib/db";
+import { saveRoute } from "@/lib/db";
 import { notifyDiscord } from "@/app/utils/discordNotifications";
 import { getLogger } from "@/lib/logger";
 
 const logger = getLogger("api.routes");
-
-let initialized = false;
 
 const MAX_SAVED_ROUTE_COORDINATES = 100_000;
 
@@ -54,12 +52,6 @@ function toTwoDimensionalCoordinates(
 
 export async function POST(request: NextRequest) {
   try {
-    if (!initialized) {
-      logger.debug("Initializing database");
-      await initializeDatabase();
-      initialized = true;
-    }
-
     const body: unknown = await request.json();
 
     if (!isValidRoutePayload(body)) {
@@ -84,16 +76,6 @@ export async function POST(request: NextRequest) {
     });
 
     logger.info({ id, distance }, "Route saved successfully");
-
-    /*
-    after(() =>
-      notifyDiscord({
-        event: "route_generated",
-        routeId: id,
-        distance,
-      }),
-    );
-    */
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

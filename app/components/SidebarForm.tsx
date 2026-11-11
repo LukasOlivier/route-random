@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useState, useEffect } from "react";
 import { Clock, Ruler, Locate, LocateOff } from "lucide-react";
 import ToggleModeButton from "./ToggleModeButton";
@@ -16,11 +18,46 @@ import {
 import LocationSearch from "./LocationSearch";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import { useTranslations } from "next-intl";
-import {
-  getLocationErrorMessageKey,
-  getLocationPermissionState,
-} from "../utils/geolocationDiagnostics";
 import type { RoutePattern } from "../utils/routePatterns";
+import { useGeolocation } from "../hooks/useGeolocation";
+
+const FORM_ID = "route-form";
+
+const isTouchDevice = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(pointer: coarse)").matches;
+
+const blurOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === "Enter" && isTouchDevice()) {
+    e.preventDefault();
+    e.currentTarget.blur();
+  }
+};
+
+const scrollIntoViewOnFocus = (
+  e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>,
+) => {
+  if (!isTouchDevice()) return;
+  const el = e.currentTarget;
+  window.setTimeout(() => {
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, 300);
+};
+
+const handleFormPointerDown = (e: React.PointerEvent<HTMLFormElement>) => {
+  const target = e.target as HTMLElement;
+  const isInteractive = target.closest(
+    "input, select, textarea, button, label",
+  );
+  const active = document.activeElement;
+  if (
+    !isInteractive &&
+    active instanceof HTMLElement &&
+    active !== document.body
+  ) {
+    active.blur();
+  }
+};
 
 export default function SidebarForm() {
   const t = useTranslations("SidebarForm");
@@ -33,7 +70,16 @@ export default function SidebarForm() {
     resetRoute,
     acceptRoute,
     isRouteAccepted,
-  } = useLocationStore();
+  } = useLocationStore(
+    useShallow((state) => ({
+      setUserLocation: state.setUserLocation,
+      initializeFromStorage: state.initializeFromStorage,
+      generatedRoute: state.generatedRoute,
+      resetRoute: state.resetRoute,
+      acceptRoute: state.acceptRoute,
+      isRouteAccepted: state.isRouteAccepted,
+    })),
+  );
 
   const {
     mode,
@@ -46,10 +92,24 @@ export default function SidebarForm() {
     setPace,
     setDistance,
     setTime,
-    resetSessionCount,
     initializeFromParams,
     syncLocationToParams,
-  } = useRouteFormStore();
+  } = useRouteFormStore(
+    useShallow((state) => ({
+      mode: state.mode,
+      pattern: state.pattern,
+      pace: state.pace,
+      distance: state.distance,
+      time: state.time,
+      setMode: state.setMode,
+      setPattern: state.setPattern,
+      setPace: state.setPace,
+      setDistance: state.setDistance,
+      setTime: state.setTime,
+      initializeFromParams: state.initializeFromParams,
+      syncLocationToParams: state.syncLocationToParams,
+    })),
+  );
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
   const showNotification = useNotificationStore((s) => s.showNotification);
@@ -71,7 +131,7 @@ export default function SidebarForm() {
         setUserLocation([parsedLat, parsedLon]);
       }
     }
-  }, []);
+  }, [initializeFromParams, initializeFromStorage, setUserLocation]);
 
   const handleLocationSelect = (location: { lat: number; lon: number }) => {
     const newLocation: [number, number] = [location.lat, location.lon];
@@ -82,63 +142,28 @@ export default function SidebarForm() {
   const handleGenerateRoute = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const distanceInput = formData.get("distance") as string;
-    const timeInput = formData.get("time") as string;
-
+    // Values are already controlled by the store, so no need to read FormData.
     await generateRoute({
-      distance: distanceInput,
-      time: timeInput,
+      distance,
+      time,
     });
   };
 
-  const getCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      showNotification(t("geolocationNotSupported"), { variant: "error" });
-      setLocationError(true);
-      return;
-    }
+  const { getCurrentLocation } = useGeolocation();
 
+  const handleUseCurrentLocation = () => {
     setIsGettingLocation(true);
     setLocationError(false);
 
-    const permissionState = await getLocationPermissionState();
-    if (permissionState === "denied") {
-      showNotification(t("locationPermissionDenied"), {
-        variant: "error",
-        durationMs: 6500,
-      });
-      setIsGettingLocation(false);
-      setLocationError(true);
-      return;
-    }
-
-    if (permissionState === "prompt") {
-      showNotification(t("allowLocationPrompt"), {
-        durationMs: 5000,
-      });
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const newLocation: [number, number] = [latitude, longitude];
-        setUserLocation(newLocation);
+    getCurrentLocation(
+      ([latitude, longitude]) => {
+        setUserLocation([latitude, longitude]);
         syncLocationToParams(latitude, longitude);
         setIsGettingLocation(false);
-        setLocationError(false);
       },
-      async (error) => {
-        console.error("Error getting location:", error);
-        const messageKey = await getLocationErrorMessageKey(error);
-        showNotification(t(messageKey), { variant: "error" });
+      () => {
         setIsGettingLocation(false);
         setLocationError(true);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 12000,
-        maximumAge: 5000,
       },
     );
   };
@@ -167,16 +192,23 @@ export default function SidebarForm() {
 
   const handleAcceptRoute = () => {
     acceptRoute();
-    resetSessionCount();
   };
 
   const handleResetRoute = () => {
     resetRoute();
   };
 
+  // text-base (16px) on mobile prevents iOS Safari from zooming on focus.
+  const inputClassName =
+    "w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700 text-base md:text-sm";
+  const selectClassName =
+    "w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white text-base md:text-sm";
+
   return (
     <form
+      id={FORM_ID}
       onSubmit={handleGenerateRoute}
+      onPointerDown={handleFormPointerDown}
       className="flex flex-col gap-4 grow mb-4"
     >
       <div className="w-full flex gap-2">
@@ -212,6 +244,8 @@ export default function SidebarForm() {
                 id="distance"
                 name="distance"
                 type="number"
+                inputMode="decimal"
+                enterKeyHint="done"
                 step="0.1"
                 min="0.1"
                 value={distance}
@@ -219,8 +253,10 @@ export default function SidebarForm() {
                 onChange={(e) => {
                   setDistance(e.target.value);
                 }}
+                onKeyDown={blurOnEnter}
+                onFocus={scrollIntoViewOnFocus}
                 placeholder={t("distancePlaceholder")}
-                className="w-full bg-gray-800 rounded-md pl-10 pr-3 py-2 border border-gray-700"
+                className={inputClassName}
                 required
               />
             </div>
@@ -237,13 +273,18 @@ export default function SidebarForm() {
                   id="time"
                   name="time"
                   type="number"
+                  inputMode="numeric"
+                  enterKeyHint="done"
                   min="1"
                   value={time}
                   disabled={!!generatedRoute}
                   onChange={(e) => {
                     setTime(e.target.value);
                   }}
+                  onKeyDown={blurOnEnter}
+                  onFocus={scrollIntoViewOnFocus}
                   placeholder={t("timePlaceholder")}
+                  className={inputClassName}
                   required
                 />
               </div>
@@ -253,11 +294,12 @@ export default function SidebarForm() {
                 {t("pace")}
               </label>
               <select
-                className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
+                className={selectClassName}
                 disabled={!!generatedRoute}
                 onChange={(e) => {
                   setPace(e.target.value as Pace);
                 }}
+                onFocus={scrollIntoViewOnFocus}
                 value={pace}
                 id="pace"
                 name="pace"
@@ -282,7 +324,8 @@ export default function SidebarForm() {
             onChange={(e) => {
               setPattern(e.target.value as RoutePattern);
             }}
-            className="w-full dark:bg-gray-800 rounded-md px-3 py-2 border dark:border-gray-700 border-gray-400 bg-gray-200 dark:text-white"
+            onFocus={scrollIntoViewOnFocus}
+            className={selectClassName}
           >
             {routePatternOptions.map((option) => (
               <option
@@ -314,9 +357,7 @@ export default function SidebarForm() {
               type="button"
               title={t("useCurrentLocation")}
               aria-label={t("useCurrentLocation")}
-              onClick={() => {
-                void getCurrentLocation();
-              }}
+              onClick={handleUseCurrentLocation}
               disabled={isGettingLocation || !!generatedRoute}
               className="px-3 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 rounded-md dark:text-white flex items-center bg-gray-200 hover:bg-gray-300 transition-colors border-gray-400"
               data-umami-event="Use current location"

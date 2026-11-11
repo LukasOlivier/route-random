@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import {
   MapContainer,
   TileLayer,
@@ -9,14 +11,13 @@ import {
   Polyline,
 } from "react-leaflet";
 import { LatLngTuple } from "leaflet";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import * as L from "leaflet";
 import { useTranslations } from "next-intl";
 import { useLocationStore } from "../../stores/store";
 import { useRouteGeneration } from "../hooks/useRouteGeneration";
 import {
   mapDefaults,
-  blueIcon,
   userLocationIcon,
   createNumberedWaypointIcon,
   normalizeToLatLngTuple,
@@ -62,7 +63,9 @@ const MapUpdater = ({
 
 function RouteFitter() {
   const map = useMap();
-  const { generatedRoute } = useLocationStore();
+  const { generatedRoute } = useLocationStore(
+    useShallow((state) => ({ generatedRoute: state.generatedRoute })),
+  );
   const hasFittedRef = useRef(false);
 
   useEffect(() => {
@@ -84,7 +87,12 @@ function RouteFitter() {
 }
 
 function MapClickHandler() {
-  const { setStartLocation, generatedRoute } = useLocationStore();
+  const { setStartLocation, generatedRoute } = useLocationStore(
+    useShallow((state) => ({
+      setStartLocation: state.setStartLocation,
+      generatedRoute: state.generatedRoute,
+    })),
+  );
   useMapEvent("click", (e) => {
     if (generatedRoute) {
       return;
@@ -107,49 +115,20 @@ const Map = () => {
     isRouteAccepted,
     isTrackingLocation,
     updateWaypoint,
-  } = useLocationStore();
-  const {
-    isGeneratingRoute,
-    routesGeneratedInSession,
-    incrementRoutesGenerated,
-  } = useRouteFormStore();
-
+  } = useLocationStore(
+    useShallow((state) => ({
+      startLocation: state.startLocation,
+      isStartLocationFromStorage: state.isStartLocationFromStorage,
+      userLocation: state.userLocation,
+      generatedRoute: state.generatedRoute,
+      isRouteAccepted: state.isRouteAccepted,
+      isTrackingLocation: state.isTrackingLocation,
+      updateWaypoint: state.updateWaypoint,
+    })),
+  );
+  const isGeneratingRoute = useRouteFormStore((s) => s.isGeneratingRoute);
   const { regenerateRouteFromWaypoints } = useRouteGeneration();
   const markerRef = useRef<L.Marker>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [feedbackContext, setFeedbackContext] = useState<
-    "generation" | "accept"
-  >("generation");
-  const previousRouteRef = useRef<typeof generatedRoute>(null);
-
-  // Show feedback when user accepts a route
-  useEffect(() => {
-    if (isRouteAccepted) {
-      setShowFeedback(true);
-      setFeedbackContext("accept");
-    }
-  }, [isRouteAccepted]);
-
-  // Track route generations and show feedback
-  useEffect(() => {
-    if (
-      generatedRoute &&
-      previousRouteRef.current !== generatedRoute &&
-      !showFeedback
-    ) {
-      previousRouteRef.current = generatedRoute;
-      incrementRoutesGenerated();
-    }
-  }, [generatedRoute, showFeedback, incrementRoutesGenerated]);
-
-  // Show feedback after 2+ route generations
-  useEffect(() => {
-    if (routesGeneratedInSession >= 2 && !showFeedback) {
-      setShowFeedback(true);
-      setFeedbackContext("generation");
-    }
-  }, [routesGeneratedInSession, showFeedback]);
 
   useEffect(() => {
     if (markerRef.current && startLocation && !isStartLocationFromStorage) {
@@ -190,9 +169,13 @@ const Map = () => {
     }
   };
 
-  const routeSegments = generatedRoute
-    ? getRouteSegmentsWithOverlaps(generatedRoute.coordinates)
-    : null;
+  const routeSegments = useMemo(
+    () =>
+      generatedRoute
+        ? getRouteSegmentsWithOverlaps(generatedRoute.coordinates)
+        : null,
+    [generatedRoute],
+  );
 
   return (
     <div className="relative h-full w-full">
@@ -218,7 +201,7 @@ const Map = () => {
         {startLocation && !isStartLocationFromStorage && (
           <Marker
             position={startLocation}
-            icon={blueIcon}
+            icon={createNumberedWaypointIcon(1)}
             ref={markerRef}
           ></Marker>
         )}
@@ -256,8 +239,8 @@ const Map = () => {
             <Marker
               key={`waypoint-${index}`}
               position={waypoint}
-              icon={createNumberedWaypointIcon(index + 1)}
-              draggable={!isRouteAccepted}
+              icon={createNumberedWaypointIcon(index + 2)}
+              draggable={!isRouteAccepted && !isGeneratingRoute}
               eventHandlers={{
                 dragend: (e) => {
                   const marker = e.target;

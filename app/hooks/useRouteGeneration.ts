@@ -1,5 +1,7 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import {
   useLocationStore,
   useRouteFormStore,
@@ -13,108 +15,30 @@ import {
   MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM,
 } from "../utils/routeCalculations";
 
-type RouteErrorKind =
-  | "serviceUnavailable"
-  | "rateLimited"
-  | "noRouteFound"
-  | "distanceTooLong"
-  | "generic";
+import {
+  requestGeneratedRoute,
+  sanitizeRouteErrorKind,
+  type GeneratedRouteResult,
+} from "../services/routeClient";
+import { isValidStartLocation } from "../utils/routeRequestValidation";
 
-function sanitizeRouteErrorKind(error: unknown): RouteErrorKind {
-  if (!(error instanceof Error)) {
-    return "generic";
-  }
-
-  const message = error.message;
-  if (message === "rateLimited") {
-    return "rateLimited";
-  }
-
-  if (message === "serviceUnavailable") {
-    return "serviceUnavailable";
-  }
-
-  if (message === "noRouteFound") {
-    return "noRouteFound";
-  }
-
-  if (message === "distanceTooLong") {
-    return "distanceTooLong";
-  }
-
-  if (
-    message.includes("ORS API error: 429") ||
-    message.includes("HTTP error! status: 429")
-  ) {
-    return "rateLimited";
-  }
-
-  if (
-    message.includes("ORS API error") ||
-    message.includes("HTTP error! status: 5")
-  ) {
-    return "serviceUnavailable";
-  }
-
-  if (message.includes("No route found")) {
-    return "noRouteFound";
-  }
-
-  if (message.includes("route_distance_too_long")) {
-    return "distanceTooLong";
-  }
-
-  return "generic";
-}
-
-async function getResponseErrorKind(
-  response: Response,
-): Promise<RouteErrorKind> {
-  if (response.status === 429) {
-    return "rateLimited";
-  }
-
-  if (response.status >= 500) {
-    return "serviceUnavailable";
-  }
-
-  try {
-    const errorData = await response.json();
-    if (errorData?.errorCode === "route_rate_limited") {
-      return "rateLimited";
-    }
-
-    if (errorData?.errorCode === "route_service_unavailable") {
-      return "serviceUnavailable";
-    }
-
-    if (errorData?.errorCode === "route_not_found") {
-      return "noRouteFound";
-    }
-
-    const errorMessage =
-      typeof errorData?.error === "string" ? errorData.error : "";
-
-    if (errorMessage.includes("429") || errorMessage.includes("Rate Limit")) {
-      return "rateLimited";
-    }
-
-    if (
-      errorMessage.includes("No route found") ||
-      errorMessage.includes("Could not generate a route for this location")
-    ) {
-      return "noRouteFound";
-    }
-  } catch {
-    // Ignore and fall back below.
-  }
-
-  return "generic";
+function tryStartRouteGeneration(): boolean {
+  const store = useRouteFormStore.getState();
+  if (store.isGeneratingRoute) return false;
+  store.setIsGeneratingRoute(true);
+  return true;
 }
 
 export function useRouteGeneration() {
   const t = useTranslations("RouteGenerationNotifications");
-  const { startLocation, setGeneratedRoute } = useLocationStore();
+  const { startLocation, setGeneratedRoute, setStartLocation } =
+    useLocationStore(
+      useShallow((state) => ({
+        startLocation: state.startLocation,
+        setGeneratedRoute: state.setGeneratedRoute,
+        setStartLocation: state.setStartLocation,
+      })),
+    );
   const showNotification = useNotificationStore((s) => s.showNotification);
 
   const {
@@ -125,7 +49,53 @@ export function useRouteGeneration() {
     pattern,
     isGeneratingRoute,
     setIsGeneratingRoute,
-  } = useRouteFormStore();
+  } = useRouteFormStore(
+    useShallow((state) => ({
+      mode: state.mode,
+      pace: state.pace,
+      distance: state.distance,
+      time: state.time,
+      pattern: state.pattern,
+      isGeneratingRoute: state.isGeneratingRoute,
+      setIsGeneratingRoute: state.setIsGeneratingRoute,
+    })),
+  );
+
+  const applyRoute = (route: GeneratedRouteResult["route"]) => {
+    if (!route) return;
+    setGeneratedRoute({
+      coordinates: route.coordinates,
+      distance: route.distance,
+      elevationGain: route.elevationGain,
+      waypoints: route.waypoints,
+    });
+    if (
+      Array.isArray(route.startLocation) &&
+      isValidStartLocation(route.startLocation)
+    ) {
+      setStartLocation(route.startLocation);
+    }
+  };
+
+  const notifyError = (
+    error: unknown,
+    fallback: "failedGenerate" | "failedRegenerate",
+  ) => {
+    const kind = sanitizeRouteErrorKind(error);
+    const messages = {
+      serviceUnavailable: "routeServiceUnavailable",
+      rateLimited: "routeRateLimited",
+      noRouteFound: "noRouteFound",
+      distanceTooLong: "routeDistanceTooLong",
+      generic: fallback,
+    } as const;
+    showNotification(
+      t(messages[kind], {
+        maxDistanceKm: MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(0),
+      }),
+      { variant: "error" },
+    );
+  };
 
   const generateRoute = async (formData?: {
     distance?: string;
@@ -160,6 +130,11 @@ export function useRouteGeneration() {
       return;
     }
 
+    if (!Number.isFinite(finalDistance) || finalDistance <= 0) {
+      showNotification(t("enterDistance"), { variant: "error" });
+      return;
+    }
+
     if (isRequestedRoundTripDistanceTooLong(finalDistance)) {
       showNotification(
         t("routeDistanceTooLong", {
@@ -170,52 +145,42 @@ export function useRouteGeneration() {
       return;
     }
 
-    try {
-      setIsGeneratingRoute(true);
+    if (!tryStartRouteGeneration()) return;
 
+    try {
       const requestBody = {
-        startLocation: startLocation,
+        startLocation: Array.isArray(startLocation)
+          ? ([startLocation[0], startLocation[1]] as [number, number])
+          : { lat: startLocation.lat, lng: startLocation.lng },
         distance: finalDistance,
         pattern,
       };
 
-      const response = await fetch("/api/generateroute", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorKind = await getResponseErrorKind(response);
-        throw new Error(errorKind);
-      }
-
-      const result = await response.json();
+      const result = await requestGeneratedRoute(requestBody);
 
       if (result.success && result.route) {
-        setGeneratedRoute(result.route);
+        const {
+          startLocationAdjustmentMeters,
+          distanceFallback,
+          ...routeData
+        } = result.route;
+        applyRoute(result.route);
+
+        if (
+          typeof startLocationAdjustmentMeters === "number" &&
+          startLocationAdjustmentMeters > 0
+        ) {
+          showNotification(
+            t("startLocationAdjusted", {
+              distanceMeters: Math.round(startLocationAdjustmentMeters),
+            }),
+            { variant: "info" },
+          );
+        }
       }
     } catch (error) {
       console.error("Error generating route:", error);
-      const errorKind = sanitizeRouteErrorKind(error);
-
-      const errorMessage =
-        errorKind === "serviceUnavailable"
-          ? t("routeServiceUnavailable")
-          : errorKind === "rateLimited"
-            ? t("routeRateLimited")
-            : errorKind === "noRouteFound"
-              ? t("noRouteFound")
-              : errorKind === "distanceTooLong"
-                ? t("routeDistanceTooLong", {
-                    maxDistanceKm:
-                      MAX_REQUESTED_ROUND_TRIP_DISTANCE_KM.toFixed(0),
-                  })
-                : t("failedGenerate");
-
-      showNotification(errorMessage, { variant: "error" });
+      notifyError(error, "failedGenerate");
     } finally {
       setIsGeneratingRoute(false);
     }
@@ -224,54 +189,27 @@ export function useRouteGeneration() {
   const regenerateRouteFromWaypoints = async (
     waypoints: [number, number][],
   ) => {
-    if (!waypoints || waypoints.length === 0) return;
+    if (!waypoints || waypoints.length < 2 || !tryStartRouteGeneration()) {
+      return;
+    }
 
     try {
-      setIsGeneratingRoute(true);
-
-      const waypointsForApi = waypoints.map(([lat, lng]) => [lng, lat]);
+      const waypointsForApi = waypoints.map(([lat, lng]): [number, number] => [
+        lng,
+        lat,
+      ]);
 
       const requestBody = {
         waypoints: waypointsForApi,
         regenerate: true,
       };
 
-      const response = await fetch("/api/generateroute", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const result = await requestGeneratedRoute(requestBody);
 
-      if (!response.ok) {
-        const errorKind = await getResponseErrorKind(response);
-        throw new Error(errorKind);
-      }
-
-      const result = await response.json();
-
-      if (result.success && result.route) {
-        setGeneratedRoute(result.route);
-      } else {
-        throw new Error("generic");
-      }
+      applyRoute(result.route);
     } catch (error) {
       console.error("Error regenerating route:", error);
-      const errorKind = sanitizeRouteErrorKind(error);
-
-      const errorMessage =
-        errorKind === "serviceUnavailable"
-          ? t("routeServiceUnavailable")
-          : errorKind === "rateLimited"
-            ? t("routeRateLimited")
-            : errorKind === "noRouteFound"
-              ? t("noRouteFound")
-              : errorKind === "distanceTooLong"
-                ? t("routeDistanceTooLong")
-                : t("failedRegenerate");
-
-      showNotification(errorMessage, { variant: "error" });
+      notifyError(error, "failedRegenerate");
     } finally {
       setIsGeneratingRoute(false);
     }

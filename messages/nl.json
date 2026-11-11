@@ -76,6 +76,7 @@
     "enterDistance": "Voer een afstand in",
     "enterTimeDuration": "Voer een tijdsduur in",
     "selectStartLocation": "Selecteer een startlocatie",
+    "startLocationAdjusted": "Het startpunt van de route is {distanceMeters} m verplaatst naar een nabijgelegen routeerbaar punt.",
     "routeServiceUnavailable": "Routeservice niet beschikbaar. Probeer het later opnieuw.",
     "routeRateLimited": "Er worden nu te veel routes gegenereerd. Probeer het later opnieuw of steun mij via buymeacoffee.com/lukasolivier om de limiet te verhogen.",
     "noRouteFound": "Kon geen route genereren voor deze locatie. Probeer een ander startpunt.",
@@ -85,6 +86,13 @@
   },
   "Notifications": {
     "close": "Melding sluiten"
+  },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Prompt voor installatie van de Android-app",
+    "title": "Route Random voor Android",
+    "description": "Installeer de Android-app voor een snellere ervaring als app.",
+    "install": "App installeren",
+    "dismiss": "Installatieprompt sluiten"
   },
   "Page": {
     "toggleMenu": "Optiemenu tonen/verbergen",

@@ -1,13 +1,23 @@
 "use client";
 
+import { useShallow } from "zustand/react/shallow";
+
 import { useEffect, useState } from "react";
+import { isValidRouteId, updateSearchParams } from "../utils/urlParams";
 import { getLastRouteIdFromStorage, useLocationStore } from "../../stores";
 
 export function useRouteFromUrl() {
-  const { setGeneratedRoute, setRouteId, generatedRoute } = useLocationStore();
+  const { setGeneratedRoute, setRouteId, generatedRoute } = useLocationStore(
+    useShallow((state) => ({
+      setGeneratedRoute: state.setGeneratedRoute,
+      setRouteId: state.setRouteId,
+      generatedRoute: state.generatedRoute,
+    })),
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
     const loadRouteFromUrl = async () => {
       if (generatedRoute) return;
 
@@ -17,24 +27,23 @@ export function useRouteFromUrl() {
       if (!routeId) {
         routeId = getLastRouteIdFromStorage();
         if (routeId) {
-          params.set("route", routeId);
-          const newUrl = `${window.location.pathname}?${params.toString()}`;
-          window.history.replaceState(null, "", newUrl);
+          const storedRouteId = routeId;
+          updateSearchParams((params) => params.set("route", storedRouteId));
         }
       }
 
       if (!routeId) return;
 
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(routeId)) {
+      if (!isValidRouteId(routeId)) {
         return;
       }
 
       setIsLoading(true);
 
       try {
-        const response = await fetch(`/api/routes/${routeId}`);
+        const response = await fetch(`/api/routes/${routeId}`, {
+          signal: controller.signal,
+        });
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -56,13 +65,15 @@ export function useRouteFromUrl() {
           useLocationStore.setState({ isRouteAccepted: true });
         }
       } catch (err) {
-        console.error("Error loading route from URL:", err);
+        if (!controller.signal.aborted)
+          console.error("Error loading route from URL:", err);
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
 
-    loadRouteFromUrl();
+    void loadRouteFromUrl();
+    return () => controller.abort();
   }, [generatedRoute, setGeneratedRoute, setRouteId]);
 
   return { isLoading };

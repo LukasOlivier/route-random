@@ -1,7 +1,5 @@
 export type LocationPermissionState =
-  | PermissionState
-  | "unsupported"
-  | "unknown";
+  PermissionState | "unsupported" | "unknown";
 
 export type LocationErrorMessageKey =
   | "unableToGetLocation"

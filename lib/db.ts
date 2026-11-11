@@ -1,6 +1,24 @@
-import { neon } from "@neondatabase/serverless";
+import "server-only";
 
-const sql = neon(process.env.DATABASE_URL!);
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+
+let sql: NeonQueryFunction<false, false> | undefined;
+function getSql() {
+  return (sql ??= neon(process.env.DATABASE_URL!));
+}
+
+let initialization: Promise<void> | undefined;
+
+/** Share initialization across callers and allow retry after a failed connection. */
+function initializeDatabase(): Promise<void> {
+  if (!initialization) {
+    initialization = createTables().catch((error) => {
+      initialization = undefined;
+      throw error;
+    });
+  }
+  return initialization;
+}
 
 interface SavedRoute {
   id: string;
@@ -9,14 +27,8 @@ interface SavedRoute {
   created_at: Date;
 }
 
-interface SavedRouteGenerationRun {
-  id: string;
-  route_type: string;
-  payload: unknown;
-  created_at: Date;
-}
-
-export async function initializeDatabase() {
+async function createTables() {
+  const sql = getSql();
   await sql`
     CREATE TABLE IF NOT EXISTS routes (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -40,6 +52,8 @@ export async function saveRoute(route: {
   coordinates: [number, number][];
   distance: number;
 }): Promise<string> {
+  await initializeDatabase();
+  const sql = getSql();
   const result = await sql`
     INSERT INTO routes (coordinates, distance)
     VALUES (
@@ -52,6 +66,8 @@ export async function saveRoute(route: {
 }
 
 export async function getRoute(id: string): Promise<SavedRoute | null> {
+  await initializeDatabase();
+  const sql = getSql();
   const result = await sql`
     SELECT id, coordinates, distance, created_at
     FROM routes
@@ -72,6 +88,8 @@ export async function saveRouteGenerationRun(params: {
   routeType: string;
   payload: unknown;
 }): Promise<string> {
+  await initializeDatabase();
+  const sql = getSql();
   const result = await sql`
     INSERT INTO route_generation_runs (route_type, payload)
     VALUES (

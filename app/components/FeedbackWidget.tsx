@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
-import { sendFeedbackToDiscord } from "../utils/feedbackService";
-
-type FeedbackReaction = "like" | "neutral" | "dislike";
+import {
+  sendFeedbackToDiscord,
+  type FeedbackReaction,
+} from "../utils/feedbackService";
 
 interface FeedbackWidgetProps {
   routeId?: string;

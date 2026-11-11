@@ -76,6 +76,7 @@
     "enterDistance": "Bitte gib eine Distanz ein",
     "enterTimeDuration": "Bitte gib eine Dauer ein",
     "selectStartLocation": "Bitte wähle einen Startpunkt aus",
+    "startLocationAdjusted": "Der Routenstart wurde um {distanceMeters} m zu einem nahegelegenen erreichbaren Punkt verschoben.",
     "routeServiceUnavailable": "Der Routendienst ist nicht verfügbar. Bitte versuche es später erneut.",
     "routeRateLimited": "Gerade generieren zu viele Personen Routen. Versuche es später erneut oder unterstütze mich auf buymeacoffee.com/lukasolivier, um das Limit zu erhöhen.",
     "noRouteFound": "Für diesen Standort konnte keine Route generiert werden. Versuche einen anderen Startpunkt.",
@@ -85,6 +86,13 @@
   },
   "Notifications": {
     "close": "Benachrichtigung schließen"
+  },
+  "AndroidAppInstallPrompt": {
+    "ariaLabel": "Hinweis zur Installation der Android-App",
+    "title": "Route Random für Android",
+    "description": "Installiere die Android-App für ein schnelleres, appähnliches Erlebnis.",
+    "install": "App installieren",
+    "dismiss": "Installationshinweis schließen"
   },
   "Page": {
     "toggleMenu": "Menü ein-/ausblenden",

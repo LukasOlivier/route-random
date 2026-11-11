@@ -1,61 +1,29 @@
 import { getLogger } from "@/lib/logger";
 import { buildRectangleWaypoints } from "@/app/utils/routePatterns";
+import {
+  assessRouteQuality,
+  distanceBetweenLonLat,
+  getRouteDistanceTolerance,
+  isValidLonLat,
+} from "@/app/utils/routeQuality";
+import { RouteServiceError } from "./orsErrors";
+
+export { RouteServiceError } from "./orsErrors";
 
 const logger = getLogger("orsService");
 
-export interface ORSRoute {
-  type: string;
-  features: Array<{
-    type: string;
-    properties: {
-      segments: Array<{
-        distance: number;
-        ascent?: number;
-        descent?: number;
-      }>;
-      elevation?: number[];
-    };
-    geometry: {
-      coordinates: [number, number][];
-      type: string;
-    };
-  }>;
-}
-
-export interface RouteResponse {
-  coordinates: [number, number][];
-  distance: number;
-  elevation?: {
-    gain: number;
-    loss: number;
-    min: number;
-    max: number;
-    profile: number[];
-  };
-  waypoints?: [number, number][];
-  generationSummary?: RouteGenerationSummary;
-}
-
-export interface RouteGenerationAttempt {
-  factor: number;
-  correctedDistance?: number;
-  routeDistance?: number;
-  distanceDiff?: number;
-  toleranceMeters: number;
-  nextFactor?: number;
-  outcome: "success" | "retry" | "error";
-  errorMessage?: string;
-  seed?: number;
-}
-
-export interface RouteGenerationSummary {
-  routeType: "roundTrip" | "rectangle";
-  targetDistance: number;
-  toleranceMeters: number;
-  attempts: RouteGenerationAttempt[];
-  bestAttempt?: RouteGenerationAttempt;
-  selectedAttempt?: RouteGenerationAttempt;
-}
+import type {
+  ORSRoute,
+  RouteResponse,
+  RouteGenerationAttempt,
+  RouteGenerationSummary,
+} from "./orsTypes";
+import { requestOrsRoute } from "./orsClient";
+export type {
+  RouteResponse,
+  RouteGenerationAttempt,
+  RouteGenerationSummary,
+} from "./orsTypes";
 
 export class RouteGenerationError extends Error {
   constructor(
@@ -67,26 +35,17 @@ export class RouteGenerationError extends Error {
   }
 }
 
-const ORS_API_URL =
-  "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
 const COMMON_AVOID_FEATURES = ["ferries"];
 const ROUND_TRIP_INITIAL_FACTOR = 0.82;
-const ROUND_TRIP_MIN_FACTOR = 0.5;
-const ROUND_TRIP_MAX_FACTOR = 0.9;
-const ROUND_TRIP_MAX_ATTEMPTS = 3;
+const ROUND_TRIP_MIN_FACTOR = 0.4;
+const ROUND_TRIP_MAX_FACTOR = 1;
+const ROUND_TRIP_MAX_ATTEMPTS = 5;
 const RECTANGLE_INITIAL_FACTOR = 0.68;
-const RECTANGLE_MIN_FACTOR = 0.5;
-const RECTANGLE_MAX_FACTOR = 0.9;
-const RECTANGLE_MAX_ATTEMPTS = 5;
-const RECTANGLE_TOLERANCE_METERS = 500;
-
-function wrapLongitude(longitude: number): number {
-  if (!Number.isFinite(longitude)) return longitude;
-
-  const wrapped = ((((longitude + 180) % 360) + 360) % 360) - 180;
-  return wrapped === -180 ? 180 : wrapped;
-}
-
+const RECTANGLE_MIN_FACTOR = 0.4;
+const RECTANGLE_MAX_FACTOR = 1;
+const RECTANGLE_MAX_ATTEMPTS = 6;
+const MAX_START_SNAP_DISTANCE_METERS = 150;
+const MAX_ORS_ROUND_TRIP_LENGTH_METERS = 100_000;
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
 }
@@ -94,29 +53,42 @@ function clamp(value: number, minimum: number, maximum: number): number {
 function normalizeOrsCoordinate(
   coordinate: [number, number],
 ): [number, number] {
-  let [longitude, latitude] = coordinate;
-
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    throw new Error(`Invalid coordinate values: ${longitude},${latitude}`);
+  if (!isValidLonLat(coordinate)) {
+    throw new RouteServiceError(
+      `Invalid longitude/latitude coordinate: ${coordinate}`,
+      "invalid-request",
+    );
   }
 
-  if (Math.abs(latitude) > 90 && Math.abs(longitude) <= 90) {
-    [longitude, latitude] = [latitude, longitude];
-  }
-
-  longitude = wrapLongitude(longitude);
-
-  if (Math.abs(latitude) > 90) {
-    throw new Error(`Invalid latitude value: ${latitude}`);
-  }
-
-  return [longitude, latitude];
+  return coordinate;
 }
 
 function normalizeOrsCoordinates(
   coordinates: [number, number][],
 ): [number, number][] {
   return coordinates.map((coordinate) => normalizeOrsCoordinate(coordinate));
+}
+
+function getTwoDimensionalCoordinates(
+  coordinates: [number, number, ...number[]][],
+): [number, number][] {
+  if (
+    !Array.isArray(coordinates) ||
+    coordinates.length < 2 ||
+    coordinates.some(
+      (coordinate) =>
+        !Array.isArray(coordinate) ||
+        coordinate.length < 2 ||
+        !isValidLonLat([coordinate[0], coordinate[1]]),
+    )
+  ) {
+    throw new RouteServiceError(
+      "ORS response did not contain valid route geometry",
+      "no-route",
+    );
+  }
+
+  return coordinates.map(([longitude, latitude]) => [longitude, latitude]);
 }
 
 function extractWaypointsFromCoordinates(
@@ -145,13 +117,61 @@ function extractWaypointsFromCoordinates(
   return waypoints;
 }
 
-function buildOrsRequestHeaders(apiKey: string) {
-  return {
-    Accept:
-      "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8",
-    Authorization: apiKey,
-    "Content-Type": "application/json; charset=utf-8",
-  };
+function getRouteDistance(data: ORSRoute): number {
+  const segments = data.features?.[0]?.properties?.segments;
+  if (
+    !Array.isArray(segments) ||
+    segments.length === 0 ||
+    segments.some(
+      (segment) =>
+        typeof segment.distance !== "number" ||
+        !Number.isFinite(segment.distance) ||
+        segment.distance < 0,
+    )
+  ) {
+    throw new RouteServiceError(
+      "ORS response did not contain valid route segments",
+      "no-route",
+    );
+  }
+
+  const distance = segments.reduce((sum, segment) => sum + segment.distance, 0);
+
+  if (distance <= 0) {
+    throw new RouteServiceError(
+      "ORS response did not contain a valid route distance",
+      "no-route",
+    );
+  }
+
+  return distance;
+}
+
+function validateOrsRouteQuality(
+  coordinates: [number, number][],
+  distance: number,
+  targetDistance?: number,
+  toleranceMeters?: number,
+) {
+  try {
+    return assessRouteQuality(
+      coordinates,
+      distance,
+      targetDistance,
+      toleranceMeters,
+    );
+  } catch (error) {
+    throw new RouteServiceError(
+      error instanceof Error ? error.message : "Invalid route geometry",
+      "no-route",
+    );
+  }
+}
+
+function isUnroutableStartFailure(error: RouteServiceError): boolean {
+  return /routable point within a radius|cannot find point|route start is too far/i.test(
+    error.message,
+  );
 }
 
 export async function generateRoundTripRoute(
@@ -165,13 +185,12 @@ export async function generateRoundTripRoute(
     "Starting round trip route generation",
   );
 
-  const toleranceMeters = Math.max(500, targetDistance * 0.1);
-
-  let bestRoute: RouteResponse | null = null;
+  const toleranceMeters = getRouteDistanceTolerance(targetDistance);
   let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
-  let lastOperationalError: Error | undefined;
+  let bestDistanceCandidate:
+    { route: RouteResponse; attempt: RouteGenerationAttempt } | undefined;
   let currentFactor = ROUND_TRIP_INITIAL_FACTOR;
   const attempts: RouteGenerationAttempt[] = [];
 
@@ -179,7 +198,9 @@ export async function generateRoundTripRoute(
     const factor = currentFactor;
 
     try {
-      const correctedDistance = Math.round(targetDistance * factor);
+      const correctedDistance = Math.round(
+        Math.min(targetDistance * factor, MAX_ORS_ROUND_TRIP_LENGTH_METERS),
+      );
       const normalizedStart = normalizeOrsCoordinate([startLng, startLat]);
       const seed = Math.floor(Math.random() * 100000);
 
@@ -204,39 +225,29 @@ export async function generateRoundTripRoute(
         },
       };
 
-      const response = await fetch(ORS_API_URL, {
-        method: "POST",
-        headers: buildOrsRequestHeaders(apiKey),
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        logger.warn(
-          {
-            status: response.status,
-            factor,
-            correctedDistance,
-            errorText,
-          },
-          "ORS API returned error status",
-        );
-        throw new Error(`ORS API error: ${response.status} - ${errorText}`);
-      }
-
-      const data: ORSRoute = await response.json();
+      const data = await requestOrsRoute(requestBody, apiKey);
 
       if (!data.features || data.features.length === 0) {
         logger.warn({ factor }, "ORS API returned no features");
-        throw new Error("No route found");
+        throw new RouteServiceError("No route found", "no-route");
       }
 
       const feature = data.features[0];
-      const coordinates = feature.geometry.coordinates;
-      const totalDistance = feature.properties.segments.reduce(
-        (sum, segment) => sum + segment.distance,
-        0,
+      const coordinates = getTwoDimensionalCoordinates(
+        feature.geometry.coordinates,
       );
+
+      if (
+        distanceBetweenLonLat(normalizedStart, coordinates[0]) >
+        MAX_START_SNAP_DISTANCE_METERS
+      ) {
+        throw new RouteServiceError(
+          "The route start is too far from the requested starting point",
+          "no-route",
+        );
+      }
+
+      const totalDistance = getRouteDistance(data);
 
       const elevation = extractElevationData(data);
       const waypoints = extractWaypointsFromCoordinates(coordinates, 5);
@@ -248,24 +259,41 @@ export async function generateRoundTripRoute(
       };
 
       const distanceDiff = Math.abs(totalDistance - targetDistance);
+      const quality = validateOrsRouteQuality(
+        route.coordinates,
+        route.distance,
+        targetDistance,
+        toleranceMeters,
+      );
+      const nonDistanceQuality = validateOrsRouteQuality(
+        route.coordinates,
+        route.distance,
+      );
       const attempt: RouteGenerationAttempt = {
         factor,
         correctedDistance,
         routeDistance: totalDistance,
         distanceDiff,
         toleranceMeters,
-        outcome: distanceDiff <= toleranceMeters ? "success" : "retry",
+        outcome: quality.reason ? "retry" : "success",
+        ...(quality.reason ? { errorMessage: quality.reason } : {}),
+        quality: quality.metrics,
         seed,
       };
       attempts.push(attempt);
-
       if (distanceDiff < bestDistanceDiff) {
         bestDistanceDiff = distanceDiff;
-        bestRoute = route;
         bestAttempt = attempt;
       }
+      if (
+        !nonDistanceQuality.reason &&
+        (!bestDistanceCandidate ||
+          distanceDiff < bestDistanceCandidate.attempt.distanceDiff!)
+      ) {
+        bestDistanceCandidate = { route, attempt };
+      }
 
-      if (distanceDiff <= toleranceMeters) {
+      if (!quality.reason) {
         selectedAttempt = attempt;
         logger.info(
           {
@@ -289,16 +317,8 @@ export async function generateRoundTripRoute(
         };
       }
 
-      const adjustmentBase = Math.max(targetDistance, 1);
-      const adjustment = clamp(
-        (distanceDiff / adjustmentBase) * 0.5,
-        0.02,
-        0.08,
-      );
-      const routeWasTooShort = totalDistance < targetDistance;
-
       currentFactor = clamp(
-        factor * (routeWasTooShort ? 1 + adjustment : 1 - adjustment),
+        factor * (targetDistance / Math.max(totalDistance, 1)),
         ROUND_TRIP_MIN_FACTOR,
         ROUND_TRIP_MAX_FACTOR,
       );
@@ -316,24 +336,22 @@ export async function generateRoundTripRoute(
         "Route attempt",
       );
     } catch (error) {
-      if (error instanceof Error && error.message !== "No route found") {
-        lastOperationalError = error;
+      if (!(error instanceof RouteServiceError) || error.kind !== "no-route") {
+        throw error;
+      }
+      if (isUnroutableStartFailure(error)) {
+        throw error;
       }
 
       attempts.push({
         factor,
-        nextFactor: clamp(
-          currentFactor * 0.95,
-          ROUND_TRIP_MIN_FACTOR,
-          ROUND_TRIP_MAX_FACTOR,
-        ),
         toleranceMeters,
         outcome: "error",
         errorMessage: error instanceof Error ? error.message : String(error),
       });
 
       currentFactor = clamp(
-        currentFactor * 0.95,
+        currentFactor,
         ROUND_TRIP_MIN_FACTOR,
         ROUND_TRIP_MAX_FACTOR,
       );
@@ -348,19 +366,21 @@ export async function generateRoundTripRoute(
     }
   }
 
-  if (bestRoute) {
-    selectedAttempt = selectedAttempt ?? bestAttempt;
-
-    logger.info(
+  if (bestDistanceCandidate) {
+    const { route, attempt } = bestDistanceCandidate;
+    attempt.outcome = "fallback";
+    selectedAttempt = attempt;
+    logger.warn(
       {
-        distance: (bestRoute.distance / 1000).toFixed(2),
-        target: (targetDistance / 1000).toFixed(2),
-        diff: (bestDistanceDiff / 1000).toFixed(2),
+        targetDistance,
+        routeDistance: route.distance,
+        distanceDiff: attempt.distanceDiff,
+        toleranceMeters,
       },
-      "Using best attempt instead of ideal match",
+      "Returning closest valid round-trip route outside requested distance tolerance",
     );
     return {
-      ...bestRoute,
+      ...route,
       generationSummary: {
         routeType: "roundTrip",
         targetDistance,
@@ -373,13 +393,14 @@ export async function generateRoundTripRoute(
   }
 
   logger.error(
-    { targetDistance },
+    {
+      targetDistance,
+      routeType: "roundTrip",
+      attempts,
+      bestAttempt,
+    },
     "Failed to generate route after all attempts",
   );
-  if (lastOperationalError) {
-    throw lastOperationalError;
-  }
-
   throw new RouteGenerationError("No route found", {
     routeType: "roundTrip",
     targetDistance,
@@ -400,12 +421,13 @@ export async function generateRectangleRoute(
     "Starting rectangle route generation",
   );
 
-  let bestRoute: RouteResponse | null = null;
-  let bestDistanceDiff = Infinity;
   let currentFactor = RECTANGLE_INITIAL_FACTOR;
+  let bestDistanceDiff = Infinity;
   let bestAttempt: RouteGenerationAttempt | undefined;
   let selectedAttempt: RouteGenerationAttempt | undefined;
-  let lastOperationalError: Error | undefined;
+  let bestDistanceCandidate:
+    { route: RouteResponse; attempt: RouteGenerationAttempt } | undefined;
+  const toleranceMeters = getRouteDistanceTolerance(targetDistance);
   const attempts: RouteGenerationAttempt[] = [];
 
   for (let attempt = 0; attempt < RECTANGLE_MAX_ATTEMPTS; attempt += 1) {
@@ -420,22 +442,34 @@ export async function generateRectangleRoute(
       );
       const route = await generateWalkingRoute(waypoints, apiKey);
       const distanceDiff = Math.abs(route.distance - targetDistance);
+      const quality = validateOrsRouteQuality(
+        route.coordinates,
+        route.distance,
+        targetDistance,
+        toleranceMeters,
+      );
       const routeAttempt: RouteGenerationAttempt = {
         factor,
         routeDistance: route.distance,
         distanceDiff,
-        toleranceMeters: RECTANGLE_TOLERANCE_METERS,
-        outcome:
-          distanceDiff <= RECTANGLE_TOLERANCE_METERS ? "success" : "retry",
+        toleranceMeters,
+        outcome: quality.reason ? "retry" : "success",
+        ...(quality.reason ? { errorMessage: quality.reason } : {}),
+        quality: quality.metrics,
       };
 
       if (distanceDiff < bestDistanceDiff) {
         bestDistanceDiff = distanceDiff;
-        bestRoute = route;
         bestAttempt = routeAttempt;
       }
+      if (
+        !bestDistanceCandidate ||
+        distanceDiff < bestDistanceCandidate.attempt.distanceDiff!
+      ) {
+        bestDistanceCandidate = { route, attempt: routeAttempt };
+      }
 
-      if (distanceDiff <= RECTANGLE_TOLERANCE_METERS) {
+      if (!quality.reason) {
         selectedAttempt = routeAttempt;
         attempts.push(routeAttempt);
         logger.info(
@@ -452,7 +486,7 @@ export async function generateRectangleRoute(
           generationSummary: {
             routeType: "rectangle",
             targetDistance,
-            toleranceMeters: RECTANGLE_TOLERANCE_METERS,
+            toleranceMeters,
             attempts,
             bestAttempt,
             selectedAttempt,
@@ -460,16 +494,8 @@ export async function generateRectangleRoute(
         };
       }
 
-      const adjustmentBase = Math.max(targetDistance, 1);
-      const adjustment = clamp(
-        (distanceDiff / adjustmentBase) * 0.5,
-        0.02,
-        0.08,
-      );
-      const routeWasTooShort = route.distance < targetDistance;
-
       currentFactor = clamp(
-        factor * (routeWasTooShort ? 1 + adjustment : 1 - adjustment),
+        factor * (targetDistance / Math.max(route.distance, 1)),
         RECTANGLE_MIN_FACTOR,
         RECTANGLE_MAX_FACTOR,
       );
@@ -488,8 +514,11 @@ export async function generateRectangleRoute(
         "Rectangle route attempt",
       );
     } catch (error) {
-      if (error instanceof Error && error.message !== "No route found") {
-        lastOperationalError = error;
+      if (!(error instanceof RouteServiceError) || error.kind !== "no-route") {
+        throw error;
+      }
+      if (/route start is too far/i.test(error.message)) {
+        throw error;
       }
 
       logger.warn(
@@ -502,36 +531,32 @@ export async function generateRectangleRoute(
 
       attempts.push({
         factor,
-        toleranceMeters: RECTANGLE_TOLERANCE_METERS,
+        toleranceMeters,
         outcome: "error",
         errorMessage: error instanceof Error ? error.message : String(error),
       });
-
-      currentFactor = clamp(
-        currentFactor * 0.95,
-        RECTANGLE_MIN_FACTOR,
-        RECTANGLE_MAX_FACTOR,
-      );
     }
   }
 
-  if (bestRoute) {
-    selectedAttempt = bestAttempt;
-
-    logger.info(
+  if (bestDistanceCandidate) {
+    const { route, attempt } = bestDistanceCandidate;
+    attempt.outcome = "fallback";
+    selectedAttempt = attempt;
+    logger.warn(
       {
-        distance: (bestRoute.distance / 1000).toFixed(2),
-        target: (targetDistance / 1000).toFixed(2),
-        diff: (bestDistanceDiff / 1000).toFixed(2),
+        targetDistance,
+        routeDistance: route.distance,
+        distanceDiff: attempt.distanceDiff,
+        toleranceMeters,
       },
-      "Using best rectangle attempt instead of ideal match",
+      "Returning closest valid rectangle route outside requested distance tolerance",
     );
     return {
-      ...bestRoute,
+      ...route,
       generationSummary: {
         routeType: "rectangle",
         targetDistance,
-        toleranceMeters: RECTANGLE_TOLERANCE_METERS,
+        toleranceMeters,
         attempts,
         bestAttempt,
         selectedAttempt,
@@ -540,17 +565,18 @@ export async function generateRectangleRoute(
   }
 
   logger.error(
-    { targetDistance },
+    {
+      targetDistance,
+      routeType: "rectangle",
+      attempts,
+      bestAttempt,
+    },
     "Failed to generate rectangle route after all attempts",
   );
-  if (lastOperationalError) {
-    throw lastOperationalError;
-  }
-
   throw new RouteGenerationError("No route found", {
     routeType: "rectangle",
     targetDistance,
-    toleranceMeters: RECTANGLE_TOLERANCE_METERS,
+    toleranceMeters,
     attempts,
     bestAttempt,
   });
@@ -566,6 +592,12 @@ export async function generateWalkingRoute(
   );
 
   const normalizedWaypoints = normalizeOrsCoordinates(waypoints);
+  if (normalizedWaypoints.length < 2) {
+    throw new RouteServiceError(
+      "At least two waypoints are required",
+      "invalid-request",
+    );
+  }
 
   const requestBody = {
     coordinates: normalizedWaypoints,
@@ -584,36 +616,41 @@ export async function generateWalkingRoute(
   };
 
   try {
-    const response = await fetch(ORS_API_URL, {
-      method: "POST",
-      headers: buildOrsRequestHeaders(apiKey),
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error(
-        { status: response.status, errorText },
-        "ORS API error for walking route",
-      );
-      throw new Error(`ORS API error: ${response.status} - ${errorText}`);
-    }
-
-    const data: ORSRoute = await response.json();
+    const data = await requestOrsRoute(requestBody, apiKey);
 
     if (!data.features || data.features.length === 0) {
       logger.warn("ORS API returned no features for walking route");
-      throw new Error("No route found");
+      throw new RouteServiceError("No route found", "no-route");
     }
 
     const feature = data.features[0];
-    const coordinates = feature.geometry.coordinates;
-    const totalDistance = feature.properties.segments.reduce(
-      (sum, segment) => sum + segment.distance,
-      0,
+    const coordinates = getTwoDimensionalCoordinates(
+      feature.geometry.coordinates,
     );
 
+    const totalDistance = getRouteDistance(data);
+
     const elevation = extractElevationData(data);
+    const startDisplacement = distanceBetweenLonLat(
+      normalizedWaypoints[0],
+      coordinates[0],
+    );
+    if (startDisplacement > MAX_START_SNAP_DISTANCE_METERS) {
+      throw new RouteServiceError(
+        "The route start is too far from the requested starting point",
+        "no-route",
+      );
+    }
+
+    const routeQuality = validateOrsRouteQuality(coordinates, totalDistance);
+    if (routeQuality.reason) {
+      throw new RouteServiceError(routeQuality.reason, "no-route");
+    }
+
+    const routeWaypoints = [...normalizedWaypoints];
+    routeWaypoints[0] = coordinates[0];
+    routeWaypoints[routeWaypoints.length - 1] =
+      coordinates[coordinates.length - 1];
 
     logger.info(
       {
@@ -627,7 +664,7 @@ export async function generateWalkingRoute(
       coordinates,
       distance: totalDistance,
       elevation,
-      waypoints: normalizedWaypoints,
+      waypoints: routeWaypoints,
     };
   } catch (error) {
     logger.error(

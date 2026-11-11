@@ -1,6 +1,8 @@
 "use client";
 
-import { useLocationStore, useRouteFormStore } from "../../stores";
+import { useShallow } from "zustand/react/shallow";
+
+import { useLocationStore } from "../../stores";
 import GenerateRouteButton from "./GenerateRouteButton";
 import AcceptRouteButton from "./AcceptRouteButton";
 import ResetRouteButton from "./ResetRouteButton";
@@ -8,15 +10,19 @@ import { useRouteGeneration } from "../hooks/useRouteGeneration";
 
 export default function MobileBottomBar() {
   const { generatedRoute, resetRoute, acceptRoute, isRouteAccepted } =
-    useLocationStore();
-
-  const { resetSessionCount } = useRouteFormStore();
+    useLocationStore(
+      useShallow((state) => ({
+        generatedRoute: state.generatedRoute,
+        resetRoute: state.resetRoute,
+        acceptRoute: state.acceptRoute,
+        isRouteAccepted: state.isRouteAccepted,
+      })),
+    );
 
   const { generateRoute, isGeneratingRoute } = useRouteGeneration();
 
   const handleAcceptRoute = () => {
     acceptRoute();
-    resetSessionCount();
   };
 
   const handleResetRoute = () => {
