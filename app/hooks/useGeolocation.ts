@@ -23,7 +23,7 @@ const LOW_ACCURACY: PositionOptions = {
 };
 
 export function useGeolocation() {
-  const t = useTranslations("Geolocation");
+  const t = useTranslations("SidebarForm");
   const showNotification = useNotificationStore((s) => s.showNotification);
   const watchIdRef = useRef<number | null>(null);
 
