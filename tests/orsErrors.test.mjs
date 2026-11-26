@@ -34,6 +34,13 @@ test("classifies quota exhaustion without marking it retryable", () => {
   assert.equal(isTransientOrsStatus(error.status), false);
 });
 
+test("classifies a retired ORS endpoint as service unavailable", () => {
+  const error = classifyOrsError(410, "Deprecated API URL");
+
+  assert.equal(error.kind, "unavailable");
+  assert.equal(error.status, 410);
+});
+
 test("preserves upstream 429 retry-after information", () => {
   const error = classifyOrsError(429, "Rate limit reached", "30");
 

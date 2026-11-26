@@ -10,7 +10,7 @@ import type { ORSRoute } from "./orsTypes";
 const logger = getLogger("orsClient");
 
 const ORS_API_URL =
-  "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson";
+  "https://api.heigit.org/openrouteservice/v2/directions/foot-hiking/geojson";
 const ORS_REQUEST_TIMEOUT_MS = 15_000;
 const ORS_TRANSIENT_RETRY_DELAY_MS = 300;
 const ORS_CIRCUIT_BREAKER_THRESHOLD = 3;

@@ -52,8 +52,12 @@ async function withMockedFetch(mock, callback) {
 test("retries a successful ORS 500 response only once", async () => {
   let calls = 0;
   const route = await withMockedFetch(
-    async () => {
+    async (url) => {
       calls += 1;
+      assert.equal(
+        url,
+        "https://api.heigit.org/openrouteservice/v2/directions/foot-hiking/geojson",
+      );
       return calls === 1
         ? new Response("upstream failure", { status: 500 })
         : routeResponse();

@@ -59,6 +59,14 @@ export function classifyOrsError(
     );
   }
 
+  if (status === 410) {
+    return new RouteServiceError(
+      `ORS API endpoint is no longer available: ${errorText}`,
+      "unavailable",
+      status,
+    );
+  }
+
   if (
     (status === 400 || status === 404) &&
     /no route|routable point|valid point|could not find (?:a route|point)|"code"\s*:\s*2010/i.test(
