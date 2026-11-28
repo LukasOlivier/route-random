@@ -184,6 +184,9 @@ const Map = () => {
         zoom={mapDefaults.zoom}
         zoomControl={true}
         scrollWheelZoom={true}
+        rotate={true}
+        touchRotate={true}
+        rotateControl={true}
         style={{
           height: "100%",
           width: "100%",

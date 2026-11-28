@@ -183,6 +183,9 @@ importers:
       leaflet-defaulticon-compatibility:
         specifier: ^0.1.2
         version: 0.1.2
+      leaflet-rotate:
+        specifier: ^0.6.2
+        version: 0.6.2(leaflet@1.9.4)
       lucide-react:
         specifier: ^0.545.0
         version: 0.545.0(react@19.2.7)
@@ -2201,6 +2204,11 @@ packages:
 
   leaflet-defaulticon-compatibility@0.1.2:
     resolution: {integrity: sha512-IrKagWxkTwzxUkFIumy/Zmo3ksjuAu3zEadtOuJcKzuXaD76Gwvg2Z1mLyx7y52ykOzM8rAH5ChBs4DnfdGa6Q==}
+
+  leaflet-rotate@0.6.2:
+    resolution: {integrity: sha512-HCvMUGaWimqAVn4wXTUnpp2FT1ByPh8WfVJeK2bUrSC2rRHfzNJyXFKc7wxQRtqItJanD/GC20HE9CtRvl2DUw==}
+    peerDependencies:
+      leaflet: ^1.9.3 || ^2.0.0-beta.3
 
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
@@ -4925,6 +4933,10 @@ snapshots:
       language-subtag-registry: 0.3.23
 
   leaflet-defaulticon-compatibility@0.1.2: {}
+
+  leaflet-rotate@0.6.2(leaflet@1.9.4):
+    dependencies:
+      leaflet: 1.9.4
 
   leaflet@1.9.4: {}
 
